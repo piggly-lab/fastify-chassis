@@ -112,3 +112,9 @@ export interface HttpServerInterface<
 	stop(): Promise<boolean>;
 	isRunning(): boolean;
 }
+
+/** Validations */
+
+export interface RuleInterface {
+	assert(): void;
+}

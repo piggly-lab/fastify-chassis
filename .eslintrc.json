@@ -43,6 +43,7 @@
 		"no-console": "off",
 		"@typescript-eslint/naming-convention": "off",
 		"no-underscore-dangle": "off",
-		"class-methods-use-this": "off"
+		"class-methods-use-this": "off",
+		"import/no-extraneous-dependencies": "off"
 	}
 }
