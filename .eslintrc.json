@@ -41,6 +41,7 @@
 		"prettier/prettier": "error",
 		"@typescript-eslint/no-explicit-any": "off",
 		"no-console": "off",
-		"@typescript-eslint/naming-convention": "off"
+		"@typescript-eslint/naming-convention": "off",
+		"no-underscore-dangle": "off"
 	}
 }
