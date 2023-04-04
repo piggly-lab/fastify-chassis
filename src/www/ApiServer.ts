@@ -11,11 +11,35 @@ import AbstractError from '@/errors/AbstractError';
 import ResponseError from '@/errors/ResponseError';
 import HttpServer from './HttpServer';
 
+/**
+ * The API server.
+ */
 export default class ApiServer implements ApiServerInterface {
+	/**
+	 * The Fastify application.
+	 *
+	 * @type {FastifyInstance}
+	 * @protected
+	 */
 	protected _app: FastifyInstance;
 
+	/**
+	 * The options.
+	 *
+	 * @type {ApiServerOptions}
+	 * @protected
+	 */
 	protected _options: ApiServerOptions;
 
+	/**
+	 * Create a new API server.
+	 *
+	 * @param options The options.
+	 * @returns {void}
+	 * @public
+	 * @constructor
+	 * @memberof ApiServer
+	 */
 	constructor(options: ApiServerOptions) {
 		this._options = options;
 
@@ -27,19 +51,53 @@ export default class ApiServer implements ApiServerInterface {
 		});
 	}
 
+	/**
+	 * Get the Fastify application.
+	 *
+	 * @returns {FastifyInstance}
+	 * @public
+	 * @memberof ApiServer
+	 */
 	public getApp(): FastifyInstance {
 		return this._app;
 	}
 
+	/**
+	 * Get the global environment.
+	 *
+	 * @returns {DefaultEnvironment}
+	 * @public
+	 * @memberof ApiServer
+	 */
 	public getEnv(): DefaultEnvironment {
 		return this._options.env;
 	}
 
+	/**
+	 * Bootstrap the API server.
+	 *
+	 * This method will prepare the environment, the logger,
+	 * the plugins and the routes for fastify.
+	 *
+	 * After that, it will return a new HttpServer instance.
+	 * This instance will be used to start the server.
+	 *
+	 * @returns {Promise<HttpServerInterface>}
+	 * @public
+	 * @memberof ApiServer
+	 */
 	public async bootstrap(): Promise<HttpServerInterface> {
 		await this.init();
 		return new HttpServer(this);
 	}
 
+	/**
+	 * Initialize the API server.
+	 *
+	 * @returns {Promise<void>}
+	 * @protected
+	 * @memberof ApiServer
+	 */
 	protected async init(): Promise<void> {
 		// Prepare application logger
 		Logger.prepare(this._app.log);

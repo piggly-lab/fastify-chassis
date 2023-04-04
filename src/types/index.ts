@@ -129,7 +129,7 @@ export interface DatabaseCompatibileInterface<
 	ClassObject = any,
 	DatabaseRecord = Record<string, any>
 > {
-	preload(id: number): ClassObject;
+	preload(id: number): void;
 	isPreloaded(): boolean;
 	fromDatabase(DatabaseRecord: DatabaseRecord): ClassObject;
 	toDatabase(): DatabaseRecord;
@@ -155,3 +155,15 @@ export interface RepositoryReaderInterface<ID = any, Model = any> {
 	findOne(id: ID): Promise<TOrNull<Model>>;
 	findAll(): Promise<Model[]>;
 }
+
+/** Services */
+
+export interface ServiceManagerInterface {
+	register(name: string, constructor: ServiceConstructor): void;
+	get(name: string): Promise<any>;
+	clear(): void;
+}
+
+export type ServiceConstructor = (
+	manager: ServiceManagerInterface
+) => Promise<any>;

@@ -1,13 +1,41 @@
 import { DefaultEnvironment } from '@/types';
 
+/**
+ * The environment helper.
+ */
 export default class Environment {
-	private static env: DefaultEnvironment;
+	/**
+	 * The environment.
+	 *
+	 * @type {any}
+	 * @private
+	 * @static
+	 */
+	private static env: any;
 
-	public static prepare(env: DefaultEnvironment) {
+	/**
+	 * Prepare the environment.
+	 *
+	 * @param env The environment.
+	 * @returns {void}
+	 * @public
+	 * @static
+	 * @memberof Environment
+	 */
+	public static prepare<Env = DefaultEnvironment>(env: Env) {
 		Environment.env = env;
 	}
 
-	public static get(): DefaultEnvironment {
+	/**
+	 * Get the environment.
+	 *
+	 * @returns {Env}
+	 * @public
+	 * @static
+	 * @memberof Environment
+	 * @throws {Error} If the environment is not initialized.
+	 */
+	public static get<Env = DefaultEnvironment>(): Env {
 		if (!Environment.env) {
 			throw new Error(
 				'Environment not initialized, use prepare() method before get it.'
