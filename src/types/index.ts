@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 export type TOrNull<T> = T | null;
 export type TOrUndefined<T> = T | undefined;
 export type TOrU<T, U> = T | U;
+export type TOrFalse<T> = T | false;
 
 /** Application Errors */
 
@@ -117,4 +118,40 @@ export interface HttpServerInterface<
 
 export interface RuleInterface {
 	assert(): void;
+}
+
+/** Core */
+export interface JSONMapperInterface<Mapper = Record<string, any>> {
+	toJSON(exclude?: string[]): Mapper;
+}
+
+export interface DatabaseCompatibileInterface<
+	ClassObject = any,
+	DatabaseRecord = Record<string, any>
+> {
+	preload(id: number): ClassObject;
+	isPreloaded(): boolean;
+	fromDatabase(DatabaseRecord: DatabaseRecord): ClassObject;
+	toDatabase(): DatabaseRecord;
+}
+
+export type RecordInterface<
+	ClassObject = any,
+	DatabaseRecord = Record<string, any>,
+	JSONMapper = Record<string, any>
+> = DatabaseCompatibileInterface<ClassObject, DatabaseRecord> &
+	JSONMapperInterface<JSONMapper>;
+
+/** Repositories */
+
+export interface RepositoryWriterInterface<ID = any, Model = any> {
+	create(model: Model): Promise<TOrFalse<Model>>;
+	update(id: ID, model: Model): Promise<TOrFalse<Model>>;
+	delete(id: ID, model: Model): Promise<boolean>;
+}
+
+export interface RepositoryReaderInterface<ID = any, Model = any> {
+	findBy(model: Model): Promise<TOrNull<Model>>;
+	findOne(id: ID): Promise<TOrNull<Model>>;
+	findAll(): Promise<Model[]>;
 }
