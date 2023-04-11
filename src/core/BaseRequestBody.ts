@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import { ResponseErrorInterface } from '@/types';
 
 /**
  * Base class for request body validation.
