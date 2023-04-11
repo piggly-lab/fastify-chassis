@@ -1,10 +1,13 @@
 import { FastifyInstance } from 'fastify';
+import moment from 'moment-timezone';
 
 /** Globals */
 export type TOrNull<T> = T | null;
 export type TOrUndefined<T> = T | undefined;
 export type TOrU<T, U> = T | U;
 export type TOrFalse<T> = T | false;
+export type TOrEmpty<T> = T | undefined | null;
+export type TDateInput = number | string | Date | moment.Moment;
 
 /** Application Errors */
 
