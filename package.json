@@ -1,7 +1,7 @@
 {
-	"name": "fastify-chassis",
-	"private": false,
-	"version": "0.1.0",
+	"name": "@piggly/fastify-chassis",
+	"private": true,
+	"version": "0.1.0-beta.0",
 	"description": "Utilities to build HTTP microservices with fastify.",
 	"scripts": {
 		"check": "tsc --noEmit",
