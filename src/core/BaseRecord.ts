@@ -15,7 +15,7 @@ export default abstract class BaseRecord<
 	 * @type {number}
 	 * @private
 	 */
-	private _id?: number = undefined;
+	protected _id?: number = undefined;
 
 	/**
 	 * Preload this model with the given ID.
