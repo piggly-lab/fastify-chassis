@@ -1,7 +1,6 @@
 {
 	"name": "@piggly/fastify-chassis",
-	"private": true,
-	"version": "0.1.0-beta.0",
+	"version": "0.1.0-beta.2",
 	"description": "Utilities to build HTTP microservices with fastify.",
 	"scripts": {
 		"check": "tsc --noEmit",
@@ -16,12 +15,12 @@
 		"test:debug": "cross-env NODE_ENV=test node --inspect ./node_modules/.bin/jest --runInBand",
 		"preversion": "npm run build",
 		"postversion": "git push --follow-tags",
-		"prepublishOnly": "npm test && npm run prettier && npm run lint",
+		"prepublishOnly": "npm run format && npm run lint",
 		"prepare": "npm run build"
 	},
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.js",
-	"types": "./dist/esm/types/index.d.ts",
+	"types": "./dist/esm/index.d.ts",
 	"files": [
 		"dist",
 		"LICENSE",
@@ -51,6 +50,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.48.0",
 		"@typescript-eslint/parser": "^5.48.0",
 		"@zerollup/ts-transform-paths": "^1.7.18",
+		"cross-env": "^7.0.3",
 		"dotenv": "^16.0.3",
 		"eslint": "^8.31.0",
 		"eslint-config-airbnb-base": "^15.0.0",
