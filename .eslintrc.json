@@ -3,18 +3,14 @@
 	"extends": [
 		"airbnb-base",
 		"airbnb-typescript",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
 		"plugin:import/errors",
 		"plugin:import/warnings",
 		"plugin:import/typescript",
 		"prettier"
 	],
-	"plugins": [
-		"import",
-		"@typescript-eslint",
-		"prettier"
-	],
+	"plugins": ["import", "@typescript-eslint", "prettier"],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"ecmaVersion": "latest",
@@ -41,6 +37,10 @@
 		"prettier/prettier": "error",
 		"@typescript-eslint/no-explicit-any": "off",
 		"no-console": "off",
-		"@typescript-eslint/naming-convention": "off"
+		"@typescript-eslint/naming-convention": "off",
+		"no-underscore-dangle": "off",
+		"class-methods-use-this": "off",
+		"import/no-extraneous-dependencies": "off",
+		"import/prefer-default-export": "off"
 	}
 }

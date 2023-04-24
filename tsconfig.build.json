@@ -3,7 +3,7 @@
 		"target": "esnext",
 		"module": "commonjs",
 		"strict": true,
-		"declaration": false,
+		"declaration": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": false,
 		"importHelpers": true,
@@ -18,33 +18,18 @@
 		"rootDir": "./src",
 		"outDir": "./dist/esm",
 		"paths": {
-			"@/*": [
-				"src/*",
-			],
+			"@/*": ["src/*"]
 		},
 		"plugins": [
 			{
-				"transform":"@zerollup/ts-transform-paths",
+				"transform": "@zerollup/ts-transform-paths",
 				"exclude": ["*"]
 			}
 		],
-		"lib": [
-			"esnext",
-		],
-		"typeRoots": [
-			"<rootDir>/src/types",
-			"node_modules/@types"
-		],
-		"types": [
-			"node"
-		],
+		"lib": ["esnext"],
+		"typeRoots": ["<rootDir>/src/types", "node_modules/@types"],
+		"types": ["node"]
 	},
-	"include": [
-		"./src/**/*"
-	],
-	"exclude": [
-		"./node_modules/**/*",
-		"./build/**/*",
-		"./test/**/*"
-	]
+	"include": ["./src/**/*"],
+	"exclude": ["./node_modules/**/*", "./build/**/*", "./test/**/*"]
 }
