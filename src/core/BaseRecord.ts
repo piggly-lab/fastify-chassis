@@ -3,11 +3,8 @@ import { RecordInterface } from '@/types';
 /**
  * Base record class.
  */
-export default abstract class BaseRecord<
-	ClassObject,
-	DatabaseRecord,
-	JSONMapper
-> implements RecordInterface<ClassObject, DatabaseRecord, JSONMapper>
+export default abstract class BaseRecord<DatabaseRecord, JSONMapper>
+	implements RecordInterface<DatabaseRecord, JSONMapper>
 {
 	/**
 	 * The ID of the record.
@@ -59,7 +56,10 @@ export default abstract class BaseRecord<
 	 * @abstract
 	 * @memberof BaseRecord
 	 */
-	public abstract fromDatabase(DatabaseRecord: DatabaseRecord): ClassObject;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public static fromDatabase<Entry = any, Record = any>(entry: Entry): Record {
+		throw new Error('Not implemented');
+	}
 
 	/**
 	 * Return the database record from the record object.
