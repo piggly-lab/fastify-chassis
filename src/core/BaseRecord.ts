@@ -15,7 +15,18 @@ export default abstract class BaseRecord<
 	 * @type {number}
 	 * @private
 	 */
-	private _id?: number = undefined;
+	protected _id?: number = undefined;
+
+	/**
+	 * Return the ID of the record.
+	 *
+	 * @returns {number | undefined}
+	 * @public
+	 * @memberof BaseRecord
+	 */
+	public id(): number | undefined {
+		return this._id;
+	}
 
 	/**
 	 * Preload this model with the given ID.
@@ -26,7 +37,9 @@ export default abstract class BaseRecord<
 	 * @abstract
 	 * @memberof BaseRecord
 	 */
-	public abstract preload(id: number): void;
+	public preload(id: number): void {
+		this._id = id;
+	}
 
 	/**
 	 * Check if the model is preloaded.

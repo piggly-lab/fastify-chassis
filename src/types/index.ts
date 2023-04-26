@@ -132,6 +132,7 @@ export interface DatabaseCompatibileInterface<
 	ClassObject = any,
 	DatabaseRecord = Record<string, any>
 > {
+	id(): number | undefined;
 	preload(id: number): void;
 	isPreloaded(): boolean;
 	fromDatabase(DatabaseRecord: DatabaseRecord): ClassObject;
