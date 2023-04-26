@@ -129,21 +129,18 @@ export interface JSONMapperInterface<Mapper = Record<string, any>> {
 }
 
 export interface DatabaseCompatibileInterface<
-	ClassObject = any,
 	DatabaseRecord = Record<string, any>
 > {
 	id(): number | undefined;
 	preload(id: number): void;
 	isPreloaded(): boolean;
-	fromDatabase(DatabaseRecord: DatabaseRecord): ClassObject;
 	toDatabase(): DatabaseRecord;
 }
 
 export type RecordInterface<
-	ClassObject = any,
 	DatabaseRecord = Record<string, any>,
 	JSONMapper = Record<string, any>
-> = DatabaseCompatibileInterface<ClassObject, DatabaseRecord> &
+> = DatabaseCompatibileInterface<DatabaseRecord> &
 	JSONMapperInterface<JSONMapper>;
 
 /** Repositories */
