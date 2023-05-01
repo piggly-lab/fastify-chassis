@@ -27,7 +27,8 @@
 		"import/resolver": {
 			"typescript": {
 				"project": "./tsconfig.json"
-			}
+			},
+			"alias": [["@", "./src"]]
 		}
 	},
 	"rules": {
