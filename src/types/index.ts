@@ -55,7 +55,7 @@ export interface ResponseErrorInterface extends ApplicationErrorInterface {
 
 /** Environment */
 
-export type Environment = 'test' | 'development' | 'production';
+export type EnvironmentType = 'test' | 'development' | 'production';
 
 export type DefaultEnvironment = {
 	name: string;
@@ -64,8 +64,9 @@ export type DefaultEnvironment = {
 	log_path: string;
 	api_key: string;
 	cookie_secret: string;
+	jwt_secret: string;
 	debug: boolean;
-	environment: Environment;
+	environment: EnvironmentType;
 };
 
 /** Fastify modifiers */
