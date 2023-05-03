@@ -34,9 +34,9 @@ export default abstract class AbstractError
 	/**
 	 * Create a new error.
 	 *
-	 * @param name The name of the error.
-	 * @param message The message of the error.
-	 * @param previous The previous error.
+	 * @param {string} name The name of the error.
+	 * @param {string} message The message of the error.
+	 * @param {PreviousError | undefined} previous The previous error.
 	 * @returns {void}
 	 * @public
 	 * @constructor

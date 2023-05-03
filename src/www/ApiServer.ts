@@ -1,18 +1,20 @@
 import fastify, { FastifyError, FastifyInstance } from 'fastify';
 import Environment from '@/helpers/Environment';
 import Logger from '@/helpers/Logger';
+import AbstractError from '@/errors/AbstractError';
+import ResponseError from '@/errors/ResponseError';
 import {
 	ApiServerInterface,
 	ApiServerOptions,
 	DefaultEnvironment,
 	HttpServerInterface,
 } from '@/types';
-import AbstractError from '@/errors/AbstractError';
-import ResponseError from '@/errors/ResponseError';
 import HttpServer from './HttpServer';
 
 /**
  * The API server.
+ *
+ *
  */
 export default class ApiServer implements ApiServerInterface {
 	/**
@@ -87,7 +89,16 @@ export default class ApiServer implements ApiServerInterface {
 	 * @memberof ApiServer
 	 */
 	public async bootstrap(): Promise<HttpServerInterface> {
+		if (this._options.beforeInit) {
+			await this._options.beforeInit(this._app, this._options.env);
+		}
+
 		await this.init();
+
+		if (this._options.afterInit) {
+			await this._options.afterInit(this._app, this._options.env);
+		}
+
 		return new HttpServer(this);
 	}
 
