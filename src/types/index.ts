@@ -1,3 +1,5 @@
+import BaseEntity from '@/entities/BaseEntity';
+import EntityUUID from '@/entities/EntityUUID';
 import { FastifyInstance } from 'fastify';
 import moment from 'moment-timezone';
 
@@ -8,6 +10,7 @@ export type TOrU<T, U> = T | U;
 export type TOrFalse<T> = T | false;
 export type TOrEmpty<T> = T | undefined | null;
 export type TDateInput = number | string | Date | moment.Moment;
+export type TObject = Record<string, any>;
 
 /** Application Errors */
 
@@ -92,6 +95,8 @@ export type ApiServerOptions<
 	routes: FastifyAppliable<Fastify, AppEnvironment>;
 	plugins: FastifyAppliable<Fastify, AppEnvironment>;
 	env: AppEnvironment;
+	beforeInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
+	afterInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
 	errors: {
 		notFound: ResponseErrorInterface;
 		unknown: ResponseErrorInterface;
@@ -125,38 +130,34 @@ export interface RuleInterface {
 }
 
 /** Core */
-export interface JSONMapperInterface<Mapper = Record<string, any>> {
-	toJSON(exclude?: string[]): Mapper;
+
+/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
+export interface RepositoryInterface {}
+
+/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
+export interface ServiceInterface {}
+
+export interface AdapterInterface<Entity extends BaseEntity<any>, DTO> {
+	toDTO(entity: Entity): DTO;
 }
 
-export interface DatabaseCompatibileInterface<
-	DatabaseRecord = Record<string, any>
+export interface FactoryInterface<
+	Args extends any[],
+	Entity extends BaseEntity<any>
 > {
-	id(): number | undefined;
-	preload(id: number): void;
-	isPreloaded(): boolean;
-	toDatabase(): DatabaseRecord;
+	create(...args: Args): Entity;
 }
-
-export type RecordInterface<
-	DatabaseRecord = Record<string, any>,
-	JSONMapper = Record<string, any>
-> = DatabaseCompatibileInterface<DatabaseRecord> &
-	JSONMapperInterface<JSONMapper>;
 
 /** Repositories */
 
-export interface RepositoryWriterInterface<ID = any, Model = any> {
-	create(model: Model): Promise<TOrFalse<Model>>;
-	update(id: ID, model: Model): Promise<TOrFalse<Model>>;
-	delete(id: ID, model: Model): Promise<boolean>;
-}
+export type PaginateQuery = {
+	page: number;
+	size: number;
+};
 
-export interface RepositoryReaderInterface<ID = any, Model = any> {
-	findBy(model: Model): Promise<TOrNull<Model>>;
-	findOne(id: ID): Promise<TOrNull<Model>>;
-	findAll(): Promise<Model[]>;
-}
+export type Filter = {
+	[key: string]: any;
+};
 
 /** Services */
 
@@ -169,3 +170,26 @@ export interface ServiceManagerInterface {
 export type ServiceConstructor = (
 	manager: ServiceManagerInterface
 ) => Promise<any>;
+
+/** Events */
+
+export type DomainEvent = {
+	readonly id: EntityUUID;
+	readonly name: string;
+	readonly payload: Record<string, any>;
+	readonly issuedAt: Date;
+};
+
+export type EventHandler = (event: DomainEvent) => Promise<void>;
+
+export type EventPublishOptions = {
+	readonly driver: string;
+};
+
+export type EventSubscribeOptions = {
+	readonly driver: string;
+};
+
+/** Schemas */
+
+export type SchemaHandler<ReturnEntry> = (entry: any) => ReturnEntry;

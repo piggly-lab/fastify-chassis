@@ -67,7 +67,6 @@ export default class ResponseError
 	constructor(message: string, previous?: PreviousError) {
 		super('ResponseError', message, previous);
 
-		this.name = 'ResponseError';
 		this._payload = {};
 		this._code = 0;
 		this._statusCode = 200;
