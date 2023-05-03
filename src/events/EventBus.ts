@@ -11,6 +11,15 @@ import BaseEventDriver from './BaseEventDriver';
  */
 export default class EventBus {
 	/**
+	 * The singleton instance.
+	 *
+	 * @type {EventBus}
+	 * @private
+	 * @static
+	 */
+	private static _instance: EventBus;
+
+	/**
 	 * The drivers.
 	 *
 	 * @type {Map<string, BaseEventDriver>}
@@ -22,12 +31,28 @@ export default class EventBus {
 	/**
 	 * Creates an instance of EventBus.
 	 *
-	 * @public
+	 * @private
 	 * @constructor
 	 * @memberof EventBus
 	 */
-	public constructor() {
+	private constructor() {
 		this._drivers = new Map();
+	}
+
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @returns {EventBus}
+	 * @public
+	 * @static
+	 * @memberof EventBus
+	 */
+	public static get instance(): EventBus {
+		if (!EventBus._instance) {
+			EventBus._instance = new EventBus();
+		}
+
+		return EventBus._instance;
 	}
 
 	/**
