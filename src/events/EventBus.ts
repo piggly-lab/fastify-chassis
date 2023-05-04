@@ -4,7 +4,7 @@ import {
 	EventSubscribeOptions,
 } from '@/types';
 import BaseEventDriver from './BaseEventDriver';
-import BaseEvent from './BaseEvent';
+import BaseEvent from './Event';
 
 /**
  * The event bus allows to publish and subscribe to any events drivers.
@@ -77,8 +77,8 @@ export default class EventBus {
 	 * @async
 	 * @memberof EventBus
 	 */
-	public async publish<Event extends BaseEvent<any>>(
-		event: Event,
+	public async publish<Payload = any>(
+		event: BaseEvent<Payload>,
 		options?: EventPublishOptions
 	): Promise<void> {
 		if (!options) {
@@ -110,9 +110,9 @@ export default class EventBus {
 	 * @async
 	 * @memberof EventBus
 	 */
-	public async subscribe<Event extends BaseEvent<any>>(
+	public async subscribe<Payload = any>(
 		name: string,
-		handler: EventHandler<Event>,
+		handler: EventHandler<Payload>,
 		options?: EventSubscribeOptions
 	) {
 		if (!options) {

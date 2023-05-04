@@ -1,5 +1,5 @@
 import BaseEntity from '@/entities/BaseEntity';
-import BaseEvent from '@/events/BaseEvent';
+import BaseEvent from '@/events/Event';
 import { FastifyInstance } from 'fastify';
 import moment from 'moment-timezone';
 
@@ -167,8 +167,8 @@ export type ServiceConstructor = (
 
 /** Events */
 
-export type EventHandler<Event extends BaseEvent<any>> = (
-	event: Event
+export type EventHandler<Payload = any> = (
+	event: BaseEvent<Payload>
 ) => Promise<void>;
 
 export type EventPublishOptions = {

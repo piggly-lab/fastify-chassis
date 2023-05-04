@@ -1,6 +1,6 @@
 import { EventHandler } from '@/types';
 import BaseEventDriver from './BaseEventDriver';
-import BaseEvent from './BaseEvent';
+import BaseEvent from './Event';
 
 /**
  * Local event driver for in-memory implementation of event handlers.
@@ -37,8 +37,8 @@ export default class LocalEventDriver extends BaseEventDriver {
 	 * @async
 	 * @memberof LocalEventDriver
 	 */
-	public async publish<Event extends BaseEvent<any>>(
-		event: Event
+	public async publish<Payload = any>(
+		event: BaseEvent<Payload>
 	): Promise<void> {
 		const handlers = this._handlers.get(event.name);
 
@@ -59,9 +59,9 @@ export default class LocalEventDriver extends BaseEventDriver {
 	 * @async
 	 * @memberof LocalEventDriver
 	 */
-	public async subscribe<Event extends BaseEvent<any>>(
+	public async subscribe<Payload = any>(
 		name: string,
-		handler: EventHandler<Event>
+		handler: EventHandler<Payload>
 	): Promise<void> {
 		const handlers = this._handlers.get(name);
 

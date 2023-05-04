@@ -1,6 +1,6 @@
 import { EntityUUID } from '@/entities';
 
-export default class BaseEvent<Payload> {
+export default class Event<Payload> {
 	public readonly id: EntityUUID;
 
 	public readonly name: string;

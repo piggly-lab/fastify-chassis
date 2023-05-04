@@ -1,5 +1,5 @@
 import { EventHandler } from '@/types';
-import BaseEvent from './BaseEvent';
+import BaseEvent from './Event';
 
 /**
  * Base class for event drivers.
@@ -15,8 +15,8 @@ export default abstract class BaseEventDriver {
 	 * @abstract
 	 * @memberof BaseEventDriver
 	 */
-	public abstract publish<Event extends BaseEvent<any>>(
-		event: Event
+	public abstract publish<Payload = any>(
+		event: BaseEvent<Payload>
 	): Promise<void>;
 
 	/**
@@ -29,9 +29,9 @@ export default abstract class BaseEventDriver {
 	 * @abstract
 	 * @memberof BaseEventDriver
 	 */
-	public abstract subscribe<Event extends BaseEvent<any>>(
+	public abstract subscribe<Payload = any>(
 		name: string,
-		handler: EventHandler<Event>
+		handler: EventHandler<Payload>
 	): Promise<void>;
 
 	/**
