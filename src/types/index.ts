@@ -1,5 +1,5 @@
 import BaseEntity from '@/entities/BaseEntity';
-import EntityUUID from '@/entities/EntityUUID';
+import BaseEvent from '@/events/BaseEvent';
 import { FastifyInstance } from 'fastify';
 import moment from 'moment-timezone';
 
@@ -173,14 +173,9 @@ export type ServiceConstructor = (
 
 /** Events */
 
-export type DomainEvent = {
-	readonly id: EntityUUID;
-	readonly name: string;
-	readonly payload: Record<string, any>;
-	readonly issuedAt: Date;
-};
-
-export type EventHandler = (event: DomainEvent) => Promise<void>;
+export type EventHandler<Event extends BaseEvent<any>> = (
+	event: Event
+) => Promise<void>;
 
 export type EventPublishOptions = {
 	readonly driver: string;

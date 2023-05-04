@@ -1,5 +1,6 @@
-import { DomainEvent, EventHandler } from '@/types';
+import { EventHandler } from '@/types';
 import BaseEventDriver from './BaseEventDriver';
+import BaseEvent from './BaseEvent';
 
 /**
  * Local event driver for in-memory implementation of event handlers.
@@ -13,7 +14,7 @@ export default class LocalEventDriver extends BaseEventDriver {
 	 * @readonly
 	 * @memberof LocalEventDriver
 	 */
-	private readonly _handlers: Map<string, EventHandler[]>;
+	private readonly _handlers: Map<string, EventHandler<any>[]>;
 
 	/**
 	 * Creates an instance of LocalEventDriver.
@@ -36,7 +37,9 @@ export default class LocalEventDriver extends BaseEventDriver {
 	 * @async
 	 * @memberof LocalEventDriver
 	 */
-	public async publish(event: DomainEvent): Promise<void> {
+	public async publish<Event extends BaseEvent<any>>(
+		event: Event
+	): Promise<void> {
 		const handlers = this._handlers.get(event.name);
 
 		if (!handlers) {
@@ -56,7 +59,10 @@ export default class LocalEventDriver extends BaseEventDriver {
 	 * @async
 	 * @memberof LocalEventDriver
 	 */
-	public async subscribe(name: string, handler: EventHandler): Promise<void> {
+	public async subscribe<Event extends BaseEvent<any>>(
+		name: string,
+		handler: EventHandler<Event>
+	): Promise<void> {
 		const handlers = this._handlers.get(name);
 
 		if (!handlers) {

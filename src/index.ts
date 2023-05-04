@@ -1,5 +1,3 @@
-import './lib/moduleAlias';
-
 export * from './errors';
 export * from './helpers';
 export * from './www';

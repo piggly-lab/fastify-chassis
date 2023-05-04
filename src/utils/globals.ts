@@ -37,7 +37,7 @@ export function getBearerToken(
 }
 
 export function getTimestamp(): number {
-	return Date.now() / 1000 || 0;
+	return Math.floor(new Date().getTime() / 1000);
 }
 
 export function parseResponseError(err: any): ResponseError {
@@ -105,6 +105,14 @@ export function randomString(length: number): string {
 		.substring(0, length);
 }
 
+export function toJSON(obj: string | object): object {
+	if (typeof obj === 'string') {
+		return JSON.parse(obj);
+	}
+
+	return obj;
+}
+
 export function toArray<T>(val?: T | Array<T>): Array<T> {
 	if (!val) return [];
 	if (Array.isArray(val)) return val;
@@ -113,4 +121,18 @@ export function toArray<T>(val?: T | Array<T>): Array<T> {
 
 export function toMoment(val: TDateInput): moment.Moment {
 	return DateParser.toMoment(val);
+}
+
+export function toRFC3339(date: moment.Moment, timezone = 'UTC') {
+	return date.tz(timezone).format('YYYY-MM-DDTHH:mm:ssZ');
+}
+
+export function mountURL(base: string, relative_path: string) {
+	let path = relative_path;
+
+	if (path.startsWith('/')) {
+		path = path.substring(1);
+	}
+
+	return `${base}/${path}`;
 }
