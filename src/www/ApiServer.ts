@@ -6,7 +6,6 @@ import ResponseError from '@/errors/ResponseError';
 import {
 	ApiServerInterface,
 	ApiServerOptions,
-	DefaultEnvironment,
 	HttpServerInterface,
 } from '@/types';
 import HttpServer from './HttpServer';
@@ -16,11 +15,13 @@ import HttpServer from './HttpServer';
  *
  *
  */
-export default class ApiServer implements ApiServerInterface {
+export default class ApiServer<AppEnvironment extends Record<string, any>>
+	implements ApiServerInterface<FastifyInstance, AppEnvironment>
+{
 	/**
 	 * The Fastify application.
 	 *
-	 * @type {FastifyInstance}
+	 * @type {Fastify}
 	 * @protected
 	 */
 	protected _app: FastifyInstance;
@@ -31,7 +32,7 @@ export default class ApiServer implements ApiServerInterface {
 	 * @type {ApiServerOptions}
 	 * @protected
 	 */
-	protected _options: ApiServerOptions;
+	protected _options: ApiServerOptions<FastifyInstance, AppEnvironment>;
 
 	/**
 	 * Create a new API server.
@@ -42,7 +43,7 @@ export default class ApiServer implements ApiServerInterface {
 	 * @constructor
 	 * @memberof ApiServer
 	 */
-	constructor(options: ApiServerOptions) {
+	constructor(options: ApiServerOptions<FastifyInstance, AppEnvironment>) {
 		this._options = options;
 
 		this._app = fastify({
@@ -67,11 +68,11 @@ export default class ApiServer implements ApiServerInterface {
 	/**
 	 * Get the global environment.
 	 *
-	 * @returns {DefaultEnvironment}
+	 * @returns {AppEnvironment}
 	 * @public
 	 * @memberof ApiServer
 	 */
-	public getEnv(): DefaultEnvironment {
+	public getEnv(): AppEnvironment {
 		return this._options.env;
 	}
 
@@ -88,7 +89,9 @@ export default class ApiServer implements ApiServerInterface {
 	 * @public
 	 * @memberof ApiServer
 	 */
-	public async bootstrap(): Promise<HttpServerInterface> {
+	public async bootstrap(): Promise<
+		HttpServerInterface<FastifyInstance, AppEnvironment>
+	> {
 		if (this._options.beforeInit) {
 			await this._options.beforeInit(this._app, this._options.env);
 		}

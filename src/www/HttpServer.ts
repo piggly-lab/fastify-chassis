@@ -1,17 +1,20 @@
 import Logger from '@/helpers/Logger';
 import { ApiServerInterface, HttpServerInterface } from '@/types';
+import { FastifyInstance } from 'fastify';
 
 /**
  * The HTTP server.
  */
-export default class HttpServer implements HttpServerInterface {
+export default class HttpServer<AppEnvironment extends Record<string, any>>
+	implements HttpServerInterface<FastifyInstance, AppEnvironment>
+{
 	/**
 	 * The API server.
 	 *
 	 * @type {ApiServerInterface}
 	 * @protected
 	 */
-	protected _api: ApiServerInterface;
+	protected _api: ApiServerInterface<FastifyInstance, AppEnvironment>;
 
 	/**
 	 * The running state.
@@ -30,7 +33,7 @@ export default class HttpServer implements HttpServerInterface {
 	 * @constructor
 	 * @memberof HttpServer
 	 */
-	constructor(api: ApiServerInterface) {
+	constructor(api: ApiServerInterface<FastifyInstance, AppEnvironment>) {
 		this._api = api;
 	}
 
@@ -41,7 +44,7 @@ export default class HttpServer implements HttpServerInterface {
 	 * @public
 	 * @memberof HttpServer
 	 */
-	public getApi(): ApiServerInterface {
+	public getApi(): ApiServerInterface<FastifyInstance, AppEnvironment> {
 		return this._api;
 	}
 

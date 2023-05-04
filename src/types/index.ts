@@ -103,19 +103,13 @@ export type ApiServerOptions<
 	};
 };
 
-export interface ApiServerInterface<
-	Fastify = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
-> {
+export interface ApiServerInterface<Fastify, AppEnvironment> {
 	getApp: () => Fastify;
 	getEnv: () => AppEnvironment;
-	bootstrap: () => Promise<HttpServerInterface>;
+	bootstrap: () => Promise<HttpServerInterface<Fastify, AppEnvironment>>;
 }
 
-export interface HttpServerInterface<
-	Fastify = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
-> {
+export interface HttpServerInterface<Fastify, AppEnvironment> {
 	getApi: () => ApiServerInterface<Fastify, AppEnvironment>;
 	start(): Promise<boolean>;
 	restart(): Promise<boolean>;

@@ -1,17 +1,10 @@
-import { FastifyInstance } from 'fastify';
-import {
-	DefaultEnvironment,
-	FastifyAppliable,
-	FastifyModifierCallable,
-} from '@/types';
+import { FastifyAppliable, FastifyModifierCallable } from '@/types';
 
 /**
  * The Fastify modifier.
  */
-export default class FastifyModifier<
-	App = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
-> implements FastifyAppliable<App, AppEnvironment>
+export default class FastifyModifier<App, AppEnvironment>
+	implements FastifyAppliable<App, AppEnvironment>
 {
 	/**
 	 * The callables.

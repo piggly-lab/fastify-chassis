@@ -1,13 +1,9 @@
-import { FastifyInstance } from 'fastify';
-import { DefaultEnvironment, FastifyModifierCallable } from '@/types';
+import { FastifyModifierCallable } from '@/types';
 
 /**
  * Base controller class.
  */
-export default class BaseController<
-	App = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
-> {
+export default class BaseController<App, AppEnvironment> {
 	/**
 	 * The Fastify instance.
 	 *
@@ -57,7 +53,10 @@ export default class BaseController<
 	 * @static
 	 * @memberof BaseController
 	 */
-	public static create(): FastifyModifierCallable {
+	public static createInstance<App, AppEnvironment>(): FastifyModifierCallable<
+		App,
+		AppEnvironment
+	> {
 		return async (app, env) => {
 			const controller = new this(app, env);
 			await controller.init();
