@@ -26,6 +26,19 @@ export default class CollectionOfEntity<Entity extends BaseEntity<any>> {
 	}
 
 	/**
+	 * Map an array of entities to the collection.
+	 *
+	 * @param {Entity[]} entities
+	 * @returns {this}
+	 * @public
+	 * @memberof CollectionOfEntity
+	 */
+	public map(entities: Entity[]): this {
+		entities.forEach(entity => this.add(entity));
+		return this;
+	}
+
+	/**
 	 * Add an entity to the collection.
 	 *
 	 * @param {Entity} entity

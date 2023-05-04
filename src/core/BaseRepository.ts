@@ -1,9 +1,11 @@
 import BaseEntity from '@/entities/BaseEntity';
-import CollectionOfEntity from '@/entities/CollectionOfEntity';
 import EntityUUID from '@/entities/EntityUUID';
 import { Filter, PaginateQuery } from '@/types';
 
-export default abstract class BaseRepository<Entity extends BaseEntity<any>> {
+export default abstract class BaseRepository<
+	Entity extends BaseEntity<any>,
+	Collection
+> {
 	/**
 	 * Find an entity by its id.
 	 *
@@ -20,7 +22,7 @@ export default abstract class BaseRepository<Entity extends BaseEntity<any>> {
 	 *
 	 * @param {Filter<Entity>} filter
 	 * @param {PaginateQuery} paginate
-	 * @returns {Promise<CollectionOfEntity<Entity>>}
+	 * @returns {Promise<Collection>}
 	 * @public
 	 * @abstract
 	 * @memberof BaseRepository
@@ -28,20 +30,18 @@ export default abstract class BaseRepository<Entity extends BaseEntity<any>> {
 	public abstract find(
 		filter: Filter,
 		paginate: PaginateQuery
-	): Promise<CollectionOfEntity<Entity>>;
+	): Promise<Collection>;
 
 	/**
 	 * Find all entities.
 	 *
 	 * @param {PaginateQuery} paginate
-	 * @returns {Promise<CollectionOfEntity<Entity>>}
+	 * @returns {Promise<Collection>}
 	 * @public
 	 * @abstract
 	 * @memberof BaseRepository
 	 */
-	public abstract findAll(
-		paginate: PaginateQuery
-	): Promise<CollectionOfEntity<Entity>>;
+	public abstract findAll(paginate: PaginateQuery): Promise<Collection>;
 
 	/**
 	 * Save an entity.
