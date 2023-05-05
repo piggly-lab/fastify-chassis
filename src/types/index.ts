@@ -156,14 +156,32 @@ export type Filter = {
 /** Services */
 
 export interface ServiceManagerInterface {
-	register(name: string, constructor: ServiceConstructor): void;
-	get(name: string): Promise<any>;
-	clear(): void;
+	registerAsync<Service = any>(
+		name: string,
+		constructor: AsyncServiceConstructor<Service>
+	): void;
+	getAsync<Service = any>(name: string): Promise<Service>;
+	registerSync<Service = any>(
+		name: string,
+		constructor: SyncServiceConstructor<Service>
+	): void;
+	getSync<Service = any>(name: string): Service;
+	flushOnAsyncCache(name: string): void;
+	flushOnSyncCache(name: string): void;
+	clearCache(): void;
 }
 
-export type ServiceConstructor = (
+export type AsyncServiceConstructor<Service> = (
 	manager: ServiceManagerInterface
-) => Promise<any>;
+) => Promise<Service>;
+
+export type SyncServiceConstructor<Service> = (
+	manager: ServiceManagerInterface
+) => Service;
+
+export type ServiceConstructor<Service> =
+	| AsyncServiceConstructor<Service>
+	| SyncServiceConstructor<Service>;
 
 /** Events */
 

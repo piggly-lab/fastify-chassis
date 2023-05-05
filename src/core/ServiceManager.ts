@@ -1,4 +1,9 @@
-import { ServiceConstructor, ServiceManagerInterface } from '@/types';
+import {
+	AsyncServiceConstructor,
+	ServiceConstructor,
+	ServiceManagerInterface,
+	SyncServiceConstructor,
+} from '@/types';
 
 /**
  * The service manager is a singleton that allows to register and get any services.
@@ -16,10 +21,10 @@ export default class ServiceManager implements ServiceManagerInterface {
 	/**
 	 * Mapping of dependencies with their constructors.
 	 *
-	 * @type {Map<string, ServiceConstructor>}
+	 * @type {Map<string, ServiceConstructor<any>>}
 	 * @protected
 	 */
-	protected dependencyMap: Map<string, ServiceConstructor>;
+	protected dependencyMap: Map<string, ServiceConstructor<any>>;
 
 	/**
 	 * Caching of constructed dependencies.
@@ -66,8 +71,27 @@ export default class ServiceManager implements ServiceManagerInterface {
 	 * @public
 	 * @memberof ServiceManager
 	 */
-	register(name: string, constructor: ServiceConstructor): void {
-		this.dependencyMap.set(name, constructor);
+	registerAsync<Service = any>(
+		name: string,
+		constructor: AsyncServiceConstructor<Service>
+	): void {
+		this.dependencyMap.set(`async.${name}`, constructor);
+	}
+
+	/**
+	 * Register a new dependency.
+	 *
+	 * @param name The name of the dependency.
+	 * @param constructor The constructor of the dependency.
+	 * @returns {void}
+	 * @public
+	 * @memberof ServiceManager
+	 */
+	registerSync<Service = any>(
+		name: string,
+		constructor: SyncServiceConstructor<Service>
+	): void {
+		this.dependencyMap.set(`sync.${name}`, constructor);
 	}
 
 	/**
@@ -83,22 +107,83 @@ export default class ServiceManager implements ServiceManagerInterface {
 	 * @memberof ServiceManager
 	 * @throws {Error} If the dependency is not registered.
 	 */
-	async get<Dependency = any>(name: string): Promise<Dependency> {
-		let dependency = this.dependencyCache.get(name);
+	async getAsync<Service = any>(name: string): Promise<Service> {
+		const _name = `async.${name}`;
+		let dependency = this.dependencyCache.get(_name);
 
 		// no cache
 		if (dependency === undefined) {
-			dependency = this.dependencyMap.get(name);
+			dependency = this.dependencyMap.get(_name);
 
 			if (dependency === undefined) {
-				throw new Error(`Dependency "${name}" is not registered.`);
+				throw new Error(
+					`Dependency "${name}" is not registered as asynchonous.`
+				);
 			}
 
 			dependency = await dependency(this);
-			this.dependencyCache.set(name, dependency);
+			this.dependencyCache.set(_name, dependency);
 		}
 
 		return dependency;
+	}
+
+	/**
+	 * Get a dependency.
+	 * If the dependency is not yet constructed, it will be constructed.
+	 * If the dependency is not registered, an error will be thrown.
+	 * If the dependency is already constructed, the cached version will be returned.
+	 *
+	 * @param name The name of the dependency.
+	 * @returns {Promise<Dependency>}
+	 * @public
+	 * @async
+	 * @memberof ServiceManager
+	 * @throws {Error} If the dependency is not registered.
+	 */
+	getSync<Service = any>(name: string): Service {
+		const _name = `sync.${name}`;
+		let dependency = this.dependencyCache.get(_name);
+
+		// no cache
+		if (dependency === undefined) {
+			dependency = this.dependencyMap.get(_name);
+
+			if (dependency === undefined) {
+				throw new Error(
+					`Dependency "${_name}" is not registered synchonous.`
+				);
+			}
+
+			dependency = dependency(this);
+			this.dependencyCache.set(_name, dependency);
+		}
+
+		return dependency;
+	}
+
+	/**
+	 * Flush the dependency cache for a specific dependency.
+	 *
+	 * @param name The name of the dependency.
+	 * @returns {void}
+	 * @public
+	 * @memberof ServiceManager
+	 */
+	flushOnAsyncCache(name: string): void {
+		this.dependencyCache.delete(`async.${name}`);
+	}
+
+	/**
+	 * Flush the dependency cache for a specific dependency.
+	 *
+	 * @param name The name of the dependency.
+	 * @returns {void}
+	 * @public
+	 * @memberof ServiceManager
+	 */
+	flushOnSyncCache(name: string): void {
+		this.dependencyCache.delete(`sync.${name}`);
 	}
 
 	/**
@@ -108,8 +193,7 @@ export default class ServiceManager implements ServiceManagerInterface {
 	 * @public
 	 * @memberof ServiceManager
 	 */
-	clear(): void {
+	clearCache(): void {
 		this.dependencyCache = new Map();
-		this.dependencyMap = new Map();
 	}
 }
