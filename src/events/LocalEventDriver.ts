@@ -46,7 +46,11 @@ export default class LocalEventDriver extends BaseEventDriver {
 			return;
 		}
 
-		await Promise.allSettled(handlers.map(handler => handler(event)));
+		await Promise.allSettled(
+			handlers.map(async handler => {
+				await handler(event);
+			})
+		);
 	}
 
 	/**
