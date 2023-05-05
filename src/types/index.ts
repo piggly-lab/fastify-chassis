@@ -172,11 +172,11 @@ export type EventHandler<Payload = any> = (
 ) => Promise<void>;
 
 export type EventPublishOptions = {
-	readonly driver: string;
+	readonly driver: string | string[];
 };
 
 export type EventSubscribeOptions = {
-	readonly driver: string;
+	readonly driver: string | string[];
 };
 
 /** Schemas */

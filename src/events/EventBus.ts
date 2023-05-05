@@ -82,14 +82,27 @@ export default class EventBus {
 		options?: EventPublishOptions
 	): Promise<void> {
 		if (!options) {
-			Object.values(this._drivers).forEach(async driver => {
-				await driver.publish(event);
-			});
+			await Promise.allSettled(
+				Array.from(this._drivers).map(async data => {
+					await data[1].publish(event);
+				})
+			);
 
 			return;
 		}
 
-		const driver = this._drivers.get(options.driver);
+		if (Array.isArray(options.driver)) {
+			await Promise.allSettled(
+				Array.from(this._drivers).map(async data => {
+					if (!options.driver.includes(data[0])) {
+						return;
+					}
+
+					await data[1].publish(event);
+				})
+			);
+		}
+		const driver = this._drivers.get(options.driver as string);
 
 		if (!driver) {
 			throw new Error(`Driver ${options.driver} not found.`);
@@ -116,14 +129,28 @@ export default class EventBus {
 		options?: EventSubscribeOptions
 	) {
 		if (!options) {
-			Object.values(this._drivers).forEach(async driver => {
-				await driver.subscribe(name, handler);
-			});
+			await Promise.allSettled(
+				Array.from(this._drivers).map(async data => {
+					await data[1].subscribe(name, handler);
+				})
+			);
 
 			return;
 		}
 
-		const driver = this._drivers.get(options.driver);
+		if (Array.isArray(options.driver)) {
+			await Promise.allSettled(
+				Array.from(this._drivers).map(async data => {
+					if (!options.driver.includes(data[0])) {
+						return;
+					}
+
+					await data[1].subscribe(name, handler);
+				})
+			);
+		}
+
+		const driver = this._drivers.get(options.driver as string);
 
 		if (!driver) {
 			throw new Error(`Driver ${options.driver} not found.`);
