@@ -1,7 +1,7 @@
+import { FastifyInstance, FastifyServerOptions } from 'fastify';
+import moment from 'moment-timezone';
 import BaseEntity from '@/entities/BaseEntity';
 import BaseEvent from '@/events/Event';
-import { FastifyInstance } from 'fastify';
-import moment from 'moment-timezone';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -94,6 +94,7 @@ export type ApiServerOptions<
 > = {
 	routes: FastifyAppliable<Fastify, AppEnvironment>;
 	plugins: FastifyAppliable<Fastify, AppEnvironment>;
+	logger?: FastifyServerOptions['logger'];
 	env: AppEnvironment;
 	beforeInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
 	afterInit?: FastifyModifierCallable<Fastify, AppEnvironment>;

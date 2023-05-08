@@ -47,8 +47,29 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 		this._options = options;
 
 		this._app = fastify({
-			logger: {
+			logger: this._options.logger || {
 				file: `${this._options.env.log_path}/server.log`,
+				level: this._options.env.debug ? 'debug' : 'info',
+				transport: {
+					target: 'pino-pretty',
+					options: {
+						translateTime: true,
+						colorize: true,
+						ignore: 'pid',
+						messageFormat:
+							'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
+					},
+				},
+				serializers: {
+					req: req => ({
+						method: req.method,
+						url: req.url,
+						hostname: req.hostname,
+					}),
+					res: res => ({
+						statusCode: res.statusCode,
+					}),
+				},
 			},
 			trustProxy: true,
 		});
