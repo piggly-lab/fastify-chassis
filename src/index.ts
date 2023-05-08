@@ -5,5 +5,6 @@ export * from './events';
 export * from './entities';
 export * from './services';
 export * from './core';
+export * from './hooks';
 export * from './utils';
 export * from './types';

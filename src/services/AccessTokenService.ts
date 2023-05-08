@@ -7,6 +7,8 @@ import ForbiddenError from '@/errors/ForbiddenError';
 import InvalidAuthorizationHeaderError from '@/errors/InvalidAuthorizationHeaderError';
 import MissingAuthorizationHeaderError from '@/errors/MissingAuthorizationHeaderError';
 import { AccessTokenServiceOptions } from '@/types';
+import DomainEvent from '@/events/Event';
+import EventBus from '@/events/EventBus';
 
 export type JWTPayload = jose.JWTPayload & {
 	scopes: string;
@@ -112,6 +114,10 @@ export default class AccessTokenService<
 
 			return payload as Payload;
 		} catch (error: any) {
+			await EventBus.instance.publish(
+				new DomainEvent('access_token.invalid', error)
+			);
+
 			throw new UnauthorizedError();
 		}
 	}
@@ -238,11 +244,23 @@ export default class AccessTokenService<
 		return this._options.ttl || 300;
 	}
 
+	public static readKeyFileSync(path: string) {
+		try {
+			const data = fs.readFileSync(path, {
+				encoding: 'utf8',
+			});
+
+			return data.toString();
+		} catch (err) {
+			throw new Error(`Failed to read key file: ${path}`);
+		}
+	}
+
 	public static async readKeyFile(path: string) {
 		return new Promise<string>((resolve, reject) => {
 			fs.readFile(path, (err, buff) => {
 				if (err) {
-					reject(new Error('Cannot read public key file.'));
+					reject(new Error(`Failed to read key file: ${path}`));
 				}
 
 				resolve(buff.toString());
