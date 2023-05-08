@@ -4,3 +4,5 @@ export { default as CollectionOfEntity } from './CollectionOfEntity';
 export { default as EntityIdentifier } from './EntityIdentifier';
 export { default as EntityUUID } from './EntityUUID';
 export { default as ValueObject } from './ValueObject';
+export { default as CollectionOfValueObject } from './valueObjects/CollectionOfValueObject';
+export { default as MapOfValueObject } from './valueObjects/MapOfValueObject';

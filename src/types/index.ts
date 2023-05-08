@@ -61,15 +61,12 @@ export interface ResponseErrorInterface extends ApplicationErrorInterface {
 export type EnvironmentType = 'test' | 'development' | 'production';
 
 export type DefaultEnvironment = {
+	environment: EnvironmentType;
 	name: string;
 	port: number;
 	host: string;
 	log_path: string;
-	api_key: string;
-	cookie_secret: string;
-	jwt_secret: string;
 	debug: boolean;
-	environment: EnvironmentType;
 };
 
 /** Fastify modifiers */
@@ -201,3 +198,9 @@ export type EventSubscribeOptions = {
 /** Schemas */
 
 export type SchemaHandler<ReturnEntry> = (entry: any) => ReturnEntry;
+
+declare module 'fastify' {
+	export interface FastifyRequest {
+		access_token?: Record<string, any>;
+	}
+}

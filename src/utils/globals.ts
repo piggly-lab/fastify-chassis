@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { FastifyRequest } from 'fastify';
 import crypto from 'crypto';
 import { IncomingHttpHeaders } from 'http';
 import moment from 'moment-timezone';
@@ -42,7 +42,7 @@ export function getTimestamp(): number {
 
 export function parseResponseError(err: any): ResponseError {
 	if (err.isAxiosError) {
-		const axiosErr: AxiosError<any, any> = err;
+		const axiosErr: any = err;
 		const responseErr = new ResponseError('External API Error', err);
 
 		return responseErr
@@ -135,4 +135,32 @@ export function mountURL(base: string, relative_path: string) {
 	}
 
 	return `${base}/${path}`;
+}
+
+export function getIp(request: FastifyRequest): string {
+	if (request.headers['x-forwarded-for'] !== undefined) {
+		if (Array.isArray(request.headers['x-forwarded-for']) === false) {
+			return request.headers['x-forwarded-for'] as string;
+		}
+
+		return (request.headers['x-forwarded-for'] as Array<string>)[0];
+	}
+
+	return request.ip;
+}
+
+export function getOrigin(request: FastifyRequest): string {
+	if (request.headers.host) {
+		return request.headers.host;
+	}
+
+	if (request.headers['x-forwarded-host'] !== undefined) {
+		if (Array.isArray(request.headers['x-forwarded-host']) === false) {
+			return request.headers['x-forwarded-host'] as string;
+		}
+
+		return (request.headers['x-forwarded-host'] as Array<string>)[0];
+	}
+
+	return request.hostname;
 }
