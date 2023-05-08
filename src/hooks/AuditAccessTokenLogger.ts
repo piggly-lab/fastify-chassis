@@ -4,12 +4,13 @@ import { EnvironmentType } from '@/types';
 
 export default (
 	app: FastifyInstance,
-	environment: EnvironmentType,
-	log_path: string
+	log_path: string,
+	environment: EnvironmentType = 'development',
+	log_level = 'info'
 ) => {
 	const logger = pino(
 		{
-			level: 'info',
+			level: log_level,
 			timestamp: true,
 			transport:
 				environment === 'development'

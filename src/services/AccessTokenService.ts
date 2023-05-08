@@ -101,7 +101,7 @@ export default class AccessTokenService<
 					issuer: accept_issuer,
 					audience: accept_audience,
 					requiredClaims: [
-						'jit',
+						'jti',
 						'iss',
 						'aud',
 						'nbf',
