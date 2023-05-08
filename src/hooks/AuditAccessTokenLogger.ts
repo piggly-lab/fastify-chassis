@@ -21,7 +21,7 @@ export default (
 								colorize: true,
 								ignore: 'pid',
 								messageFormat:
-									'{msg} [id={reqId} method={method} url={url} statusCode={statusCode} responseTime={responseTime}ms hostname={hostname} jit={jit} sub={sub}]',
+									'{msg} [id={reqId} method={method} url={url} statusCode={statusCode} responseTime={responseTime}ms hostname={hostname} jti={jti} sub={sub}]',
 							},
 					  }
 					: undefined,
