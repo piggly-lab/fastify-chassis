@@ -6,26 +6,13 @@ import UnauthorizedError from '@/errors/UnauthorizedError';
 import ForbiddenError from '@/errors/ForbiddenError';
 import InvalidAuthorizationHeaderError from '@/errors/InvalidAuthorizationHeaderError';
 import MissingAuthorizationHeaderError from '@/errors/MissingAuthorizationHeaderError';
+import { AccessTokenServiceOptions } from '@/types';
 
 export type JWTPayload = jose.JWTPayload & {
 	scopes: string;
 	role?: string;
 	origin?: string;
 	ip?: string;
-};
-
-export type AccessTokenServiceOptions = {
-	token_type: string;
-	issuer: string;
-	audience: string[];
-	accept_issuer: string;
-	accept_audience: string;
-	ed25519: {
-		public_key: string;
-		private_key: string;
-	};
-	ttl?: number;
-	requiredClaims?: string[];
 };
 
 export default class AccessTokenService<
@@ -44,6 +31,24 @@ export default class AccessTokenService<
 		origin?: string,
 		ip?: string
 	) {
+		const {
+			issuer,
+			audience,
+			ed25519: { private_key },
+		} = this._options;
+
+		if (!issuer) {
+			throw new Error('Missing issuer.');
+		}
+
+		if (!audience) {
+			throw new Error('Missing audience.');
+		}
+
+		if (!private_key) {
+			throw new Error('Missing private key.');
+		}
+
 		const data = { ...payload } as Payload;
 
 		if (origin) {
@@ -57,25 +62,42 @@ export default class AccessTokenService<
 		return new jose.SignJWT(payload)
 			.setProtectedHeader({ alg: 'EdDSA' })
 			.setJti(jti)
-			.setIssuer(this._options.issuer)
+			.setIssuer(issuer)
 			.setSubject(sub)
-			.setAudience(this._options.audience)
+			.setAudience(audience)
 			.setIssuedAt(getTimestamp())
 			.setNotBefore(getTimestamp())
 			.setExpirationTime(getTimestamp() + (this._options.ttl || 300))
-			.sign(
-				await jose.importPKCS8(this._options.ed25519.private_key, 'EdDSA')
-			);
+			.sign(await jose.importPKCS8(private_key, 'EdDSA'));
 	}
 
 	public async get(token: string) {
+		const {
+			accept_issuer,
+			accept_audience,
+			ed25519: { public_key },
+			required_claims,
+		} = this._options;
+
+		if (!accept_issuer) {
+			throw new Error('Missing issuer.');
+		}
+
+		if (!accept_audience) {
+			throw new Error('Missing audience.');
+		}
+
+		if (!public_key) {
+			throw new Error('Missing public key.');
+		}
+
 		try {
 			const { payload } = await jose.jwtVerify(
 				token,
-				await jose.importSPKI(this._options.ed25519.public_key, 'EdDSA'),
+				await jose.importSPKI(public_key, 'EdDSA'),
 				{
-					issuer: this._options.accept_issuer,
-					audience: this._options.accept_audience,
+					issuer: accept_issuer,
+					audience: accept_audience,
 					requiredClaims: [
 						'jit',
 						'iss',
@@ -83,7 +105,7 @@ export default class AccessTokenService<
 						'nbf',
 						'exp',
 						'scopes',
-						...(this._options.requiredClaims || ['role']),
+						...(required_claims || ['role']),
 					],
 				}
 			);
@@ -213,7 +235,7 @@ export default class AccessTokenService<
 	}
 
 	public get ttl() {
-		return this._options.ttl;
+		return this._options.ttl || 300;
 	}
 
 	public static async readKeyFile(path: string) {

@@ -65,8 +65,23 @@ export type DefaultEnvironment = {
 	name: string;
 	port: number;
 	host: string;
-	log_path: string;
 	debug: boolean;
+	timezone: string;
+	log_path: string;
+};
+
+export type EnvironmentAccessTokenOptions = {
+	access_token: AccessTokenServiceOptions;
+};
+
+export type EnvironmentMysqlOptions = {
+	mysql: {
+		host: string;
+		port: number;
+		database: string;
+		username: string;
+		password: string;
+	};
 };
 
 /** Fastify modifiers */
@@ -180,6 +195,20 @@ export type SyncServiceConstructor<Service> = (
 export type ServiceConstructor<Service> =
 	| AsyncServiceConstructor<Service>
 	| SyncServiceConstructor<Service>;
+
+export type AccessTokenServiceOptions = {
+	token_type: string;
+	issuer?: string;
+	audience?: string[];
+	accept_issuer?: string;
+	accept_audience?: string;
+	ed25519: {
+		public_key?: string;
+		private_key?: string;
+	};
+	ttl?: number;
+	required_claims?: string[];
+};
 
 /** Events */
 
