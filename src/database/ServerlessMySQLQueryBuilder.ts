@@ -102,12 +102,12 @@ export default class ServerlessMySQLQueryBuilder {
 		}
 
 		if (this._limit) {
-			sql += ` LIMIT ${this._limit}`;
+			sql += ` LIMIT ?`;
 			this._params.push(this._limit);
 		}
 
 		if (this._offset) {
-			sql += ` OFFSET ${this._offset}`;
+			sql += ` OFFSET ?`;
 			this._params.push(this._offset);
 		}
 
