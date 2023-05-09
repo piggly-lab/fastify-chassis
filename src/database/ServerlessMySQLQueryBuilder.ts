@@ -55,21 +55,36 @@ export default class ServerlessMySQLQueryBuilder {
 		return this;
 	}
 
-	orderBy(exp: string) {
+	orderBy(exp: string, allowed: string[] = []): ServerlessMySQLQueryBuilder {
 		const exps = exp.split(',');
+
+		if (allowed.length > 0) {
+			exps
+				.filter(e => allowed.includes(e))
+				.forEach(e => {
+					const [column, order = 'asc'] = e.split(':');
+					this._order_by.push(`\`${column}\` ${order.toUpperCase()}`);
+				});
+
+			return this;
+		}
 
 		exps.forEach(e => {
 			const [column, order = 'asc'] = e.split(':');
 			this._order_by.push(`\`${column}\` ${order.toUpperCase()}`);
 		});
+
+		return this;
 	}
 
 	limit(limit: number, offset?: number) {
 		this._limit = limit;
 		this._offset = offset;
+
+		return this;
 	}
 
-	mount(): { sql: string; params: any[] } {
+	get(): { sql: string; params: any[] } {
 		let sql = this._base;
 
 		if (this._where.length > 0) {
