@@ -17,9 +17,9 @@ export default class ServerlessMySQLQueryBuilder {
 
 	whereEqualByColumn(
 		column: string,
-		value: string
+		value: string | string[]
 	): ServerlessMySQLQueryBuilder {
-		const values = value.split(',');
+		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(
 			`(${values.map(() => `\`${column}\` = ?`).join(' OR ')})`
@@ -32,10 +32,10 @@ export default class ServerlessMySQLQueryBuilder {
 
 	whereLikeByColumn(
 		column: string,
-		value: string,
+		value: string | string[],
 		operator = '%{value}%'
 	): ServerlessMySQLQueryBuilder {
-		const values = value.split(',');
+		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(
 			`(${values.map(() => `\`${column}\` LIKE ?`).join(' OR ')})`
@@ -46,8 +46,11 @@ export default class ServerlessMySQLQueryBuilder {
 		return this;
 	}
 
-	whereInByColumn(column: string, value: string): ServerlessMySQLQueryBuilder {
-		const values = value.split(',');
+	whereInByColumn(
+		column: string,
+		value: string | string[]
+	): ServerlessMySQLQueryBuilder {
+		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(`\`${column}\` IN (?)`);
 		this._params.push(values);
@@ -55,8 +58,11 @@ export default class ServerlessMySQLQueryBuilder {
 		return this;
 	}
 
-	orderBy(exp: string, allowed: string[] = []): ServerlessMySQLQueryBuilder {
-		const exps = exp.split(',');
+	orderBy(
+		exp: string | string[],
+		allowed: string[] = []
+	): ServerlessMySQLQueryBuilder {
+		const exps = typeof exp === 'string' ? exp.split(',') : exp;
 
 		if (allowed.length > 0) {
 			exps
