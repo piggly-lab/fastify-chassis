@@ -3,7 +3,7 @@ import { FastifyModifierCallable } from '@/types';
 /**
  * Base controller class.
  */
-export default class BaseController<App, AppEnvironment> {
+export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	/**
 	 * The Fastify instance.
 	 *
@@ -21,6 +21,14 @@ export default class BaseController<App, AppEnvironment> {
 	protected _env: AppEnvironment;
 
 	/**
+	 * Services dependencies.
+	 *
+	 * @type {ServiceDeps}
+	 * @protected
+	 */
+	protected _services: ServiceDeps;
+
+	/**
 	 * Create a new base controller instance.
 	 *
 	 * @param app The Fastify instance.
@@ -29,9 +37,10 @@ export default class BaseController<App, AppEnvironment> {
 	 * @public
 	 * @memberof BaseController
 	 */
-	constructor(app: App, env: AppEnvironment) {
+	constructor(app: App, env: AppEnvironment, servicesDeps: ServiceDeps) {
 		this._app = app;
 		this._env = env;
+		this._services = servicesDeps;
 	}
 
 	/**
@@ -53,12 +62,11 @@ export default class BaseController<App, AppEnvironment> {
 	 * @static
 	 * @memberof BaseController
 	 */
-	public static createInstance<App, AppEnvironment>(): FastifyModifierCallable<
-		App,
-		AppEnvironment
-	> {
+	public static createInstance<App, AppEnvironment, ServiceDeps>(
+		servicesDeps: ServiceDeps
+	): FastifyModifierCallable<App, AppEnvironment> {
 		return async (app, env) => {
-			const controller = new this(app, env);
+			const controller = new this(app, env, servicesDeps);
 			await controller.init();
 		};
 	}
