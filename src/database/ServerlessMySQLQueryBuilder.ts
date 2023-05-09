@@ -108,7 +108,7 @@ export default class ServerlessMySQLQueryBuilder {
 
 		if (this._offset) {
 			sql += ` OFFSET ${this._offset}`;
-			this._params.push(this._limit);
+			this._params.push(this._offset);
 		}
 
 		return {
