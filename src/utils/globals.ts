@@ -170,8 +170,22 @@ export function splitAndTrim(str: string, separator: string): Array<string> {
 	return str.split(separator).map(s => s.trim());
 }
 
+export function validateAnySchema<Payload>(
+	entry: any,
+	schema: Joi.Schema,
+	messages?: Joi.LanguageMessages
+): Payload {
+	const { error, value } = schema.validate(entry ?? {}, { messages });
+
+	if (error) {
+		throw new InvalidRequestBodyError(error.details.map(val => val.message));
+	}
+
+	return value as Payload;
+}
+
 export function validateSchema<Payload>(
-	entry: Record<string, object> | undefined,
+	entry: Record<string, any> | undefined,
 	schema: Joi.ObjectSchema,
 	messages?: Joi.LanguageMessages
 ): Payload {
