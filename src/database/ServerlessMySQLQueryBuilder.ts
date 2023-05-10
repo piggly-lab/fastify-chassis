@@ -22,7 +22,7 @@ export default class ServerlessMySQLQueryBuilder {
 		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(
-			`(${values.map(() => `\`${column}\` = ?)`).join(' OR ')})`
+			`(${values.map(() => `\`${column}\` = ?`).join(' OR ')})`
 		);
 
 		values.forEach(v => this._params.push(v));
@@ -38,7 +38,7 @@ export default class ServerlessMySQLQueryBuilder {
 		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(
-			`(${values.map(() => `\`${column}\` LIKE ?)`).join(' OR ')})`
+			`(${values.map(() => `\`${column}\` LIKE ?`).join(' OR ')})`
 		);
 
 		values.forEach(v => this._params.push(operator.replace('{value}', v)));
@@ -54,6 +54,47 @@ export default class ServerlessMySQLQueryBuilder {
 
 		this._where.push(`\`${column}\` IN (?)`);
 		this._params.push(values);
+
+		return this;
+	}
+
+	whereBetweenByColumn(
+		column: string,
+		begin: string,
+		end: string
+	): ServerlessMySQLQueryBuilder {
+		this._where.push(`\`${column}\` BETWEEN ? AND ?`);
+		this._params.push(begin);
+		this._params.push(end);
+
+		return this;
+	}
+
+	whereBetweenDateByColumn(
+		column: string,
+		begin?: string,
+		end?: string
+	): ServerlessMySQLQueryBuilder {
+		this._where.push(
+			`\`${column}\` BETWEEN ${begin ? '?' : 'NOW()'} AND ${
+				end ? '?' : 'NOW()'
+			}`
+		);
+
+		if (begin) this._params.push(begin);
+		if (end) this._params.push(end);
+
+		return this;
+	}
+
+	whereNotBetweenByColumn(
+		column: string,
+		begin: string,
+		end: string
+	): ServerlessMySQLQueryBuilder {
+		this._where.push(`\`${column}\` NOT BETWEEN ? AND ?`);
+		this._params.push(begin);
+		this._params.push(end);
 
 		return this;
 	}

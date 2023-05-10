@@ -2,9 +2,10 @@ import { FastifyRequest } from 'fastify';
 import crypto from 'crypto';
 import { IncomingHttpHeaders } from 'http';
 import moment from 'moment-timezone';
+import Joi from 'joi';
 
 import { TDateInput, TOrEmpty, TOrUndefined } from '@/types';
-import { ResponseError } from '@/errors';
+import { InvalidRequestBodyError, ResponseError } from '@/errors';
 import DateParser from './parsers/DateParser';
 
 export function commaStringAsArray(str?: string): Array<string> {
@@ -163,4 +164,22 @@ export function getOrigin(request: FastifyRequest): string {
 	}
 
 	return request.hostname;
+}
+
+export function splitAndTrim(str: string, separator: string): Array<string> {
+	return str.split(separator).map(s => s.trim());
+}
+
+export function validateSchema<Payload>(
+	entry: Record<string, object> | undefined,
+	schema: Joi.ObjectSchema,
+	messages?: Joi.LanguageMessages
+): Payload {
+	const { error, value } = schema.validate(entry ?? {}, { messages });
+
+	if (error) {
+		throw new InvalidRequestBodyError(error.details.map(val => val.message));
+	}
+
+	return value as Payload;
 }
