@@ -22,7 +22,7 @@ export default class ServerlessMySQLQueryBuilder {
 		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(
-			`(${values.map(() => `\`${column}\` = ?`).join(' OR ')})`
+			`(${values.map(() => `\`${column}\` = ?)`).join(' OR ')})`
 		);
 
 		values.forEach(v => this._params.push(v));
@@ -38,7 +38,7 @@ export default class ServerlessMySQLQueryBuilder {
 		const values = typeof value === 'string' ? value.split(',') : value;
 
 		this._where.push(
-			`(${values.map(() => `\`${column}\` LIKE ?`).join(' OR ')})`
+			`(${values.map(() => `\`${column}\` LIKE ?)`).join(' OR ')})`
 		);
 
 		values.forEach(v => this._params.push(operator.replace('{value}', v)));
@@ -94,7 +94,7 @@ export default class ServerlessMySQLQueryBuilder {
 		let sql = this._base;
 
 		if (this._where.length > 0) {
-			sql += ` WHERE ${this._where.join(' AND ')}`;
+			sql += ` WHERE (${this._where.join(' AND ')})`;
 		}
 
 		if (this._order_by.length > 0) {
