@@ -13,6 +13,14 @@ export default class PaginationMeta {
 		this.props = props;
 	}
 
+	public get limit(): number {
+		return this.props.size;
+	}
+
+	public get offset(): number {
+		return (this.props.current_page - 1) * this.props.size;
+	}
+
 	public toJSON(url: string) {
 		let next_url = null;
 		let previous_url = null;

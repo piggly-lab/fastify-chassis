@@ -1,3 +1,5 @@
+import PaginationMeta from './PaginationMeta';
+
 export default class ServerlessMySQLQueryBuilder {
 	protected _base: string;
 
@@ -23,6 +25,23 @@ export default class ServerlessMySQLQueryBuilder {
 
 		this._where.push(
 			`(${values.map(() => `\`${column}\` = ?`).join(' OR ')})`
+		);
+
+		values.forEach(v => this._params.push(v));
+
+		return this;
+	}
+
+	whereEqualWithCRC32ByColumn(
+		column: string,
+		value: string | string[]
+	): ServerlessMySQLQueryBuilder {
+		const values = typeof value === 'string' ? value.split(',') : value;
+
+		this._where.push(
+			`(${values
+				.map(() => `(\`_crc_${column}\` = CRC32(?) AND \`${column}\` = ?)`)
+				.join(' OR ')})`
 		);
 
 		values.forEach(v => this._params.push(v));
@@ -120,6 +139,13 @@ export default class ServerlessMySQLQueryBuilder {
 			const [column, order = 'asc'] = e.split(':');
 			this._order_by.push(`\`${column}\` ${order.toUpperCase()}`);
 		});
+
+		return this;
+	}
+
+	pagination(pagination: PaginationMeta) {
+		this._limit = pagination.limit;
+		this._offset = pagination.offset;
 
 		return this;
 	}

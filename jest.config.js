@@ -36,6 +36,6 @@ module.exports = {
 	},
 	moduleDirectories: ['node_modules', '<rootDir>/src'],
 	extensionsToTreatAsEsm: ['.ts'],
-	setupFiles: ['<rootDir>/src/env/config.ts'],
-	setupFilesAfterEnv: ['<rootDir>/test/global.ts'],
+	// setupFiles: ['<rootDir>/src/env/config.ts'],
+	// setupFilesAfterEnv: ['<rootDir>/test/global.ts'],
 };
