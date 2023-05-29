@@ -1,3 +1,4 @@
+import EventBus from '@piggly/event-bus';
 import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from 'fastify';
 import * as jose from 'jose';
 import fs from 'fs';
@@ -7,8 +8,7 @@ import ForbiddenError from '@/errors/ForbiddenError';
 import InvalidAuthorizationHeaderError from '@/errors/InvalidAuthorizationHeaderError';
 import MissingAuthorizationHeaderError from '@/errors/MissingAuthorizationHeaderError';
 import { AccessTokenServiceOptions } from '@/types';
-import DomainEvent from '@/events/Event';
-import EventBus from '@/events/EventBus';
+import UniqueEvent from '@/events/UniqueEvent';
 
 export type JWTPayload = jose.JWTPayload & {
 	scopes: string;
@@ -114,8 +114,8 @@ export default class AccessTokenService<
 
 			return payload as Payload;
 		} catch (error: any) {
-			await EventBus.instance.publish(
-				new DomainEvent('access_token.invalid', error)
+			EventBus.instance.publish(
+				new UniqueEvent('INVALID_ACCESS_TOKEN', { error })
 			);
 
 			throw new UnauthorizedError();

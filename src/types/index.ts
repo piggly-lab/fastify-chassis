@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyServerOptions } from 'fastify';
 import moment from 'moment-timezone';
 import BaseEntity from '@/entities/BaseEntity';
-import BaseEvent from '@/events/Event';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -208,20 +207,6 @@ export type AccessTokenServiceOptions = {
 	};
 	ttl?: number;
 	required_claims?: string[];
-};
-
-/** Events */
-
-export type EventHandler<Payload = any> = (
-	event: BaseEvent<Payload>
-) => Promise<void>;
-
-export type EventPublishOptions = {
-	readonly driver: string | string[];
-};
-
-export type EventSubscribeOptions = {
-	readonly driver: string | string[];
 };
 
 /** Schemas */

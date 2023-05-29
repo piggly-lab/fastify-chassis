@@ -28,7 +28,6 @@ export default class HttpServer<AppEnvironment extends Record<string, any>>
 	 * Create a new HTTP server.
 	 *
 	 * @param api The API server.
-	 * @returns {void}
 	 * @public
 	 * @constructor
 	 * @memberof HttpServer

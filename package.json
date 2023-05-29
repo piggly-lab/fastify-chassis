@@ -80,6 +80,7 @@
 		"jose": "^4.14.4"
 	},
 	"dependencies": {
+		"@piggly/event-bus": "^1.0.1",
 		"moment-timezone": "^0.5.43",
 		"pino": "^8.14.1",
 		"shallow-equal-object": "^1.1.1",
