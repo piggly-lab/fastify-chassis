@@ -1,7 +1,6 @@
 export * from './errors';
 export * from './helpers';
 export * from './www';
-export * from './entities';
 export * from './database';
 export * from './services';
 export * from './core';

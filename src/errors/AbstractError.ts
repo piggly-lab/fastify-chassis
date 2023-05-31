@@ -37,7 +37,6 @@ export default abstract class AbstractError
 	 * @param {string} name The name of the error.
 	 * @param {string} message The message of the error.
 	 * @param {PreviousError | undefined} previous The previous error.
-	 * @returns {void}
 	 * @public
 	 * @constructor
 	 * @memberof AbstractError
