@@ -1,7 +1,8 @@
 import { FastifyBaseLogger } from 'fastify';
 
 /**
- * Logger class.
+ * @file Logger class for static logging access.
+ * @copyright Piggly Lab 2023
  */
 export default class Logger {
 	/**
@@ -10,6 +11,9 @@ export default class Logger {
 	 * @type {Logger}
 	 * @private
 	 * @static
+	 * @memberof Logger
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	private static instance: Logger;
 
@@ -18,17 +22,21 @@ export default class Logger {
 	 *
 	 * @type {FastifyBaseLogger}
 	 * @public
+	 * @memberof Logger
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public logger: FastifyBaseLogger;
 
 	/**
 	 * Create a new logger.
 	 *
-	 * @param logger The logger.
-	 * @returns {void}
+	 * @param {FastifyBaseLogger} logger The logger.
 	 * @private
 	 * @constructor
 	 * @memberof Logger
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	private constructor(logger: FastifyBaseLogger) {
 		this.logger = logger;
@@ -37,13 +45,15 @@ export default class Logger {
 	/**
 	 * Prepare the logger.
 	 *
-	 * @param logger The logger.
+	 * @param {FastifyBaseLogger} logger The logger.
 	 * @returns {void}
 	 * @public
 	 * @static
 	 * @memberof Logger
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static prepare(logger: FastifyBaseLogger) {
+	public static prepare(logger: FastifyBaseLogger): void {
 		Logger.instance = new Logger(logger);
 	}
 
@@ -53,8 +63,10 @@ export default class Logger {
 	 * @returns {FastifyBaseLogger}
 	 * @public
 	 * @static
-	 * @memberof Logger
 	 * @throws {Error} If the logger is not initialized.
+	 * @memberof Logger
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public static get(): FastifyBaseLogger {
 		if (!Logger.instance) {
