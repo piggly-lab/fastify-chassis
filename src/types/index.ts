@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyServerOptions } from 'fastify';
 import moment from 'moment-timezone';
-import BaseEntity from '@/entities/BaseEntity';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -135,65 +134,7 @@ export interface RuleInterface {
 	assert(): void;
 }
 
-/** Core */
-
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
-export interface RepositoryInterface {}
-
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
-export interface ServiceInterface {}
-
-export interface AdapterInterface<Entity extends BaseEntity<any>, DTO> {
-	toDTO(entity: Entity): DTO;
-}
-
-export interface FactoryInterface<
-	Args extends any[],
-	Entity extends BaseEntity<any>
-> {
-	create(...args: Args): Entity;
-}
-
-/** Repositories */
-
-export type PaginateQuery = {
-	page: number;
-	size: number;
-};
-
-export type Filter = {
-	[key: string]: any;
-};
-
 /** Services */
-
-export interface ServiceManagerInterface {
-	registerAsync<Service = any>(
-		name: string,
-		constructor: AsyncServiceConstructor<Service>
-	): void;
-	getAsync<Service = any>(name: string): Promise<Service>;
-	registerSync<Service = any>(
-		name: string,
-		constructor: SyncServiceConstructor<Service>
-	): void;
-	getSync<Service = any>(name: string): Service;
-	flushOnAsyncCache(name: string): void;
-	flushOnSyncCache(name: string): void;
-	clearCache(): void;
-}
-
-export type AsyncServiceConstructor<Service> = (
-	manager: ServiceManagerInterface
-) => Promise<Service>;
-
-export type SyncServiceConstructor<Service> = (
-	manager: ServiceManagerInterface
-) => Service;
-
-export type ServiceConstructor<Service> =
-	| AsyncServiceConstructor<Service>
-	| SyncServiceConstructor<Service>;
 
 export type AccessTokenServiceOptions = {
 	token_type: string;

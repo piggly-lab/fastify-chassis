@@ -7,7 +7,8 @@ import {
 import AbstractError from './AbstractError';
 
 /**
- * The response error.
+ * @file The response error.
+ * @copyright Piggly Lab 2023
  */
 export default class ResponseError
 	extends AbstractError
@@ -19,14 +20,20 @@ export default class ResponseError
 	 * @type {boolean}
 	 * @public
 	 * @readonly
+	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public readonly isResponseError = true;
+	public readonly isResponseError: boolean = true;
 
 	/**
 	 * The error code.
 	 *
 	 * @type {number}
 	 * @protected
+	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _code: number;
 
@@ -35,6 +42,9 @@ export default class ResponseError
 	 *
 	 * @type {number}
 	 * @protected
+	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _statusCode: number;
 
@@ -43,6 +53,9 @@ export default class ResponseError
 	 *
 	 * @type {TOrUndefined<string>}
 	 * @protected
+	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _hint: TOrUndefined<string>;
 
@@ -51,18 +64,22 @@ export default class ResponseError
 	 *
 	 * @type {Record<string, any>}
 	 * @protected
+	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _payload: Record<string, any>;
 
 	/**
 	 * Create a new error.
 	 *
-	 * @param message The message of the error.
-	 * @param previous The previous error.
-	 * @returns {void}
+	 * @param {string} message The message of the error.
+	 * @param {PreviousError} [previous] The previous error.
 	 * @public
 	 * @constructor
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	constructor(message: string, previous?: PreviousError) {
 		super('ResponseError', message, previous);
@@ -75,10 +92,12 @@ export default class ResponseError
 	/**
 	 * Change the hint of the error.
 	 *
-	 * @param hint The hint of the error.
+	 * @param {string} [hint] The hint of the error.
 	 * @returns {this}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public hint(hint: TOrUndefined<string>): this {
 		this._hint = hint;
@@ -88,10 +107,12 @@ export default class ResponseError
 	/**
 	 * Change the HTTP status code of the error.
 	 *
-	 * @param statusCode The HTTP status code.
+	 * @param {number} statusCode The HTTP status code.
 	 * @returns {this}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public httpCode(statusCode: number): this {
 		this._statusCode = statusCode;
@@ -101,10 +122,12 @@ export default class ResponseError
 	/**
 	 * Change the payload of the error.
 	 *
-	 * @param payload The payload of the error.
+	 * @param {object} payload The payload of the error.
 	 * @returns {this}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public payload(payload: Record<string, any>): this {
 		this._payload = payload;
@@ -114,9 +137,11 @@ export default class ResponseError
 	/**
 	 * Get the hint of the error.
 	 *
-	 * @returns {TOrUndefined<string>}
+	 * @returns {(string|undefined)}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getHint(): TOrUndefined<string> {
 		return this._hint;
@@ -128,6 +153,8 @@ export default class ResponseError
 	 * @returns {number}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getHttpCode(): number {
 		return this._statusCode;
@@ -139,6 +166,8 @@ export default class ResponseError
 	 * @returns {object}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getPayload(): object {
 		return this._payload;
@@ -147,9 +176,11 @@ export default class ResponseError
 	/**
 	 * Get the JSON representation of the error.
 	 *
-	 * @returns {Partial<ResponseErrorJSON>}
+	 * @returns {object}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public toJSON(): Partial<ResponseErrorJSON> {
 		const JSON: Partial<ResponseErrorJSON> = super.toJSON();
@@ -170,9 +201,11 @@ export default class ResponseError
 	/**
 	 * Get the response of the error.
 	 *
-	 * @returns {ResponseErrorInterface}
+	 * @returns {ResponseError}
 	 * @public
 	 * @memberof ResponseError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public toResponse(): ResponseErrorInterface {
 		return this;
