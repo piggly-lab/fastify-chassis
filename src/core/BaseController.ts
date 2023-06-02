@@ -1,7 +1,8 @@
 import { FastifyModifierCallable } from '@/types';
 
 /**
- * Base controller class.
+ * @file Base controller class.
+ * @copyright Piggly Lab 2023
  */
 export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	/**
@@ -9,6 +10,9 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	 *
 	 * @type {App}
 	 * @protected
+	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _app: App;
 
@@ -17,6 +21,9 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	 *
 	 * @type {AppEnvironment}
 	 * @protected
+	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _env: AppEnvironment;
 
@@ -25,17 +32,23 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	 *
 	 * @type {ServiceDeps}
 	 * @protected
+	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _services: ServiceDeps;
 
 	/**
 	 * Create a new base controller instance.
 	 *
-	 * @param app The Fastify instance.
-	 * @param env The environment.
+	 * @param {App} app The Fastify instance.
+	 * @param {AppEnvironment} env The environment.
+	 * @param {ServiceDeps} servicesDeps The services dependencies.
 	 * @constructor
 	 * @public
 	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	constructor(app: App, env: AppEnvironment, servicesDeps: ServiceDeps) {
 		this._app = app;
@@ -49,6 +62,8 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	 * @returns {Promise<void>}
 	 * @public
 	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public init(): Promise<void> {
 		return Promise.resolve();
@@ -57,10 +72,13 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	/**
 	 * Create a new controller instance.
 	 *
+	 * @param {ServiceDeps} servicesDeps
 	 * @returns {FastifyModifierCallable}
 	 * @public
 	 * @static
 	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public static createInstance<App, AppEnvironment, ServiceDeps>(
 		servicesDeps: ServiceDeps

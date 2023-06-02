@@ -1,27 +1,72 @@
-export type PaginationMetaProps = {
-	current_page: number;
-	size: number;
-	current_size: number;
-	total_size: number;
-	total_pages: number;
-};
+import { PaginationMetaJSON, PaginationMetaProps } from '@/types';
 
+/**
+ * @file Pagination metadata to collections.
+ * @copyright Piggly Lab 2023
+ */
 export default class PaginationMeta {
+	/**
+	 * Properties.
+	 *
+	 * @type {PaginationMetaProps}
+	 * @public
+	 * @readonly
+	 * @memberof PaginationMeta
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
 	public readonly props: PaginationMetaProps;
 
+	/**
+	 * Create a new pagination metadata.
+	 *
+	 * @param {PaginationMetaProps} props
+	 * @public
+	 * @memberof PaginationMeta
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
 	constructor(props: PaginationMetaProps) {
 		this.props = props;
 	}
 
+	/**
+	 * Get the limit size for the pagination.
+	 *
+	 * @returns {number}
+	 * @public
+	 * @memberof PaginationMeta
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
 	public get limit(): number {
 		return this.props.size;
 	}
 
+	/**
+	 * Get the calculated offset for the pagination.
+	 *
+	 * @returns {number}
+	 * @public
+	 * @memberof PaginationMeta
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
 	public get offset(): number {
 		return (this.props.current_page - 1) * this.props.size;
 	}
 
-	public toJSON(url: string) {
+	/**
+	 * Get the metadata as JSON.
+	 *
+	 * @param {string} url Base URL to generate next and previous urls.
+	 * @returns {PaginationMetaJSON}
+	 * @public
+	 * @memberof PaginationMeta
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public toJSON(url: string): PaginationMetaJSON {
 		let next_url = null;
 		let previous_url = null;
 

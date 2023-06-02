@@ -69,12 +69,30 @@ export function parseEmpty<T>(val: T): TOrEmpty<T> {
 	return val;
 }
 
+/**
+ * Preserve value when it is equal to `when`.
+ *
+ * @param {any} value
+ * @param {any} when
+ * @param {any} _default
+ * @returns {any}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function preserve(value: any, when: any, _default: any): any {
 	if (value === when) return when;
 	if (value === undefined || value === null) return _default;
 	return value;
 }
 
+/**
+ * Parse to JSON copy of an object.
+ *
+ * @param {Array<T>} obj
+ * @returns {object}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function parseToJson(obj: { [key: string]: any }): object {
 	const copy: { [key: string]: any } = {};
 
@@ -90,14 +108,40 @@ export function parseToJson(obj: { [key: string]: any }): object {
 	return copy;
 }
 
+/**
+ * Remove item from array.
+ *
+ * @param {Array<T>} arr
+ * @param {T} item
+ * @returns {Array<T>}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function removeItem<T>(arr: Array<T>, item: T): Array<T> {
 	return arr.filter(el => el !== item);
 }
 
+/**
+ * Remove index from array.
+ *
+ * @param {Array} arr
+ * @param {number} index
+ * @returns {Array}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function removeIndex<T>(arr: Array<T>, index: number): Array<T> {
 	return arr.filter((el, idx) => idx !== index);
 }
 
+/**
+ * Get a random string.
+ *
+ * @param {number} length
+ * @returns {string}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function randomString(length: number): string {
 	return crypto
 		.randomBytes(length)
@@ -106,6 +150,14 @@ export function randomString(length: number): string {
 		.substring(0, length);
 }
 
+/**
+ * Convert any to an JSON object.
+ *
+ * @param {(string|object)} obj
+ * @returns {object}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function toJSON(obj: string | object): object {
 	if (typeof obj === 'string') {
 		return JSON.parse(obj);
@@ -114,21 +166,55 @@ export function toJSON(obj: string | object): object {
 	return obj;
 }
 
+/**
+ * Convert any to an array.
+ *
+ * @param {any} val
+ * @returns {Array<T>}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function toArray<T>(val?: T | Array<T>): Array<T> {
 	if (!val) return [];
 	if (Array.isArray(val)) return val;
 	return [val];
 }
 
+/**
+ * Convert date to moment.
+ *
+ * @param {TDateInput} val
+ * @returns {moment.Moment}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function toMoment(val: TDateInput): moment.Moment {
 	return DateParser.toMoment(val);
 }
 
-export function toRFC3339(date: moment.Moment, timezone = 'UTC') {
+/**
+ * Convert date to RFC3339 format.
+ *
+ * @param {moment.Moment} date
+ * @param {string} timezone
+ * @returns {string}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
+export function toRFC3339(date: moment.Moment, timezone = 'UTC'): string {
 	return date.tz(timezone).format('YYYY-MM-DDTHH:mm:ssZ');
 }
 
-export function mountURL(base: string, relative_path: string) {
+/**
+ * Mount an URL based on a base and a relative path.
+ *
+ * @param {string} base
+ * @param {string} relative_path
+ * @returns {string}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
+export function mountURL(base: string, relative_path: string): string {
 	let path = relative_path;
 
 	if (path.startsWith('/')) {
@@ -138,6 +224,14 @@ export function mountURL(base: string, relative_path: string) {
 	return `${base}/${path}`;
 }
 
+/**
+ * Try to get IP from request headers.
+ *
+ * @param {FastifyRequest} request
+ * @returns {string}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function getIp(request: FastifyRequest): string {
 	if (request.headers['x-forwarded-for'] !== undefined) {
 		if (Array.isArray(request.headers['x-forwarded-for']) === false) {
@@ -150,11 +244,15 @@ export function getIp(request: FastifyRequest): string {
 	return request.ip;
 }
 
+/**
+ * Try to get origin from request headers.
+ *
+ * @param {FastifyRequest} request
+ * @returns {string}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function getOrigin(request: FastifyRequest): string {
-	if (request.headers.host) {
-		return request.headers.host;
-	}
-
 	if (request.headers['x-forwarded-host'] !== undefined) {
 		if (Array.isArray(request.headers['x-forwarded-host']) === false) {
 			return request.headers['x-forwarded-host'] as string;
@@ -163,13 +261,37 @@ export function getOrigin(request: FastifyRequest): string {
 		return (request.headers['x-forwarded-host'] as Array<string>)[0];
 	}
 
+	if (request.headers.host) {
+		return request.headers.host;
+	}
+
 	return request.hostname;
 }
 
+/**
+ * Split a string and trim each item.
+ *
+ * @param {string} str
+ * @param {string} separator
+ * @returns {string[]}
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function splitAndTrim(str: string, separator: string): Array<string> {
 	return str.split(separator).map(s => s.trim());
 }
 
+/**
+ * Validate a request body against a Joi schema.
+ *
+ * @param {Record<string, any>} entry The request body.
+ * @param {Joi.ObjectSchema} schema The Joi schema.
+ * @param {Joi.LanguageMessages} [messages] The Joi language messages.
+ * @returns {Payload} The validated payload.
+ * @throws {InvalidRequestBodyError} If the request body is invalid.
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function validateAnySchema<Payload>(
 	entry: any,
 	schema: Joi.Schema,
@@ -184,6 +306,17 @@ export function validateAnySchema<Payload>(
 	return value as Payload;
 }
 
+/**
+ * Validate a request body against a Joi object schema.
+ *
+ * @param {Record<string, any>} entry The request body.
+ * @param {Joi.ObjectSchema} schema The Joi schema.
+ * @param {Joi.LanguageMessages} [messages] The Joi language messages.
+ * @returns {Payload} The validated payload.
+ * @throws {InvalidRequestBodyError} If the request body is invalid.
+ * @since 1.0.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
 export function validateSchema<Payload>(
 	entry: Record<string, any> | undefined,
 	schema: Joi.ObjectSchema,

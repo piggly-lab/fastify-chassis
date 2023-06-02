@@ -174,6 +174,24 @@ export type AccessTokenServiceErrors = {
 
 export type SchemaHandler<ReturnEntry> = (entry: any) => ReturnEntry;
 
+/** Pagination */
+export type PaginationMetaProps = {
+	current_page: number;
+	size: number;
+	current_size: number;
+	total_size: number;
+	total_pages: number;
+};
+
+export type PaginationMetaJSON = {
+	current_page: number;
+	current_size: number;
+	total_pages: number;
+	total_size: number;
+	next_url: string | null;
+	previous_url: string | null;
+};
+
 /** Events */
 
 export type INVALID_ACCESS_TOKEN_EVENT = {
