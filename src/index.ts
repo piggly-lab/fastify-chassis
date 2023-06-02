@@ -1,10 +1,8 @@
-import './lib/moduleAlias';
-
+export * from './types';
 export * from './errors';
 export * from './helpers';
-export * from './www';
-export * from './events';
-export * from './entities';
-export * from './core';
 export * from './utils';
-export * from './types';
+export * from './services';
+export * from './core';
+export * from './hooks';
+export * from './www';

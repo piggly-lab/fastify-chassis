@@ -9,7 +9,8 @@ import {
 } from '@/types';
 
 /**
- * Abstract error class.
+ * @file Abstract error class.
+ * @copyright Piggly Lab 2023
  */
 export default abstract class AbstractError
 	extends Error
@@ -20,6 +21,9 @@ export default abstract class AbstractError
 	 *
 	 * @type {number}
 	 * @protected
+	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _code: number;
 
@@ -28,6 +32,9 @@ export default abstract class AbstractError
 	 *
 	 * @type {PreviousError}
 	 * @protected
+	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _previous: PreviousError;
 
@@ -37,10 +44,11 @@ export default abstract class AbstractError
 	 * @param {string} name The name of the error.
 	 * @param {string} message The message of the error.
 	 * @param {PreviousError | undefined} previous The previous error.
-	 * @returns {void}
 	 * @public
 	 * @constructor
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	constructor(name: string, message: string, previous?: PreviousError) {
 		super(message);
@@ -57,6 +65,8 @@ export default abstract class AbstractError
 	 * @returns {this}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public changeName(name: string): this {
 		this.name = name;
@@ -70,6 +80,8 @@ export default abstract class AbstractError
 	 * @returns {this}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public code(code: number): this {
 		this._code = code;
@@ -82,6 +94,8 @@ export default abstract class AbstractError
 	 * @returns {number}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getCode(): number {
 		return this._code;
@@ -93,6 +107,8 @@ export default abstract class AbstractError
 	 * @returns {string}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getMessage(): string {
 		return this.message;
@@ -104,6 +120,8 @@ export default abstract class AbstractError
 	 * @returns {string}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getName(): string {
 		return this.name;
@@ -115,6 +133,8 @@ export default abstract class AbstractError
 	 * @returns {PreviousError}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getPrevious(): PreviousError {
 		return this._previous;
@@ -132,6 +152,8 @@ export default abstract class AbstractError
 	 * @returns {Partial<ErrorJSON>}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public toJSON(): Partial<ErrorJSON> {
 		const JSON: Partial<ErrorJSON> = {
@@ -157,6 +179,8 @@ export default abstract class AbstractError
 	 * @returns {TOrNull<PreviousErrorJSON>}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getPreviousJSON(): TOrNull<PreviousErrorJSON> {
 		const previous = this._previous;
@@ -186,6 +210,8 @@ export default abstract class AbstractError
 	 * @returns {ResponseErrorInterface}
 	 * @public
 	 * @memberof AbstractError
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public toResponse(): ResponseErrorInterface {
 		throw new Error('Not implemented');

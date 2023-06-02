@@ -1,7 +1,6 @@
-import BaseEntity from '@/entities/BaseEntity';
-import EntityUUID from '@/entities/EntityUUID';
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyServerOptions } from 'fastify';
 import moment from 'moment-timezone';
+import * as jose from 'jose';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -61,15 +60,27 @@ export interface ResponseErrorInterface extends ApplicationErrorInterface {
 export type EnvironmentType = 'test' | 'development' | 'production';
 
 export type DefaultEnvironment = {
+	environment: EnvironmentType;
 	name: string;
 	port: number;
 	host: string;
-	log_path: string;
-	api_key: string;
-	cookie_secret: string;
-	jwt_secret: string;
 	debug: boolean;
-	environment: EnvironmentType;
+	timezone: string;
+	log_path: string;
+};
+
+export type EnvironmentAccessTokenOptions = {
+	access_token: AccessTokenServiceOptions;
+};
+
+export type EnvironmentMysqlOptions = {
+	mysql: {
+		host: string;
+		port: number;
+		database: string;
+		username: string;
+		password: string;
+	};
 };
 
 /** Fastify modifiers */
@@ -94,6 +105,7 @@ export type ApiServerOptions<
 > = {
 	routes: FastifyAppliable<Fastify, AppEnvironment>;
 	plugins: FastifyAppliable<Fastify, AppEnvironment>;
+	logger?: FastifyServerOptions['logger'];
 	env: AppEnvironment;
 	beforeInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
 	afterInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
@@ -104,17 +116,17 @@ export type ApiServerOptions<
 };
 
 export interface ApiServerInterface<
-	Fastify = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
+	Fastify,
+	AppEnvironment extends DefaultEnvironment
 > {
 	getApp: () => Fastify;
 	getEnv: () => AppEnvironment;
-	bootstrap: () => Promise<HttpServerInterface>;
+	bootstrap: () => Promise<HttpServerInterface<Fastify, AppEnvironment>>;
 }
 
 export interface HttpServerInterface<
-	Fastify = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
+	Fastify,
+	AppEnvironment extends DefaultEnvironment
 > {
 	getApi: () => ApiServerInterface<Fastify, AppEnvironment>;
 	start(): Promise<boolean>;
@@ -129,67 +141,71 @@ export interface RuleInterface {
 	assert(): void;
 }
 
-/** Core */
-
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
-export interface RepositoryInterface {}
-
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
-export interface ServiceInterface {}
-
-export interface AdapterInterface<Entity extends BaseEntity<any>, DTO> {
-	toDTO(entity: Entity): DTO;
-}
-
-export interface FactoryInterface<
-	Args extends any[],
-	Entity extends BaseEntity<any>
-> {
-	create(...args: Args): Entity;
-}
-
-/** Repositories */
-
-export type PaginateQuery = {
-	page: number;
-	size: number;
-};
-
-export type Filter = {
-	[key: string]: any;
-};
-
 /** Services */
+export type JWTServiceOptions = {
+	issuer?: string;
+	audience?: string[];
+	accept_issuer?: string;
+	accept_audience?: string;
+	ed25519: {
+		public_key?: string;
+		private_key?: string;
+	};
+	ttl?: number;
+	required_claims?: string[];
+};
 
-export interface ServiceManagerInterface {
-	register(name: string, constructor: ServiceConstructor): void;
-	get(name: string): Promise<any>;
-	clear(): void;
+export interface JWTServiceInterface<Payload extends jose.JWTPayload> {
+	issue(jti: string, sub: string, payload: Payload): Promise<string>;
+	get(token: string): Promise<Payload>;
 }
 
-export type ServiceConstructor = (
-	manager: ServiceManagerInterface
-) => Promise<any>;
-
-/** Events */
-
-export type DomainEvent = {
-	readonly id: EntityUUID;
-	readonly name: string;
-	readonly payload: Record<string, any>;
-	readonly issuedAt: Date;
+export type AccessTokenServiceOptions = {
+	unlock_by: {
+		role: boolean;
+		scope: boolean;
+		origin: boolean;
+		ip: boolean;
+	};
 };
 
-export type EventHandler = (event: DomainEvent) => Promise<void>;
-
-export type EventPublishOptions = {
-	readonly driver: string;
-};
-
-export type EventSubscribeOptions = {
-	readonly driver: string;
+export type AccessTokenServiceErrors = {
+	forbidden: () => Error;
+	unauthorized: () => Error;
+	missing_header: () => Error;
+	invalid_token_type: () => Error;
 };
 
 /** Schemas */
 
 export type SchemaHandler<ReturnEntry> = (entry: any) => ReturnEntry;
+
+/** Pagination */
+export type PaginationMetaProps = {
+	current_page: number;
+	size: number;
+	current_size: number;
+	total_size: number;
+	total_pages: number;
+};
+
+export type PaginationMetaJSON = {
+	current_page: number;
+	current_size: number;
+	total_pages: number;
+	total_size: number;
+	next_url: string | null;
+	previous_url: string | null;
+};
+
+/** Events */
+
+export type INVALID_ACCESS_TOKEN_EVENT = {
+	error: any;
+};
+
+declare module 'fastify' {
+	export interface FastifyRequest {
+		access_token?: Record<string, any>;
+	}
+}

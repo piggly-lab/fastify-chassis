@@ -12,16 +12,20 @@ import {
 import HttpServer from './HttpServer';
 
 /**
- * The API server.
- *
- *
+ * @file The API server.
+ * @copyright Piggly Lab 2023
  */
-export default class ApiServer implements ApiServerInterface {
+export default class ApiServer<AppEnvironment extends DefaultEnvironment>
+	implements ApiServerInterface<FastifyInstance, AppEnvironment>
+{
 	/**
 	 * The Fastify application.
 	 *
-	 * @type {FastifyInstance}
+	 * @type {Fastify}
 	 * @protected
+	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _app: FastifyInstance;
 
@@ -30,24 +34,56 @@ export default class ApiServer implements ApiServerInterface {
 	 *
 	 * @type {ApiServerOptions}
 	 * @protected
+	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _options: ApiServerOptions;
+	protected _options: ApiServerOptions<FastifyInstance, AppEnvironment>;
 
 	/**
 	 * Create a new API server.
 	 *
 	 * @param options The options.
-	 * @returns {void}
 	 * @public
 	 * @constructor
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(options: ApiServerOptions) {
+	constructor(options: ApiServerOptions<FastifyInstance, AppEnvironment>) {
 		this._options = options;
+		const { log_path, debug, environment } = this._options.env;
 
 		this._app = fastify({
-			logger: {
-				file: `${this._options.env.log_path}/server.log`,
+			logger: this._options.logger || {
+				file: `${log_path}/server.log`,
+				level: debug ? 'debug' : 'info',
+				transport:
+					environment === 'production'
+						? undefined
+						: {
+								target: 'pino-pretty',
+								options: {
+									translateTime: true,
+									colorize: true,
+									ignore: 'pid',
+									messageFormat:
+										'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
+								},
+						  },
+				serializers:
+					environment === 'production'
+						? undefined
+						: {
+								req: req => ({
+									method: req.method,
+									url: req.url,
+									hostname: req.hostname,
+								}),
+								res: res => ({
+									statusCode: res.statusCode,
+								}),
+						  },
 			},
 			trustProxy: true,
 		});
@@ -59,6 +95,8 @@ export default class ApiServer implements ApiServerInterface {
 	 * @returns {FastifyInstance}
 	 * @public
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getApp(): FastifyInstance {
 		return this._app;
@@ -67,11 +105,13 @@ export default class ApiServer implements ApiServerInterface {
 	/**
 	 * Get the global environment.
 	 *
-	 * @returns {DefaultEnvironment}
+	 * @returns {AppEnvironment}
 	 * @public
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getEnv(): DefaultEnvironment {
+	public getEnv(): AppEnvironment {
 		return this._options.env;
 	}
 
@@ -86,9 +126,14 @@ export default class ApiServer implements ApiServerInterface {
 	 *
 	 * @returns {Promise<HttpServerInterface>}
 	 * @public
+	 * @async
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async bootstrap(): Promise<HttpServerInterface> {
+	public async bootstrap(): Promise<
+		HttpServerInterface<FastifyInstance, AppEnvironment>
+	> {
 		if (this._options.beforeInit) {
 			await this._options.beforeInit(this._app, this._options.env);
 		}
@@ -108,6 +153,8 @@ export default class ApiServer implements ApiServerInterface {
 	 * @returns {Promise<void>}
 	 * @protected
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected async init(): Promise<void> {
 		// Prepare application logger

@@ -1,18 +1,18 @@
-import { FastifyInstance } from 'fastify';
-import { DefaultEnvironment, FastifyModifierCallable } from '@/types';
+import { FastifyModifierCallable } from '@/types';
 
 /**
- * Base controller class.
+ * @file Base controller class.
+ * @copyright Piggly Lab 2023
  */
-export default class BaseController<
-	App = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
-> {
+export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	/**
 	 * The Fastify instance.
 	 *
 	 * @type {App}
 	 * @protected
+	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _app: App;
 
@@ -21,21 +21,39 @@ export default class BaseController<
 	 *
 	 * @type {AppEnvironment}
 	 * @protected
+	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _env: AppEnvironment;
 
 	/**
+	 * Services dependencies.
+	 *
+	 * @type {ServiceDeps}
+	 * @protected
+	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected _services: ServiceDeps;
+
+	/**
 	 * Create a new base controller instance.
 	 *
-	 * @param app The Fastify instance.
-	 * @param env The environment.
+	 * @param {App} app The Fastify instance.
+	 * @param {AppEnvironment} env The environment.
+	 * @param {ServiceDeps} servicesDeps The services dependencies.
 	 * @constructor
 	 * @public
 	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(app: App, env: AppEnvironment) {
+	constructor(app: App, env: AppEnvironment, servicesDeps: ServiceDeps) {
 		this._app = app;
 		this._env = env;
+		this._services = servicesDeps;
 	}
 
 	/**
@@ -44,6 +62,8 @@ export default class BaseController<
 	 * @returns {Promise<void>}
 	 * @public
 	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public init(): Promise<void> {
 		return Promise.resolve();
@@ -52,14 +72,19 @@ export default class BaseController<
 	/**
 	 * Create a new controller instance.
 	 *
+	 * @param {ServiceDeps} servicesDeps
 	 * @returns {FastifyModifierCallable}
 	 * @public
 	 * @static
 	 * @memberof BaseController
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static create(): FastifyModifierCallable {
+	public static createInstance<App, AppEnvironment, ServiceDeps>(
+		servicesDeps: ServiceDeps
+	): FastifyModifierCallable<App, AppEnvironment> {
 		return async (app, env) => {
-			const controller = new this(app, env);
+			const controller = new this(app, env, servicesDeps);
 			await controller.init();
 		};
 	}

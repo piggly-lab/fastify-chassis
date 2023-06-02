@@ -1,37 +1,53 @@
 import Logger from '@/helpers/Logger';
-import { ApiServerInterface, HttpServerInterface } from '@/types';
+import {
+	ApiServerInterface,
+	DefaultEnvironment,
+	HttpServerInterface,
+} from '@/types';
+import { FastifyInstance } from 'fastify';
 
 /**
- * The HTTP server.
+ * @file The HTTP server.
+ * @copyright Piggly Lab 2023
  */
-export default class HttpServer implements HttpServerInterface {
+export default class HttpServer<AppEnvironment extends DefaultEnvironment>
+	implements HttpServerInterface<FastifyInstance, AppEnvironment>
+{
 	/**
 	 * The API server.
 	 *
 	 * @type {ApiServerInterface}
 	 * @protected
+	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _api: ApiServerInterface;
+	protected _api: ApiServerInterface<FastifyInstance, AppEnvironment>;
 
 	/**
 	 * The running state.
 	 *
 	 * @type {boolean}
 	 * @protected
+	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _running = false;
+	protected _running: boolean;
 
 	/**
 	 * Create a new HTTP server.
 	 *
 	 * @param api The API server.
-	 * @returns {void}
 	 * @public
 	 * @constructor
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(api: ApiServerInterface) {
+	constructor(api: ApiServerInterface<FastifyInstance, AppEnvironment>) {
 		this._api = api;
+		this._running = false;
 	}
 
 	/**
@@ -40,8 +56,10 @@ export default class HttpServer implements HttpServerInterface {
 	 * @returns {ApiServerInterface}
 	 * @public
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getApi(): ApiServerInterface {
+	public getApi(): ApiServerInterface<FastifyInstance, AppEnvironment> {
 		return this._api;
 	}
 
@@ -50,7 +68,10 @@ export default class HttpServer implements HttpServerInterface {
 	 *
 	 * @returns {Promise<boolean>}
 	 * @public
+	 * @async
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public async start(): Promise<boolean> {
 		this._running = await this.listen();
@@ -62,7 +83,10 @@ export default class HttpServer implements HttpServerInterface {
 	 *
 	 * @returns {Promise<boolean>}
 	 * @public
+	 * @async
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public async restart(): Promise<boolean> {
 		await this.stop();
@@ -75,13 +99,19 @@ export default class HttpServer implements HttpServerInterface {
 	 *
 	 * @returns {Promise<boolean>}
 	 * @public
+	 * @async
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public async stop(): Promise<boolean> {
 		Logger.get().info('⚠️ [server]: Stopping server');
 
 		const response = await new Promise<boolean>((res, rej) => {
-			if (!this.isRunning()) res(true);
+			if (!this.isRunning()) {
+				res(true);
+				return;
+			}
 
 			this._api
 				.getApp()
@@ -120,6 +150,8 @@ export default class HttpServer implements HttpServerInterface {
 	 * @returns {boolean}
 	 * @public
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public isRunning(): boolean {
 		return this._running;
@@ -130,9 +162,12 @@ export default class HttpServer implements HttpServerInterface {
 	 *
 	 * @returns {Promise<boolean>}
 	 * @protected
+	 * @async
 	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected listen(): Promise<boolean> {
+	protected async listen(): Promise<boolean> {
 		if (this.isRunning()) {
 			Logger.get().warn('⚠️ [server]: Server is already running');
 
@@ -142,23 +177,19 @@ export default class HttpServer implements HttpServerInterface {
 		}
 
 		return new Promise((res, rej) => {
-			this._api
-				.getApp()
-				.listen(
-					{ port: this._api.getEnv().port, host: this._api.getEnv().host },
-					(err, address) => {
-						if (err) {
-							// Should notify administrators
-							Logger.get().error(err);
-							rej(err);
-						}
+			const { host, port } = this._api.getEnv();
 
-						Logger.get().info(
-							`⚡️ [server]: Server is running at ${address}`
-						);
-						res(true);
-					}
+			this._api.getApp().listen({ port, host }, (err, address) => {
+				if (err) {
+					Logger.get().error(err);
+					rej(err);
+				}
+
+				Logger.get().info(
+					`⚡️ [server]: Server is running at ${host}:${port} - ${address}`
 				);
+				res(true);
+			});
 		});
 	}
 }

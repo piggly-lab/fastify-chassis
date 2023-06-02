@@ -1,20 +1,19 @@
-import { FastifyInstance } from 'fastify';
-import {
-	DefaultEnvironment,
-	FastifyAppliable,
-	FastifyModifierCallable,
-} from '@/types';
+import { FastifyAppliable, FastifyModifierCallable } from '@/types';
 
 /**
- * The Fastify modifier.
+ * @file The Fastify modifier.
+ * @copyright Piggly Lab 2023
  */
-export default class FastifyModifier<
-	App = FastifyInstance,
-	AppEnvironment = DefaultEnvironment
-> implements FastifyAppliable<App, AppEnvironment>
+export default class FastifyModifier<App, AppEnvironment>
+	implements FastifyAppliable<App, AppEnvironment>
 {
 	/**
-	 * The callables.
+	 * The callables
+	 *
+	 * @type {Array<FastifyModifierCallable>}
+	 * @memberof FastifyModifier
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _callables: Array<FastifyModifierCallable<App, AppEnvironment>> =
 		[];
@@ -22,11 +21,12 @@ export default class FastifyModifier<
 	/**
 	 * Create a new Fastify modifier.
 	 *
-	 * @param args The callables.
-	 * @returns {void}
+	 * @param {Array<FastifyModifierCallable>} args The callables.
 	 * @public
 	 * @constructor
 	 * @memberof FastifyModifier
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	constructor(...args: Array<FastifyModifierCallable<App, AppEnvironment>>) {
 		this._callables = args;
@@ -38,6 +38,8 @@ export default class FastifyModifier<
 	 * @returns {number}
 	 * @public
 	 * @memberof FastifyModifier
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public size(): number {
 		return this._callables.length;
@@ -51,8 +53,10 @@ export default class FastifyModifier<
 	 * @returns {Promise<void>}
 	 * @public
 	 * @memberof FastifyModifier
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	async apply(app: App, env: AppEnvironment): Promise<void> {
+	public async apply(app: App, env: AppEnvironment): Promise<void> {
 		await Promise.all(
 			this._callables.map(async callable => {
 				await callable(app, env);
