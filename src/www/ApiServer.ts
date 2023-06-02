@@ -11,9 +11,8 @@ import {
 import HttpServer from './HttpServer';
 
 /**
- * The API server.
- *
- *
+ * @file The API server.
+ * @copyright Piggly Lab 2023
  */
 export default class ApiServer<AppEnvironment extends Record<string, any>>
 	implements ApiServerInterface<FastifyInstance, AppEnvironment>
@@ -23,6 +22,9 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 *
 	 * @type {Fastify}
 	 * @protected
+	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _app: FastifyInstance;
 
@@ -31,6 +33,9 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 *
 	 * @type {ApiServerOptions}
 	 * @protected
+	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _options: ApiServerOptions<FastifyInstance, AppEnvironment>;
 
@@ -41,6 +46,8 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 * @public
 	 * @constructor
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	constructor(options: ApiServerOptions<FastifyInstance, AppEnvironment>) {
 		this._options = options;
@@ -87,6 +94,8 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 * @returns {FastifyInstance}
 	 * @public
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getApp(): FastifyInstance {
 		return this._app;
@@ -98,6 +107,8 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 * @returns {AppEnvironment}
 	 * @public
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public getEnv(): AppEnvironment {
 		return this._options.env;
@@ -114,7 +125,10 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 *
 	 * @returns {Promise<HttpServerInterface>}
 	 * @public
+	 * @async
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public async bootstrap(): Promise<
 		HttpServerInterface<FastifyInstance, AppEnvironment>
@@ -138,6 +152,8 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 * @returns {Promise<void>}
 	 * @protected
 	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected async init(): Promise<void> {
 		// Prepare application logger
