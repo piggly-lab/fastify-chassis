@@ -1,4 +1,4 @@
-import { PaginationMeta } from '@/database';
+import { PaginationMeta } from '@/utils';
 
 describe('utils/PaginationMeta', () => {
 	it.each([

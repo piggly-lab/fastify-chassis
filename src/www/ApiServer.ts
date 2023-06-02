@@ -6,6 +6,7 @@ import ResponseError from '@/errors/ResponseError';
 import {
 	ApiServerInterface,
 	ApiServerOptions,
+	DefaultEnvironment,
 	HttpServerInterface,
 } from '@/types';
 import HttpServer from './HttpServer';
@@ -14,7 +15,7 @@ import HttpServer from './HttpServer';
  * @file The API server.
  * @copyright Piggly Lab 2023
  */
-export default class ApiServer<AppEnvironment extends Record<string, any>>
+export default class ApiServer<AppEnvironment extends DefaultEnvironment>
 	implements ApiServerInterface<FastifyInstance, AppEnvironment>
 {
 	/**

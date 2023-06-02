@@ -195,10 +195,10 @@ The `JWTEdDSAService` is expecting the public/private key of type `ed25519` to s
 
 ```bash
 # Output the private key
-openssl genpkey -algorithm ed25519 -outform PEM -out jwt.pem
+openssl genpkey -algorithm ed25519 -outform PEM -out private.pem
 
 # Extract the public key
-openssl pkey -in private.pem -pubout
+openssl pkey -in private.pem -pubout >> public.pem
 ```
 
 > We recommend you to keep `600` or `400` cmod permissions for these files.

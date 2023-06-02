@@ -1,12 +1,16 @@
 import Logger from '@/helpers/Logger';
-import { ApiServerInterface, HttpServerInterface } from '@/types';
+import {
+	ApiServerInterface,
+	DefaultEnvironment,
+	HttpServerInterface,
+} from '@/types';
 import { FastifyInstance } from 'fastify';
 
 /**
  * @file The HTTP server.
  * @copyright Piggly Lab 2023
  */
-export default class HttpServer<AppEnvironment extends Record<string, any>>
+export default class HttpServer<AppEnvironment extends DefaultEnvironment>
 	implements HttpServerInterface<FastifyInstance, AppEnvironment>
 {
 	/**

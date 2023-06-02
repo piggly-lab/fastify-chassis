@@ -6,7 +6,7 @@ import JWTService from './JWTService';
  * @file Handle a JWT with EdDSA keys.
  * @copyright Piggly Lab 2023
  */
-export default abstract class JWTEdDSAService<
+export default class JWTEdDSAService<
 	Payload extends jose.JWTPayload
 > extends JWTService<Payload> {
 	/**
