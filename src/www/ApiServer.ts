@@ -38,7 +38,6 @@ export default class ApiServer<AppEnvironment extends Record<string, any>>
 	 * Create a new API server.
 	 *
 	 * @param options The options.
-	 * @returns {void}
 	 * @public
 	 * @constructor
 	 * @memberof ApiServer

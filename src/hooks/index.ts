@@ -1,2 +1,1 @@
-export { default as AuditAccessTokenLogger } from './AuditAccessTokenLogger';
-export { default as ServerResponseLogger } from './ServerResponseLogger';
+export { default as AuditRequestLogger } from './AuditRequestLogger';

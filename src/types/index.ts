@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyServerOptions } from 'fastify';
 import moment from 'moment-timezone';
+import * as jose from 'jose';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -135,9 +136,7 @@ export interface RuleInterface {
 }
 
 /** Services */
-
-export type AccessTokenServiceOptions = {
-	token_type: string;
+export type JWTServiceOptions = {
 	issuer?: string;
 	audience?: string[];
 	accept_issuer?: string;
@@ -150,9 +149,36 @@ export type AccessTokenServiceOptions = {
 	required_claims?: string[];
 };
 
+export interface JWTServiceInterface<Payload extends jose.JWTPayload> {
+	issue(jti: string, sub: string, payload: Payload): Promise<string>;
+	get(token: string): Promise<Payload>;
+}
+
+export type AccessTokenServiceOptions = {
+	unlock_by: {
+		role: boolean;
+		scope: boolean;
+		origin: boolean;
+		ip: boolean;
+	};
+};
+
+export type AccessTokenServiceErrors = {
+	forbidden: () => Error;
+	unauthorized: () => Error;
+	missing_header: () => Error;
+	invalid_token_type: () => Error;
+};
+
 /** Schemas */
 
 export type SchemaHandler<ReturnEntry> = (entry: any) => ReturnEntry;
+
+/** Events */
+
+export type INVALID_ACCESS_TOKEN_EVENT = {
+	error: any;
+};
 
 declare module 'fastify' {
 	export interface FastifyRequest {
