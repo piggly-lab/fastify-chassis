@@ -1,6 +1,6 @@
 {
 	"name": "@piggly/fastify-chassis",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "An ESM/CommonJS toolkit to help you to do common operations in your back-end applications with Fastify and NodeJS.",
 	"scripts": {
 		"check": "tsc --noEmit",
@@ -77,11 +77,11 @@
 		"dotenv": ">=16",
 		"fastify": ">=4.11",
 		"joi": ">=17.8",
-		"jose": "^4.14.4"
+		"jose": "^4.14.4",
+		"@piggly/ddd-toolkit": ">=1.1",
+		"@piggly/event-bus": ">=1.0"
 	},
 	"dependencies": {
-		"@piggly/ddd-toolkit": "^1.0.0",
-		"@piggly/event-bus": "^1.0.1",
 		"moment-timezone": "^0.5.43",
 		"pino": "^8.14.1",
 		"shallow-equal-object": "^1.1.1",
