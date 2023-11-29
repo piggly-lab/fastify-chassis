@@ -18,38 +18,32 @@
 		"rootDir": ".",
 		"outDir": "./dist/esm",
 		"paths": {
-			"@/*": [
-				"src/*",
-			],
-			"@test/*": [
-				"test/*",
-			],
+			"@/*": ["src/*"],
+			"@test/*": ["test/*"]
 		},
 		"plugins": [
 			{
-				"transform":"@zerollup/ts-transform-paths",
+				"transform": "@zerollup/ts-transform-paths",
 				"exclude": ["*"]
 			}
 		],
-		"lib": [
-			"esnext",
-		],
-		"typeRoots": [
-			"<rootDir>/src/types",
-			"node_modules/@types"
-		],
-		"types": [
-			"node",
-			"jest"
-		],
+		"lib": ["esnext"],
+		"typeRoots": ["<rootDir>/src/types", "node_modules/@types"],
+		"types": ["node", "jest"]
 	},
 	"include": [
 		"./src/**/*",
 		"./debug/**/*",
-		"./test/**/*"
+		"./test/**/*",
+		"./samples/**/*",
+		"./samples/**/*"
 	],
-	"exclude": [
-		"./node_modules/**/*",
-		"./build/**/*",
-	]
+	"exclude": ["./node_modules/**/*", "./build/**/*"],
+	"ts-node": {
+		"compilerOptions": {
+			"module": "commonjs"
+		},
+		"require": ["tsconfig-paths/register"],
+		"files": true
+	}
 }

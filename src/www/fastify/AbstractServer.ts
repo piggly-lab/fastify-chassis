@@ -1,5 +1,5 @@
-import fastify, { FastifyError, FastifyInstance } from 'fastify';
-import Environment from '@/helpers/Environment';
+import { FastifyError, FastifyInstance, RawServerBase } from 'fastify';
+
 import Logger from '@/helpers/Logger';
 import AbstractError from '@/errors/AbstractError';
 import ResponseError from '@/errors/ResponseError';
@@ -9,36 +9,36 @@ import {
 	DefaultEnvironment,
 	HttpServerInterface,
 } from '@/types';
-import HttpServer from './HttpServer';
+import HttpServer from '../HttpServer';
 
 /**
  * @file The API server.
  * @copyright Piggly Lab 2023
  */
-export default class ApiServer<AppEnvironment extends DefaultEnvironment>
-	implements ApiServerInterface<FastifyInstance, AppEnvironment>
+export default abstract class AbstractServer<
+	Server extends RawServerBase,
+	AppEnvironment extends DefaultEnvironment
+> implements ApiServerInterface<Server, AppEnvironment>
 {
 	/**
 	 * The Fastify application.
 	 *
-	 * @type {Fastify}
 	 * @protected
 	 * @memberof ApiServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _app: FastifyInstance;
+	protected _app: FastifyInstance<Server>;
 
 	/**
 	 * The options.
 	 *
-	 * @type {ApiServerOptions}
 	 * @protected
 	 * @memberof ApiServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _options: ApiServerOptions<FastifyInstance, AppEnvironment>;
+	protected _options;
 
 	/**
 	 * Create a new API server.
@@ -50,62 +50,29 @@ export default class ApiServer<AppEnvironment extends DefaultEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(options: ApiServerOptions<FastifyInstance, AppEnvironment>) {
+	constructor(
+		options: ApiServerOptions<Server, AppEnvironment>,
+		app: FastifyInstance<Server>
+	) {
 		this._options = options;
-		const { log_path, debug, environment } = this._options.env;
-
-		this._app = fastify({
-			logger: this._options.logger || {
-				file: `${log_path}/server.log`,
-				level: debug ? 'debug' : 'info',
-				transport:
-					environment === 'production'
-						? undefined
-						: {
-								target: 'pino-pretty',
-								options: {
-									translateTime: true,
-									colorize: true,
-									ignore: 'pid',
-									messageFormat:
-										'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
-								},
-						  },
-				serializers:
-					environment === 'production'
-						? undefined
-						: {
-								req: req => ({
-									method: req.method,
-									url: req.url,
-									hostname: req.hostname,
-								}),
-								res: res => ({
-									statusCode: res.statusCode,
-								}),
-						  },
-			},
-			trustProxy: true,
-		});
+		this._app = app;
 	}
 
 	/**
 	 * Get the Fastify application.
 	 *
-	 * @returns {FastifyInstance}
 	 * @public
 	 * @memberof ApiServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getApp(): FastifyInstance {
+	public getApp() {
 		return this._app;
 	}
 
 	/**
 	 * Get the global environment.
 	 *
-	 * @returns {AppEnvironment}
 	 * @public
 	 * @memberof ApiServer
 	 * @since 1.0.0
@@ -124,7 +91,6 @@ export default class ApiServer<AppEnvironment extends DefaultEnvironment>
 	 * After that, it will return a new HttpServer instance.
 	 * This instance will be used to start the server.
 	 *
-	 * @returns {Promise<HttpServerInterface>}
 	 * @public
 	 * @async
 	 * @memberof ApiServer
@@ -132,25 +98,26 @@ export default class ApiServer<AppEnvironment extends DefaultEnvironment>
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public async bootstrap(): Promise<
-		HttpServerInterface<FastifyInstance, AppEnvironment>
+		HttpServerInterface<Server, AppEnvironment>
 	> {
-		if (this._options.beforeInit) {
-			await this._options.beforeInit(this._app, this._options.env);
+		if (this._options.hooks.beforeInit) {
+			await this._options.hooks.beforeInit(this._app, this._options.env);
 		}
 
 		await this.init();
 
-		if (this._options.afterInit) {
-			await this._options.afterInit(this._app, this._options.env);
+		if (this._options.hooks.afterInit) {
+			await this._options.hooks.afterInit(this._app, this._options.env);
 		}
 
-		return new HttpServer(this);
+		return new HttpServer(
+			this as unknown as ApiServerInterface<any, AppEnvironment>
+		);
 	}
 
 	/**
 	 * Initialize the API server.
 	 *
-	 * @returns {Promise<void>}
 	 * @protected
 	 * @memberof ApiServer
 	 * @since 1.0.0
@@ -159,8 +126,6 @@ export default class ApiServer<AppEnvironment extends DefaultEnvironment>
 	protected async init(): Promise<void> {
 		// Prepare application logger
 		Logger.prepare(this._app.log);
-		// Prepare global environment
-		Environment.prepare(this._options.env);
 
 		// Plugins
 		await this._options.plugins.apply(this._app, this._options.env);

@@ -1,6 +1,12 @@
-import { FastifyInstance, FastifyServerOptions } from 'fastify';
+import { FastifyInstance, RawServerBase, RawServerDefault } from 'fastify';
 import moment from 'moment-timezone';
 import * as jose from 'jose';
+import pino from 'pino';
+
+import type HttpInsecureServer from '@/www/fastify/HttpInsecureServer';
+import type HttpSecureServer from '@/www/fastify/HttpSecureServer';
+import type Http2InsecureServer from '@/www/fastify/Http2InsecureServer';
+import type Http2SecureServer from '@/www/fastify/Http2SecureServer';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -40,7 +46,7 @@ export interface ApplicationErrorInterface extends Error {
 	getMessage: () => string;
 	getName: () => string;
 	getPrevious: () => PreviousError;
-	toJSON: () => Partial<ErrorJSON>;
+	toJSON: (debugging: boolean) => Partial<ErrorJSON>;
 	getPreviousJSON: () => TOrNull<PreviousErrorJSON>;
 	toResponse: () => ResponseErrorInterface;
 }
@@ -57,7 +63,12 @@ export interface ResponseErrorInterface extends ApplicationErrorInterface {
 
 /** Environment */
 
-export type EnvironmentType = 'test' | 'development' | 'production';
+export type EnvironmentType =
+	| 'test'
+	| 'sandbox'
+	| 'homologation'
+	| 'development'
+	| 'production';
 
 export type DefaultEnvironment = {
 	environment: EnvironmentType;
@@ -83,32 +94,43 @@ export type EnvironmentMysqlOptions = {
 	};
 };
 
+/** Fastify server */
+export type FastifyServer<
+	AppEnvironment extends DefaultEnvironment = DefaultEnvironment
+> =
+	| HttpInsecureServer<AppEnvironment>
+	| HttpSecureServer<AppEnvironment>
+	| Http2InsecureServer<AppEnvironment>
+	| Http2SecureServer<AppEnvironment>;
+
 /** Fastify modifiers */
 
 export type FastifyModifierCallable<
-	App = FastifyInstance,
+	Server extends RawServerBase,
 	AppEnvironment = DefaultEnvironment
-> = (app: App, env: AppEnvironment) => Promise<void>;
+> = (app: FastifyInstance<Server>, env: AppEnvironment) => Promise<void>;
 
 export interface FastifyAppliable<
-	App = FastifyInstance,
+	Server extends RawServerBase,
 	AppEnvironment = DefaultEnvironment
 > {
-	apply: FastifyModifierCallable<App, AppEnvironment>;
+	apply: FastifyModifierCallable<Server, AppEnvironment>;
 }
 
 /** Servers */
 
 export type ApiServerOptions<
-	Fastify = FastifyInstance,
+	Server extends RawServerBase = RawServerDefault,
 	AppEnvironment = DefaultEnvironment
 > = {
-	routes: FastifyAppliable<Fastify, AppEnvironment>;
-	plugins: FastifyAppliable<Fastify, AppEnvironment>;
-	logger?: FastifyServerOptions['logger'];
+	routes: FastifyAppliable<Server, AppEnvironment>;
+	plugins: FastifyAppliable<Server, AppEnvironment>;
+	logger?: pino.BaseLogger;
 	env: AppEnvironment;
-	beforeInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
-	afterInit?: FastifyModifierCallable<Fastify, AppEnvironment>;
+	hooks: {
+		beforeInit?: FastifyModifierCallable<Server, AppEnvironment>;
+		afterInit?: FastifyModifierCallable<Server, AppEnvironment>;
+	};
 	errors: {
 		notFound: ResponseErrorInterface;
 		unknown: ResponseErrorInterface;
@@ -116,19 +138,19 @@ export type ApiServerOptions<
 };
 
 export interface ApiServerInterface<
-	Fastify,
+	Server extends RawServerBase,
 	AppEnvironment extends DefaultEnvironment
 > {
-	getApp: () => Fastify;
+	getApp: () => FastifyInstance<Server>;
 	getEnv: () => AppEnvironment;
-	bootstrap: () => Promise<HttpServerInterface<Fastify, AppEnvironment>>;
+	bootstrap: () => Promise<HttpServerInterface<Server, AppEnvironment>>;
 }
 
 export interface HttpServerInterface<
-	Fastify,
+	Server extends RawServerBase,
 	AppEnvironment extends DefaultEnvironment
 > {
-	getApi: () => ApiServerInterface<Fastify, AppEnvironment>;
+	getApi: () => ApiServerInterface<Server, AppEnvironment>;
 	start(): Promise<boolean>;
 	restart(): Promise<boolean>;
 	stop(): Promise<boolean>;

@@ -18,112 +18,160 @@ All classes, methods and functions are well-documented with JSDoc and implementi
 
 ### API Server / HTTP Server
 
-The `ApiServer` class creates and manages the `fastify` instance, bootstrap it and applying all plugins, routes, hooks registered. After bootstraping, it returns the `HTTPServer` instance to start, stop and restart the `fastify` instance. Below you can see a full implementation example:
+The `HttpInsecureServer`, `HttpSecureServer`, `Http2InsecureServer` or `Http2SecureServer` classes create and manage the `fastify` instance, bootstrap it and apply all plugins, routes, hooks attached to options. After bootstraping, it returns the `HTTPServer` instance to start, stop and restart the `fastify` instance. Below you can see a full implementation example:
+
+> You may see a complete example on [samples](./samples) folder.
 
 ```ts
+import { FastifyReply, FastifyRequest, RouteGenericInterface } from 'fastify';
+import { Server } from 'http';
+
+// for catching log file
+import path from 'path';
+
+// plugin example
+import fastifyRateLimit from '@fastify/rate-limit';
+
 import {
-	DefaultEnvironment,
-	AuditRequestLogger,
-	ApiServer,
-	ApiServerOptions,
-	RequestNotFoundError,
-	RequestServerError,
+  BaseController
+  ApiServerOptions,
+  DefaultEnvironment,
+  FastifyModifierCallable,
+  FastifyModifiers,
+  HttpInsecureServer
+  RequestNotFoundError,
+  RequestServerError,
+  AuditRequestLogger
 } from '@piggly/fastify-chassis';
-import { FastifyInstance } from 'fastify';
+
+// Defining global types
+type MyCurrentServer = Server;
+type MyCurrentEnvironment = DefaultEnvironment;
+type Request = FastifyRequest<RouteGenericInterface, MyCurrentServer>;
+type Reply = FastifyReply<MyCurrentServer>;
 
 // !! Environment
-type LocalEnvironment = DefaultEnvironment;
-
 // Must be an object
-const enviroment: LocalEnvironment = {
-	environment: 'development';
-	name: 'string';
-	port: 'number';
-	host: 'string';
-	debug: true;
-	timezone: 'string';
-	log_path: 'string';
+const env: MyCurrentEnvironment = {
+  environment: 'development',
+  name: 'http-insecure',
+  port: 3005,
+  host: '0.0.0.0',
+  debug: true,
+  timezone: 'UTC',
+  log_path: path.resolve(__dirname, 'logs'),
 };
 
 // !! Routes
-// Must be an instance of FastifyModifiers<FastifyInstance, LocalEnvironment>
+// Must be an instance of FastifyModifiers
+// You may create a class extending BaseController
+class PublicApiController extends BaseController<
+  MyCurrentServer,
+  MyCurrentEnvironment,
+  any // no deps
+> {
+  public async helloWorld(request: Request, reply: Reply): Promise<void> {
+    return reply.send({
+      message: 'Hello world!',
+      application: this._env.name,
+    });
+  }
 
-const routes: FastifyModifiers<FastifyInstance, LocalEnvironment> = new FastifyModifiers<FastifyInstance, LocalEnvironment>(
-	// Register new route
-	async app => {
-		app.get('/exchange-rates/latest', (req, res) => {
-			return res.send({
-				success: true;
-			});
-		});
-	},
-	// [or] use a controller
-	Controller.createInstance<FastifyInstance, LocalEnvironment, {}>({})
-);
+  public init(): Promise<void> {
+    this._app.get('/hello-world', this.helloWorld.bind(this));
+    return Promise.resolve();
+  }
+}
 
 // !! Plugins
-// Must be an instance of FastifyModifiers<FastifyInstance, LocalEnvironment>
-import fastifyRateLimit from '@fastify/rate-limit';
+// Must be an instance of FastifyModifiers
+const rateLimitPlugin: FastifyModifierCallable<
+  MyCurrentServer,
+  MyCurrentEnvironment
+> = async app => {
+  await app.register(fastifyRateLimit, {
+    max: 30,
+    timeWindow: '1 minute',
+  });
+};
 
-const plugins: FastifyModifiers<FastifyInstance, LocalEnvironment> = new FastifyModifiers<FastifyInstance, LocalEnvironment>(
-	// Register rate-limit plugin
-	async app => {
-		await app.register(fastifyRateLimit, {
-			max: 100,
-			timeWindow: '1 minute',
-		});
-	},
+const plugins = new FastifyModifiers<MyCurrentServer, MyCurrentEnvironment>(
+  rateLimitPlugin
 );
 
+import fastifyRateLimit from '@fastify/rate-limit';
+
+// !! Hooks
 // !! Hook before call init method (register plugins/routes/etc) on bootstrapping
-const beforeInit = async (app: FastifyInstance, env: LocalEnvironment) => {
-	// Do someting
-	AuditRequestLogger(app, env.log_path, env.environment, 'info');
-}
+const beforeInit: FastifyModifierCallable<
+  MyCurrentServer,
+  MyCurrentEnvironment
+> = async app => {
+  console.log('Do something before fastify init.');
+
+  AuditRequestLogger(
+    app,
+    env.log_path,
+    env.environment,
+    env.debug ? 'debug' : 'info'
+  );
+};
 
 // !! Hook after call init method (register plugins/routes/etc) on bootstrapping
-const afterInit = async (app: FastifyInstance, env: LocalEnvironment) => {
-	// Do someting
-	app.addHook('onClose', async () => {
-		await database.quit();
-	});
-}
+const afterInit: FastifyModifierCallable<
+  MyCurrentServer,
+  MyCurrentEnvironment
+> = async () => {
+  console.log(
+    'Do something after fastify init.'
+  );
+
+  // Such as register onClose hook
+  app.addHook('onClose', async () => {
+    await database.quit();
+  });
+};
 
 // !! Options
-const options: ApiServerOptions<FastifyInstance, LocalEnvironment> = {
-	routes: buildRoutes(),
-	plugins,
-	env: environment,
-	beforeInit,
-	afterInit,
-	errors: {
-		notFound: new RequestNotFoundError(), // default error to throw when not found, expecting a ResponseError instance
-		unknown: new RequestServerError(), // default error to throw when request server error, expecting a ResponseError instance
-	},
+const options: ApiServerOptions<MyCurrentServer, MyCurrentEnvironment> = {
+  routes: new FastifyModifiers<MyCurrentServer, MyCurrentEnvironment>(
+    PublicApiController.createInstance<
+      MyCurrentServer,
+      MyCurrentEnvironment,
+      any
+    >({})
+  ),
+  plugins,
+  env,
+  hooks: { beforeInit, afterInit },
+  errors: {
+    notFound: new RequestNotFoundError(),
+    unknown: new RequestServerError(),
+  },
 };
 
 // !! Listen to port on fastify
-new ApiServer(options)
-	.bootstrap()
-	.then(server => {
-		server
-			.start()
-			.then(() =>
-				console.log(
-					`⚡️ Server started ${environment.host}:${environment.port}.`
-				)
-			)
-			.catch((err: any) => {
-				console.error('❌ Server failed.');
-				console.error(err);
-				process.exit(1);
-			});
-	})
-	.catch((err: any) => {
-		console.error('❌ Server failed.');
-		console.error(err);
-		process.exit(1);
-	});
+new HttpInsecureServer(options)
+  .bootstrap()
+  .then(server => {
+    server
+      .start()
+      .then(() =>
+        console.log(
+          `⚡️ Server started ${environment.host}:${environment.port}.`
+        )
+      )
+      .catch((err: any) => {
+        console.error('❌ Server failed.');
+        console.error(err);
+        process.exit(1);
+      });
+  })
+  .catch((err: any) => {
+    console.error('❌ Server failed.');
+    console.error(err);
+    process.exit(1);
+  });
 ```
 
 ### JWT Service
@@ -133,16 +181,16 @@ This library also help to handleing with access token based in JWT. The `JWTAcce
 ```ts
 // JWT Options
 const jwt_options = {
-	issuer: 'string', // (required) in issue(), set the issuer as
-	audience: ['string'],  // (required) in issue(), set one or more audiences
-	accept_issuer: 'string', // (required) in get(), evaluate the issuer expected
-	accept_audience: 'string', // (required) in get(), evaluate the audience expected
-	ed25519: {
-		public_key: string; // (required) key data, use JWTService.readKeyFileSync() or JWTService.eadKeyFileAsync() to get from file
-		private_key: string; // (required) key data, use JWTService.readKeyFileSync() or JWTService.eadKeyFileAsync() to get from file
-	},
-   ttl: 300, // time to live, be default 300
-   required_claims: ['scopes','role'], // (optional) Addional claims to be required on token
+  issuer: 'string', // (required) in issue(), set the issuer as
+  audience: ['string'],  // (required) in issue(), set one or more audiences
+  accept_issuer: 'string', // (required) in get(), evaluate the issuer expected
+  accept_audience: 'string', // (required) in get(), evaluate the audience expected
+  ed25519: {
+    public_key: string; // (required) key data, use JWTService.readKeyFileSync() or JWTService.eadKeyFileAsync() to get from file
+    private_key: string; // (required) key data, use JWTService.readKeyFileSync() or JWTService.eadKeyFileAsync() to get from file
+  },
+  ttl: 300, // time to live, be default 300
+  required_claims: ['scopes','role'], // (optional) Addional claims to be required on token
 }
 
 // JWT Service
@@ -150,20 +198,20 @@ const jwt_service = new JWTEdDSAService(jwt_options);
 
 // Access Token Options
 const access_token_options = {
-	unlock_by: {
-		role: true, // when true, evaluate role claim as expected
-		scope: true, // when true, evaluate scope claim as expected
-		origin: true, // when true, evaluate origin claim as expected
-		ip: true, // when true, evaluate ip claim as expected
-	}
+  unlock_by: {
+    role: true, // when true, evaluate role claim as expected
+    scope: true, // when true, evaluate scope claim as expected
+    origin: true, // when true, evaluate origin claim as expected
+    ip: true, // when true, evaluate ip claim as expected
+  }
 };
 
 // Errors objects
 const access_token_errors = {
-	forbidden: () => new ForbiddenError(); // has ForbiddenError by default, but you can change it
-	unauthorized: () => new UnauthorizedError(); // has UnauthorizedError by default, but you can change it
-	missing_header: () => new MissingAuthorizationHeaderError(); // has MissingAuthorizationHeaderError by default, but you can change it
-	invalid_token_type: () => new InvalidAuthorizationHeaderError(); // has InvalidAuthorizationHeaderError by default, but you can change it
+  forbidden: () => new ForbiddenError(); // has ForbiddenError by default, but you can change it
+  unauthorized: () => new UnauthorizedError(); // has UnauthorizedError by default, but you can change it
+  missing_header: () => new MissingAuthorizationHeaderError(); // has MissingAuthorizationHeaderError by default, but you can change it
+  invalid_token_type: () => new InvalidAuthorizationHeaderError(); // has InvalidAuthorizationHeaderError by default, but you can change it
 }
 
 // Access token service
@@ -171,21 +219,21 @@ const access_token_service = new JWTAccessTokenService(jwt_service, access_token
 
 // Use somewhere as middleware, it will set the parsed token at req.access_token
 fastify.register(
-	(fastify, options, done) => {
-		fastify.addHook(
-			'preHandler',
-			this._services.AccessTokenService.middleware(
-				'payment.read', // scope needed on token to evaluate, may be "any" if does not need scope
-				'customer' // role needed on token to evaluate, may be "any" if does not need role
-			)
-		);
+  (fastify, options, done) => {
+    fastify.addHook(
+      'preHandler',
+      this._services.AccessTokenService.middleware(
+        'payment.read', // scope needed on token to evaluate, may be "any" if does not need scope
+        'customer' // role needed on token to evaluate, may be "any" if does not need role
+      )
+    );
 
-		fastify.get('/payments', this.collection.bind(this));
-		done();
-	},
-	{
-		prefix: '/public',
-	}
+    fastify.get('/payments', this.collection.bind(this));
+    done();
+  },
+  {
+    prefix: '/public',
+  }
 );
 ```
 

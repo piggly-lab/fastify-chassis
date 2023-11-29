@@ -4,25 +4,23 @@ import {
 	DefaultEnvironment,
 	HttpServerInterface,
 } from '@/types';
-import { FastifyInstance } from 'fastify';
 
 /**
  * @file The HTTP server.
  * @copyright Piggly Lab 2023
  */
 export default class HttpServer<AppEnvironment extends DefaultEnvironment>
-	implements HttpServerInterface<FastifyInstance, AppEnvironment>
+	implements HttpServerInterface<any, AppEnvironment>
 {
 	/**
 	 * The API server.
 	 *
-	 * @type {ApiServerInterface}
 	 * @protected
 	 * @memberof HttpServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _api: ApiServerInterface<FastifyInstance, AppEnvironment>;
+	protected _api;
 
 	/**
 	 * The running state.
@@ -45,7 +43,7 @@ export default class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(api: ApiServerInterface<FastifyInstance, AppEnvironment>) {
+	constructor(api: ApiServerInterface<any, AppEnvironment>) {
 		this._api = api;
 		this._running = false;
 	}
@@ -53,13 +51,12 @@ export default class HttpServer<AppEnvironment extends DefaultEnvironment>
 	/**
 	 * Get the API server.
 	 *
-	 * @returns {ApiServerInterface}
 	 * @public
 	 * @memberof HttpServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getApi(): ApiServerInterface<FastifyInstance, AppEnvironment> {
+	public getApi() {
 		return this._api;
 	}
 
