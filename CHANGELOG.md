@@ -18,3 +18,8 @@
 * Adds `HttpInsecureServer`, `HttpSecureServer`, `Http2InsecureServer` e `Http2SecureServer` classes;
 * Removes `ApiServer` class;
 * Adds `./samples` folder.
+
+## 2.1.0 at (`2023-10-29`)
+
+* Adds `disableRequestLogging` flag for production environments;
+* Allow replacing default options for fastify.
