@@ -1,5 +1,10 @@
 import { pino } from 'pino';
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import {
+	FastifyInstance,
+	FastifyReply,
+	FastifyRequest,
+	RawServerBase,
+} from 'fastify';
 import { EnvironmentType } from '@/types';
 
 /**
@@ -17,8 +22,8 @@ import { EnvironmentType } from '@/types';
  * @author Caique Araujo <caique@piggly.com.br>
  * @copyright Piggly Lab 2023
  */
-export default (
-	app: FastifyInstance,
+export default <Server extends RawServerBase>(
+	app: FastifyInstance<Server>,
 	log_path: string,
 	environment: EnvironmentType = 'development',
 	log_level = 'info'
@@ -77,7 +82,7 @@ export default (
 		return formatted;
 	};
 
-	app.addHook('onResponse', (req, res) => {
+	app.addHook('onResponse', (req: any, res: any) => {
 		logger.info(format(req, res), 'Request completed.');
 	});
 };

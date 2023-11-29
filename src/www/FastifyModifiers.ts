@@ -1,11 +1,14 @@
 import { FastifyAppliable, FastifyModifierCallable } from '@/types';
+import { FastifyInstance, RawServerBase } from 'fastify';
 
 /**
  * @file The Fastify modifier.
  * @copyright Piggly Lab 2023
  */
-export default class FastifyModifier<App, AppEnvironment>
-	implements FastifyAppliable<App, AppEnvironment>
+export default class FastifyModifier<
+	Server extends RawServerBase,
+	AppEnvironment
+> implements FastifyAppliable<Server, AppEnvironment>
 {
 	/**
 	 * The callables
@@ -15,8 +18,9 @@ export default class FastifyModifier<App, AppEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _callables: Array<FastifyModifierCallable<App, AppEnvironment>> =
-		[];
+	protected _callables: Array<
+		FastifyModifierCallable<Server, AppEnvironment>
+	> = [];
 
 	/**
 	 * Create a new Fastify modifier.
@@ -28,7 +32,9 @@ export default class FastifyModifier<App, AppEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(...args: Array<FastifyModifierCallable<App, AppEnvironment>>) {
+	constructor(
+		...args: Array<FastifyModifierCallable<Server, AppEnvironment>>
+	) {
 		this._callables = args;
 	}
 
@@ -56,7 +62,10 @@ export default class FastifyModifier<App, AppEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async apply(app: App, env: AppEnvironment): Promise<void> {
+	public async apply(
+		app: FastifyInstance<Server>,
+		env: AppEnvironment
+	): Promise<void> {
 		await Promise.all(
 			this._callables.map(async callable => {
 				await callable(app, env);

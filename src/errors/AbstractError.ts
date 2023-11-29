@@ -1,4 +1,3 @@
-import Environment from '@/helpers/Environment';
 import {
 	ApplicationErrorInterface,
 	ErrorJSON,
@@ -149,13 +148,14 @@ export default abstract class AbstractError
 	 * If the previous error is not an instance of AbstractError, it will return the previous error as a string.
 	 * If the previous error is not set, it will return null.
 	 *
+	 * @param {boolean} debugging If the environment is in debug mode.
 	 * @returns {Partial<ErrorJSON>}
 	 * @public
 	 * @memberof AbstractError
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public toJSON(): Partial<ErrorJSON> {
+	public toJSON(debugging = false): Partial<ErrorJSON> {
 		const JSON: Partial<ErrorJSON> = {
 			code: this._code,
 			name: this.name,
@@ -165,7 +165,7 @@ export default abstract class AbstractError
 			JSON.message = this.message;
 		}
 
-		if (this._previous && Environment.get().debug) {
+		if (this._previous && debugging) {
 			const previous = this.getPreviousJSON();
 			if (previous) JSON.stack = previous;
 		}

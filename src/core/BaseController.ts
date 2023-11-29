@@ -1,20 +1,24 @@
-import { FastifyModifierCallable } from '@/types';
+import { DefaultEnvironment, FastifyModifierCallable } from '@/types';
+import { FastifyInstance, RawServerBase } from 'fastify';
 
 /**
  * @file Base controller class.
  * @copyright Piggly Lab 2023
  */
-export default class BaseController<App, AppEnvironment, ServiceDeps> {
+export default class BaseController<
+	Server extends RawServerBase,
+	AppEnvironment extends DefaultEnvironment,
+	ServiceDeps = any
+> {
 	/**
 	 * The Fastify instance.
 	 *
-	 * @type {App}
 	 * @protected
 	 * @memberof BaseController
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected _app: App;
+	protected _app: FastifyInstance<Server>;
 
 	/**
 	 * The environment.
@@ -41,7 +45,7 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	/**
 	 * Create a new base controller instance.
 	 *
-	 * @param {App} app The Fastify instance.
+	 * @param app The Fastify instance.
 	 * @param {AppEnvironment} env The environment.
 	 * @param {ServiceDeps} servicesDeps The services dependencies.
 	 * @constructor
@@ -50,7 +54,11 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(app: App, env: AppEnvironment, servicesDeps: ServiceDeps) {
+	constructor(
+		app: FastifyInstance<Server>,
+		env: AppEnvironment,
+		servicesDeps: ServiceDeps
+	) {
 		this._app = app;
 		this._env = env;
 		this._services = servicesDeps;
@@ -80,9 +88,13 @@ export default class BaseController<App, AppEnvironment, ServiceDeps> {
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static createInstance<App, AppEnvironment, ServiceDeps>(
+	public static createInstance<
+		Server extends RawServerBase,
+		AppEnvironment extends DefaultEnvironment,
+		ServiceDeps
+	>(
 		servicesDeps: ServiceDeps
-	): FastifyModifierCallable<App, AppEnvironment> {
+	): FastifyModifierCallable<Server, AppEnvironment> {
 		return async (app, env) => {
 			const controller = new this(app, env, servicesDeps);
 			await controller.init();
