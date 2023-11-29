@@ -22,6 +22,8 @@ The `HttpInsecureServer`, `HttpSecureServer`, `Http2InsecureServer` or `Http2Sec
 
 > You may see a complete example on [samples](./samples) folder.
 
+> See the [caiquearaujo/fastify-chassis-benchmarks](https://github.com/caiquearaujo/fastify-chassis-benchmarks) repository to see some benchmarks and advices.
+
 ```ts
 import { FastifyReply, FastifyRequest, RouteGenericInterface } from 'fastify';
 import { Server } from 'http';
