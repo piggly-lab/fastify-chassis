@@ -1,12 +1,14 @@
-import { FastifyInstance, RawServerBase, RawServerDefault } from 'fastify';
-import moment from 'moment-timezone';
-import * as jose from 'jose';
-import pino from 'pino';
+import type { FastifyInstance, RawServerBase, RawServerDefault } from 'fastify';
+import type moment from 'moment-timezone';
+import type * as jose from 'jose';
+import type pino from 'pino';
 
+import type { DomainError, DomainErrorObject } from '@piggly/ddd-toolkit';
 import type HttpInsecureServer from '@/www/fastify/HttpInsecureServer';
 import type HttpSecureServer from '@/www/fastify/HttpSecureServer';
 import type Http2InsecureServer from '@/www/fastify/Http2InsecureServer';
 import type Http2SecureServer from '@/www/fastify/Http2SecureServer';
+import type ApplicationError from '@/errors/ApplicationError';
 
 /** Globals */
 export type TOrNull<T> = T | null;
@@ -17,49 +19,31 @@ export type TOrEmpty<T> = T | undefined | null;
 export type TDateInput = number | string | Date | moment.Moment;
 export type TObject = Record<string, any>;
 
+export interface ObjectExportable {
+	toObject(): TObject;
+}
+
 /** Application Errors */
 
-export interface PreviousErrorJSON {
+export interface ApplicationErrorObject extends DomainErrorObject {
+	previous?: TOrNull<PreviousErrorObject>;
+}
+
+export interface RuntimeErrorObject {
+	name: string;
+	message: string;
+	stack?: TOrNull<string>;
+}
+
+export interface PreviousErrorObject {
 	name: string;
 	message: TOrNull<string>;
-	stack?: TOrNull<string | PreviousErrorJSON>;
-}
-
-export interface ErrorJSON extends PreviousErrorJSON {
-	code: number;
-}
-
-export interface ResponseErrorJSON extends ErrorJSON {
-	status: number;
-	body: Record<string, any>;
-	hint: string;
+	stack?: TOrNull<string | PreviousErrorObject>;
 }
 
 export type PreviousError = TOrUndefined<
-	TOrU<ApplicationErrorInterface, Error>
+	ApplicationError | DomainError | Error
 >;
-
-export interface ApplicationErrorInterface extends Error {
-	changeName: (name: string) => this;
-	code: (code: number) => this;
-	getCode: () => number;
-	getMessage: () => string;
-	getName: () => string;
-	getPrevious: () => PreviousError;
-	toJSON: (debugging: boolean) => Partial<ErrorJSON>;
-	getPreviousJSON: () => TOrNull<PreviousErrorJSON>;
-	toResponse: () => ResponseErrorInterface;
-}
-
-export interface ResponseErrorInterface extends ApplicationErrorInterface {
-	hint: (hint: TOrUndefined<string>) => this;
-	httpCode: (statusCode: number) => this;
-	payload: (payload: Record<string, any>) => this;
-	getHint: () => TOrUndefined<string>;
-	getHttpCode: () => number;
-	getPayload: () => object;
-	toJSON: () => Partial<ResponseErrorJSON>;
-}
 
 /** Environment */
 
@@ -132,8 +116,8 @@ export type ApiServerOptions<
 		afterInit?: FastifyModifierCallable<Server, AppEnvironment>;
 	};
 	errors: {
-		notFound: ResponseErrorInterface;
-		unknown: ResponseErrorInterface;
+		notFound: ObjectExportable;
+		unknown: ObjectExportable;
 	};
 };
 

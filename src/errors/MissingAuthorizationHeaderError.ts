@@ -1,25 +1,28 @@
-import ResponseError from './ResponseError';
+import ApplicationError from './ApplicationError';
 
 /**
  * @file This error should be thrown when authorization header is missing.
  * @copyright Piggly Lab 2023
  */
-export default class MissingAuthorizationHeaderError extends ResponseError {
+export default class MissingAuthorizationHeaderError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
 	 * @param {string} [message] The error message.
 	 * @param {string} [hint] The error hint.
+	 * @param {Record<string, any>} [extra] The extra data.
 	 * @memberof MissingAuthorizationHeaderError
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(message?: string, hint?: string) {
-		super(message || 'Missing authorization header.');
-
-		this.name = 'MissingAuthorizationHeaderError';
-		this._code = 104;
-		this._hint = hint || 'The `Authorization` header is required.';
-		this._statusCode = 401;
+	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
+		super(
+			'MissingAuthorizationHeaderError',
+			50,
+			message || 'Invalid authorization header.',
+			401,
+			hint || 'The `Authorization` header is required.',
+			extra
+		);
 	}
 }
