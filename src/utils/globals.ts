@@ -2,10 +2,8 @@ import { FastifyRequest } from 'fastify';
 import crypto from 'crypto';
 import { IncomingHttpHeaders } from 'http';
 import moment from 'moment-timezone';
-import Joi from 'joi';
 
 import { TDateInput, TOrEmpty, TOrUndefined } from '@/types';
-import { InvalidRequestBodyError, ResponseError } from '@/errors';
 import DateParser from './parsers/DateParser';
 
 export function commaStringAsArray(str?: string): Array<string> {
@@ -39,28 +37,6 @@ export function getBearerToken(
 
 export function getTimestamp(): number {
 	return Math.floor(new Date().getTime() / 1000);
-}
-
-export function parseResponseError(err: any): ResponseError {
-	if (err.isAxiosError) {
-		const axiosErr: any = err;
-		const responseErr = new ResponseError('External API Error', err);
-
-		return responseErr
-			.httpCode(parseInt(axiosErr.code || '500', 10))
-			.hint(
-				axiosErr.response?.data?.message ||
-					axiosErr.message ||
-					'Unknown error'
-			);
-	}
-
-	if (err.isResponseError) {
-		return err;
-	}
-
-	const responseErr = new ResponseError(err.message, err);
-	return responseErr.httpCode(500);
 }
 
 export function parseEmpty<T>(val: T): TOrEmpty<T> {
@@ -279,54 +255,4 @@ export function getOrigin(request: FastifyRequest): string {
  */
 export function splitAndTrim(str: string, separator: string): Array<string> {
 	return str.split(separator).map(s => s.trim());
-}
-
-/**
- * Validate a request body against a Joi schema.
- *
- * @param {Record<string, any>} entry The request body.
- * @param {Joi.ObjectSchema} schema The Joi schema.
- * @param {Joi.LanguageMessages} [messages] The Joi language messages.
- * @returns {Payload} The validated payload.
- * @throws {InvalidRequestBodyError} If the request body is invalid.
- * @since 1.0.0
- * @author Caique Araujo <caique@piggly.com.br>
- */
-export function validateAnySchema<Payload>(
-	entry: any,
-	schema: Joi.Schema,
-	messages?: Joi.LanguageMessages
-): Payload {
-	const { error, value } = schema.validate(entry ?? {}, { messages });
-
-	if (error) {
-		throw new InvalidRequestBodyError(error.details.map(val => val.message));
-	}
-
-	return value as Payload;
-}
-
-/**
- * Validate a request body against a Joi object schema.
- *
- * @param {Record<string, any>} entry The request body.
- * @param {Joi.ObjectSchema} schema The Joi schema.
- * @param {Joi.LanguageMessages} [messages] The Joi language messages.
- * @returns {Payload} The validated payload.
- * @throws {InvalidRequestBodyError} If the request body is invalid.
- * @since 1.0.0
- * @author Caique Araujo <caique@piggly.com.br>
- */
-export function validateSchema<Payload>(
-	entry: Record<string, any> | undefined,
-	schema: Joi.ObjectSchema,
-	messages?: Joi.LanguageMessages
-): Payload {
-	const { error, value } = schema.validate(entry ?? {}, { messages });
-
-	if (error) {
-		throw new InvalidRequestBodyError(error.details.map(val => val.message));
-	}
-
-	return value as Payload;
 }

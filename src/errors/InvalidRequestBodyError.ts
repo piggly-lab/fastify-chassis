@@ -1,10 +1,10 @@
-import ResponseError from './ResponseError';
+import ApplicationError from './ApplicationError';
 
 /**
  * @file This error should be thrown when the request body is invalid.
  * @copyright Piggly Lab 2023
  */
-export default class InvalidRequestBodyError extends ResponseError {
+export default class InvalidRequestBodyError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
@@ -12,17 +12,18 @@ export default class InvalidRequestBodyError extends ResponseError {
 	 * @param {string} [message] The error message.
 	 * @param {string} [hint] The error hint.
 	 * @memberof InvalidRequestBodyError
+	 * @param {Record<string, any>} [extra] The extra data.
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(details: any, message?: string, hint?: string) {
-		super(message || 'The request body is invalid.');
-
-		this.name = 'InvalidRequestBodyError';
-		this._code = 106;
-		this._hint =
-			hint || 'One or more values were not accepted at request body.';
-		this._statusCode = 422;
-		this._payload = details;
+	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
+		super(
+			'InvalidRequestBodyError',
+			54,
+			message || 'Invalid request body.',
+			422,
+			hint || 'One or more values were not accepted at request body.',
+			extra
+		);
 	}
 }
