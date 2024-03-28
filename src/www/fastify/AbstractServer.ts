@@ -1,14 +1,14 @@
 import { FastifyError, FastifyInstance, RawServerBase } from 'fastify';
+import { DomainError } from '@piggly/ddd-toolkit';
 
 import Logger from '@/helpers/Logger';
-import AbstractError from '@/errors/AbstractError';
-import ResponseError from '@/errors/ResponseError';
 import {
 	ApiServerInterface,
 	ApiServerOptions,
 	DefaultEnvironment,
 	HttpServerInterface,
 } from '@/types';
+
 import HttpServer from '../HttpServer';
 
 /**
@@ -135,31 +135,83 @@ export default abstract class AbstractServer<
 
 		// Not found routes
 		this._app.setNotFoundHandler((request, reply) => {
-			reply.status(404).send(this._options.errors.notFound.toJSON());
+			reply.status(404).send(this._options.errors.notFound.toObject());
 		});
 
 		// Any error
-		this._app.setErrorHandler<AbstractError | ResponseError | FastifyError>(
+		this._app.setErrorHandler<DomainError | Error | FastifyError>(
 			(error, request, reply) => {
-				if (error instanceof AbstractError) {
-					const _error = error.toResponse();
-					this._app.log.error(_error.toJSON());
-					return reply.status(_error.getHttpCode()).send(_error.toJSON());
+				if (error instanceof DomainError) {
+					const _error = error.toObject();
+
+					if (this._options.env.debug) {
+						console.error('DomainError', _error);
+					}
+
+					this._app.log.error(_error);
+					return reply.status(error.status).send(_error);
 				}
 
-				const JSON = {
-					code: error.code,
-					status: 500,
-					name: error.name,
-					message: error.message,
-				};
+				if (this._options.env.debug) {
+					console.error('RuntimeError', {
+						name: error.name,
+						message: error.message,
+						stack: error.stack,
+					});
+				}
 
-				this._app.log.error(JSON);
-				return reply.status(500).send({
-					...this._options.errors.unknown.toJSON(),
-					...JSON,
-				});
+				const _error = this._options.errors.unknown.toObject();
+				this._app.log.error(_error);
+				return reply.status(500).send(_error);
 			}
 		);
+	}
+
+	/**
+	 * Get the default logger configuration.
+	 *
+	 * @public
+	 * @static
+	 * @memberof AbstractServer
+	 * @since 3.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected static defaultLogger(
+		env: string,
+		log_path: string,
+		debug: boolean
+	) {
+		const logger: Record<string, any> = {
+			file: `${log_path}/server.log`,
+			level: debug ? 'debug' : 'info',
+		};
+
+		if (env === 'production') {
+			return logger;
+		}
+
+		return {
+			...logger,
+			transport: {
+				target: 'pino-pretty',
+				options: {
+					translateTime: true,
+					colorize: true,
+					ignore: 'pid',
+					messageFormat:
+						'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
+				},
+			},
+			serializers: {
+				req: (req: any) => ({
+					method: req.method,
+					url: req.url,
+					hostname: req.hostname,
+				}),
+				res: (res: any) => ({
+					statusCode: res.statusCode,
+				}),
+			},
+		};
 	}
 }
