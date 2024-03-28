@@ -23,3 +23,7 @@
 
 * Adds `disableRequestLogging` flag for production environments;
 * Allow replacing default options for fastify.
+
+## 3.0.0 at (`2024-03-28`)
+
+* Refactoring all errors.
