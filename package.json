@@ -1,6 +1,6 @@
 {
 	"name": "@piggly/fastify-chassis",
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"description": "An ESM/CommonJS toolkit to help you to do common operations in your back-end applications with Fastify and NodeJS.",
 	"scripts": {
 		"check": "tsc --noEmit",
