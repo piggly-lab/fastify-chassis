@@ -1,6 +1,7 @@
 import { FastifyError, FastifyInstance, RawServerBase } from 'fastify';
 import { DomainError } from '@piggly/ddd-toolkit';
 
+import { RuntimeError } from '@/errors';
 import Logger from '@/helpers/Logger';
 import {
 	ApiServerInterface,
@@ -141,6 +142,12 @@ export default abstract class AbstractServer<
 		// Any error
 		this._app.setErrorHandler<DomainError | Error | FastifyError>(
 			(error, request, reply) => {
+				this._app.log.error(error);
+
+				if (this._options.errors.handler) {
+					this._options.errors.handler(error);
+				}
+
 				if (error instanceof DomainError) {
 					const _error = error.toObject();
 
@@ -148,21 +155,22 @@ export default abstract class AbstractServer<
 						console.error('DomainError', _error);
 					}
 
-					this._app.log.error(_error);
 					return reply.status(error.status).send(_error);
 				}
 
-				if (this._options.env.debug) {
-					console.error('RuntimeError', {
-						name: error.name,
-						message: error.message,
-						stack: error.stack,
-					});
+				if (error instanceof RuntimeError) {
+					const _error = error.toObject();
+
+					if (this._options.env.debug) {
+						console.error('RuntimeError', _error);
+					}
+
+					return reply.status(error.status).send(_error);
 				}
 
-				const _error = this._options.errors.unknown.toObject();
-				this._app.log.error(_error);
-				return reply.status(500).send(_error);
+				return reply
+					.status(500)
+					.send(this._options.errors.unknown.toObject());
 			}
 		);
 	}

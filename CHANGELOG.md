@@ -27,3 +27,9 @@
 ## 3.0.0 at (`2024-03-28`)
 
 * Refactoring all errors.
+
+## 3.1.0 at (`2024-04-10`)
+
+* Add response data to `RuntimeError`;
+* Interpreting `RuntimeError` in the fastify default error handler in `AbstractServer` class;
+* Add a custom error handler in the `ApiServer` class options.

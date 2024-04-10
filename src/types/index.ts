@@ -118,6 +118,7 @@ export type ApiServerOptions<
 	errors: {
 		notFound: ObjectExportable;
 		unknown: ObjectExportable;
+		handler?: (err: any) => void;
 	};
 };
 
