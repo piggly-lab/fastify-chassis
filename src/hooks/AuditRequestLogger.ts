@@ -22,7 +22,7 @@ import { EnvironmentType } from '@/types';
  * @author Caique Araujo <caique@piggly.com.br>
  * @copyright Piggly Lab 2023
  */
-export default <Server extends RawServerBase>(
+export const AuditRequestLogger = <Server extends RawServerBase>(
 	app: FastifyInstance<Server>,
 	log_path: string,
 	environment: EnvironmentType = 'development',
@@ -58,7 +58,7 @@ export default <Server extends RawServerBase>(
 			url: req.url,
 			hostname: req.hostname,
 			statusCode: res.statusCode,
-			responseTime: res.getResponseTime(),
+			responseTime: res.elapsedTime,
 		};
 
 		if (req.access_token) {

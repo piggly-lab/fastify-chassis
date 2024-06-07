@@ -1,1 +1,1 @@
-export { default as AuditRequestLogger } from './AuditRequestLogger';
+export { AuditRequestLogger } from './AuditRequestLogger';

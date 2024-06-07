@@ -43,7 +43,8 @@ import {
   HttpInsecureServer
   RequestNotFoundError,
   RequestServerError,
-  AuditRequestLogger
+  AuditRequestLogger,
+  SyncErrorOnDiskHandler,
 } from '@piggly/fastify-chassis';
 
 // Defining global types
@@ -78,12 +79,16 @@ class PublicApiController extends BaseController<
       application: this._env.name,
     });
   }
-
-  public init(): Promise<void> {
-    this._app.get('/hello-world', this.helloWorld.bind(this));
-    return Promise.resolve();
-  }
 }
+
+const PublicApiRoutes: FastifyModifierCallable<MyCurrentServer> = (
+  app: FastifyInstance<MyCurrentServer>
+): Promise<void> => {
+  const controller = new PublicApiController(env);
+  app.get('/hello-world', controller.helloWorld.bind(controller));
+  return Promise.resolve();
+};
+
 
 // !! Plugins
 // Must be an instance of FastifyModifiers
@@ -137,11 +142,7 @@ const afterInit: FastifyModifierCallable<
 // !! Options
 const options: ApiServerOptions<MyCurrentServer, MyCurrentEnvironment> = {
   routes: new FastifyModifiers<MyCurrentServer, MyCurrentEnvironment>(
-    PublicApiController.createInstance<
-      MyCurrentServer,
-      MyCurrentEnvironment,
-      any
-    >({})
+    PublicApiRoutes
   ),
   plugins,
   env,
@@ -149,6 +150,7 @@ const options: ApiServerOptions<MyCurrentServer, MyCurrentEnvironment> = {
   errors: {
     notFound: new RequestNotFoundError(),
     unknown: new RequestServerError(),
+    handler: SyncErrorOnDiskHandler(env.log_path),
   },
 };
 

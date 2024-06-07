@@ -1,8 +1,7 @@
 import { FastifyError, FastifyInstance, RawServerBase } from 'fastify';
-import { DomainError } from '@piggly/ddd-toolkit';
+import { RuntimeError, DomainError } from '@piggly/ddd-toolkit';
 
-import { RuntimeError } from '@/errors';
-import Logger from '@/helpers/Logger';
+import { Logger } from '@/helpers/Logger';
 import {
 	ApiServerInterface,
 	ApiServerOptions,
@@ -10,13 +9,13 @@ import {
 	HttpServerInterface,
 } from '@/types';
 
-import HttpServer from '../HttpServer';
+import { HttpServer } from '../HttpServer';
 
 /**
  * @file The API server.
  * @copyright Piggly Lab 2023
  */
-export default abstract class AbstractServer<
+export abstract class AbstractServer<
 	Server extends RawServerBase,
 	AppEnvironment extends DefaultEnvironment
 > implements ApiServerInterface<Server, AppEnvironment>
@@ -136,7 +135,9 @@ export default abstract class AbstractServer<
 
 		// Not found routes
 		this._app.setNotFoundHandler((request, reply) => {
-			reply.status(404).send(this._options.errors.notFound.toObject());
+			reply
+				.status(404)
+				.send(this._options.errors.notFound.toJSON(['extra']));
 		});
 
 		// Any error
@@ -149,7 +150,7 @@ export default abstract class AbstractServer<
 				}
 
 				if (error instanceof DomainError) {
-					const _error = error.toObject();
+					const _error = error.toJSON(['extra']);
 
 					if (this._options.env.debug) {
 						console.error('DomainError', _error);
@@ -159,7 +160,7 @@ export default abstract class AbstractServer<
 				}
 
 				if (error instanceof RuntimeError) {
-					const _error = error.toObject();
+					const _error = error.toJSON(['extra']);
 
 					if (this._options.env.debug) {
 						console.error('RuntimeError', _error);
@@ -170,7 +171,7 @@ export default abstract class AbstractServer<
 
 				return reply
 					.status(500)
-					.send(this._options.errors.unknown.toObject());
+					.send(this._options.errors.unknown.toJSON(['extra']));
 			}
 		);
 	}

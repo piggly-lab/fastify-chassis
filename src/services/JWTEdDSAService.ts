@@ -1,12 +1,13 @@
 import * as jose from 'jose';
-import { getTimestamp } from '@/utils';
-import JWTService from './JWTService';
+import { getTimestamp } from '@piggly/ddd-toolkit';
+
+import { JWTService } from './JWTService';
 
 /**
  * @file Handle a JWT with EdDSA keys.
  * @copyright Piggly Lab 2023
  */
-export default class JWTEdDSAService<
+export class JWTEdDSAService<
 	Payload extends jose.JWTPayload
 > extends JWTService<Payload> {
 	/**

@@ -33,3 +33,13 @@
 * Add response data to `RuntimeError`;
 * Interpreting `RuntimeError` in the fastify default error handler in `AbstractServer` class;
 * Add a custom error handler in the `ApiServer` class options.
+
+## 4.0.0 at (`2024-06-07`)
+
+* Dependencies update;
+* Break changes in the `BaseController` class, see samples for more information;
+* Break changes on errors, `ApplicationError` and `RuntimeError` moved to `@piggly/ddd-toolkit` package;
+* Break changes on types, generic types moved to `@piggly/ddd-toolkit` package;
+* Added `SyncErrorOnDiskHandler` to log errors in a log file;
+* Added `HealthCheckService` to check the server status based on handlers available, useful to run in a route to check if the server is healthy;
+* Named exportation to be fully compatible with ESM.

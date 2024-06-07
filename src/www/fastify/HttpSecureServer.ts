@@ -2,13 +2,13 @@ import fastify, { FastifyHttpsOptions } from 'fastify';
 import { Server } from 'https';
 
 import { ApiServerOptions, DefaultEnvironment } from '@/types';
-import AbstractServer from './AbstractServer';
+import { AbstractServer } from './AbstractServer';
 
 /**
  * @file The API server.
  * @copyright Piggly Lab 2023
  */
-export default class HttpSecureServer<
+export class HttpSecureServer<
 	AppEnvironment extends DefaultEnvironment
 > extends AbstractServer<Server, AppEnvironment> {
 	/**

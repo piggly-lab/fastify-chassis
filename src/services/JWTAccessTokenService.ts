@@ -2,17 +2,19 @@ import EventBus from '@piggly/event-bus';
 import { DomainEvent, InfraService } from '@piggly/ddd-toolkit';
 import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from 'fastify';
 import * as jose from 'jose';
+
 import { getIp, getOrigin } from '@/utils/globals';
-import ForbiddenError from '@/errors/ForbiddenError';
-import UnauthorizedError from '@/errors/UnauthorizedError';
-import InvalidAuthorizationHeaderError from '@/errors/InvalidAuthorizationHeaderError';
-import MissingAuthorizationHeaderError from '@/errors/MissingAuthorizationHeaderError';
+import { ForbiddenError } from '@/errors/ForbiddenError';
+import { UnauthorizedError } from '@/errors/UnauthorizedError';
+import { InvalidAuthorizationHeaderError } from '@/errors/InvalidAuthorizationHeaderError';
+import { MissingAuthorizationHeaderError } from '@/errors/MissingAuthorizationHeaderError';
 import {
 	AccessTokenServiceErrors,
 	AccessTokenServiceOptions,
 	INVALID_ACCESS_TOKEN_EVENT,
 } from '@/types';
-import JWTService from './JWTService';
+
+import { JWTService } from './JWTService';
 
 export type JWTPayload = jose.JWTPayload & {
 	scopes: string;
@@ -25,7 +27,7 @@ export type JWTPayload = jose.JWTPayload & {
  * @file Handle an access token with JWT.
  * @copyright Piggly Lab 2023
  */
-export default class JWTAccessTokenService<
+export class JWTAccessTokenService<
 	Payload extends JWTPayload = JWTPayload
 > extends InfraService {
 	/**

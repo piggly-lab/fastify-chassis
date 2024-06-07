@@ -1,4 +1,9 @@
-import { FastifyReply, FastifyRequest, RouteGenericInterface } from 'fastify';
+import {
+	FastifyInstance,
+	FastifyReply,
+	FastifyRequest,
+	RouteGenericInterface,
+} from 'fastify';
 import fastifyRateLimit from '@fastify/rate-limit';
 import { Http2Server } from 'http2';
 import path from 'path';
@@ -12,6 +17,7 @@ import {
 import { FastifyModifiers, Http2InsecureServer } from '@/www';
 import { RequestNotFoundError, RequestServerError } from '@/errors';
 import { AuditRequestLogger } from '@/hooks';
+import { SyncErrorOnDiskHandler } from '@/handlers';
 
 type MyCurrentServer = Http2Server;
 type MyCurrentEnvironment = DefaultEnvironment;
@@ -40,12 +46,15 @@ class PublicApiController extends BaseController<
 			application: this._env.name,
 		});
 	}
-
-	public init(): Promise<void> {
-		this._app.get('/hello-world', this.helloWorld.bind(this));
-		return Promise.resolve();
-	}
 }
+
+const PublicApiRoutes: FastifyModifierCallable<MyCurrentServer> = (
+	app: FastifyInstance<MyCurrentServer>
+): Promise<void> => {
+	const controller = new PublicApiController(env);
+	app.get('/hello-world', controller.helloWorld.bind(controller));
+	return Promise.resolve();
+};
 
 const rateLimitPlugin: FastifyModifierCallable<
 	MyCurrentServer,
@@ -86,11 +95,7 @@ const afterInit: FastifyModifierCallable<
 
 const options: ApiServerOptions<MyCurrentServer, MyCurrentEnvironment> = {
 	routes: new FastifyModifiers<MyCurrentServer, MyCurrentEnvironment>(
-		PublicApiController.createInstance<
-			MyCurrentServer,
-			MyCurrentEnvironment,
-			any
-		>({})
+		PublicApiRoutes
 	),
 	plugins,
 	env,
@@ -98,6 +103,7 @@ const options: ApiServerOptions<MyCurrentServer, MyCurrentEnvironment> = {
 	errors: {
 		notFound: new RequestNotFoundError(),
 		unknown: new RequestServerError(),
+		handler: SyncErrorOnDiskHandler(env.log_path),
 	},
 };
 

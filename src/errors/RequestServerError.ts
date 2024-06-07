@@ -1,10 +1,11 @@
-import ApplicationError from './ApplicationError';
+import { ApplicationError } from '@piggly/ddd-toolkit';
+import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when server cannot handle the request.
  * @copyright Piggly Lab 2023
  */
-export default class RequestServerError extends ApplicationError {
+export class RequestServerError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
@@ -18,9 +19,9 @@ export default class RequestServerError extends ApplicationError {
 	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
 		super(
 			'RequestServerError',
-			57,
+			crc32('RequestServerError'),
 			message || 'Something went wrong.',
-			401,
+			500,
 			hint ||
 				'The server was unable to handle this request. Contact the server administrator.',
 			extra

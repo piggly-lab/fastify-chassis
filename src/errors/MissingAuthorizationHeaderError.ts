@@ -1,10 +1,11 @@
-import ApplicationError from './ApplicationError';
+import { ApplicationError } from '@piggly/ddd-toolkit';
+import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when authorization header is missing.
  * @copyright Piggly Lab 2023
  */
-export default class MissingAuthorizationHeaderError extends ApplicationError {
+export class MissingAuthorizationHeaderError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
@@ -18,7 +19,7 @@ export default class MissingAuthorizationHeaderError extends ApplicationError {
 	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
 		super(
 			'MissingAuthorizationHeaderError',
-			50,
+			crc32('MissingAuthorizationHeaderError'),
 			message || 'Invalid authorization header.',
 			401,
 			hint || 'The `Authorization` header is required.',

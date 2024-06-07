@@ -1,4 +1,4 @@
-import Logger from '@/helpers/Logger';
+import { Logger } from '@/helpers/Logger';
 import {
 	ApiServerInterface,
 	DefaultEnvironment,
@@ -9,7 +9,7 @@ import {
  * @file The HTTP server.
  * @copyright Piggly Lab 2023
  */
-export default class HttpServer<AppEnvironment extends DefaultEnvironment>
+export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	implements HttpServerInterface<any, AppEnvironment>
 {
 	/**

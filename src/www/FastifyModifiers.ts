@@ -5,10 +5,8 @@ import { FastifyInstance, RawServerBase } from 'fastify';
  * @file The Fastify modifier.
  * @copyright Piggly Lab 2023
  */
-export default class FastifyModifier<
-	Server extends RawServerBase,
-	AppEnvironment
-> implements FastifyAppliable<Server, AppEnvironment>
+export class FastifyModifiers<Server extends RawServerBase, AppEnvironment>
+	implements FastifyAppliable<Server, AppEnvironment>
 {
 	/**
 	 * The callables
