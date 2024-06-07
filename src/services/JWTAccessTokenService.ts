@@ -1,4 +1,4 @@
-import EventBus from '@piggly/event-bus';
+import { EventBus } from '@piggly/event-bus';
 import { DomainEvent, InfraService } from '@piggly/ddd-toolkit';
 import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from 'fastify';
 import * as jose from 'jose';
