@@ -6,7 +6,7 @@ import { JWTServiceInterface, JWTServiceOptions } from '@/types';
  * @file Handle a JWT.
  * @copyright Piggly Lab 2023
  */
-export default abstract class JWTService<Payload extends jose.JWTPayload>
+export abstract class JWTService<Payload extends jose.JWTPayload>
 	implements JWTServiceInterface<Payload>
 {
 	/**

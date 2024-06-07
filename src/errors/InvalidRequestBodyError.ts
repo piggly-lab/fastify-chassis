@@ -1,10 +1,11 @@
-import ApplicationError from './ApplicationError';
+import { ApplicationError } from '@piggly/ddd-toolkit';
+import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when the request body is invalid.
  * @copyright Piggly Lab 2023
  */
-export default class InvalidRequestBodyError extends ApplicationError {
+export class InvalidRequestBodyError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
@@ -19,7 +20,7 @@ export default class InvalidRequestBodyError extends ApplicationError {
 	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
 		super(
 			'InvalidRequestBodyError',
-			54,
+			crc32('InvalidRequestBodyError'),
 			message || 'Invalid request body.',
 			422,
 			hint || 'One or more values were not accepted at request body.',

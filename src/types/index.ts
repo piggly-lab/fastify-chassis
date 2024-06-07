@@ -1,52 +1,14 @@
 import type { FastifyInstance, RawServerBase, RawServerDefault } from 'fastify';
-import type moment from 'moment-timezone';
+import type { JSONExportable } from '@piggly/ddd-toolkit';
 import type * as jose from 'jose';
 import type pino from 'pino';
 
-import type { DomainError, DomainErrorObject } from '@piggly/ddd-toolkit';
-import type HttpInsecureServer from '@/www/fastify/HttpInsecureServer';
-import type HttpSecureServer from '@/www/fastify/HttpSecureServer';
-import type Http2InsecureServer from '@/www/fastify/Http2InsecureServer';
-import type Http2SecureServer from '@/www/fastify/Http2SecureServer';
-import type ApplicationError from '@/errors/ApplicationError';
-
-/** Globals */
-export type TOrNull<T> = T | null;
-export type TOrUndefined<T> = T | undefined;
-export type TOrU<T, U> = T | U;
-export type TOrFalse<T> = T | false;
-export type TOrEmpty<T> = T | undefined | null;
-export type TDateInput = number | string | Date | moment.Moment;
-export type TObject = Record<string, any>;
-
-export interface ObjectExportable {
-	toObject(): TObject;
-}
-
-/** Application Errors */
-
-export interface ApplicationErrorObject extends DomainErrorObject {
-	previous?: TOrNull<PreviousErrorObject>;
-}
-
-export interface RuntimeErrorObject {
-	name: string;
-	message: string;
-	stack?: TOrNull<string>;
-}
-
-export interface PreviousErrorObject {
-	name: string;
-	message: TOrNull<string>;
-	stack?: TOrNull<string | PreviousErrorObject>;
-}
-
-export type PreviousError = TOrUndefined<
-	ApplicationError | DomainError | Error
->;
+import type { HttpInsecureServer } from '@/www/fastify/HttpInsecureServer';
+import type { HttpSecureServer } from '@/www/fastify/HttpSecureServer';
+import type { Http2InsecureServer } from '@/www/fastify/Http2InsecureServer';
+import type { Http2SecureServer } from '@/www/fastify/Http2SecureServer';
 
 /** Environment */
-
 export type EnvironmentType =
 	| 'test'
 	| 'sandbox'
@@ -88,7 +50,6 @@ export type FastifyServer<
 	| Http2SecureServer<AppEnvironment>;
 
 /** Fastify modifiers */
-
 export type FastifyModifierCallable<
 	Server extends RawServerBase,
 	AppEnvironment = DefaultEnvironment
@@ -116,8 +77,8 @@ export type ApiServerOptions<
 		afterInit?: FastifyModifierCallable<Server, AppEnvironment>;
 	};
 	errors: {
-		notFound: ObjectExportable;
-		unknown: ObjectExportable;
+		notFound: JSONExportable;
+		unknown: JSONExportable;
 		handler?: (err: any) => void;
 	};
 };

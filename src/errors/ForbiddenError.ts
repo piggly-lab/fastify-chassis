@@ -1,10 +1,11 @@
-import ApplicationError from './ApplicationError';
+import { ApplicationError } from '@piggly/ddd-toolkit';
+import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when access is not allowed.
  * @copyright Piggly Lab 2023
  */
-export default class ForbiddenError extends ApplicationError {
+export class ForbiddenError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
@@ -18,7 +19,7 @@ export default class ForbiddenError extends ApplicationError {
 	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
 		super(
 			'ForbiddenError',
-			52,
+			crc32('ForbiddenError'),
 			message || 'Access not allowed.',
 			403,
 			hint || "You don't have enough permissions for this request.",

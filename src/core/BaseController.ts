@@ -1,25 +1,21 @@
-import { DefaultEnvironment, FastifyModifierCallable } from '@/types';
-import { FastifyInstance, RawServerBase } from 'fastify';
+import { DefaultEnvironment } from '@/types';
+import {
+	BusinessRuleViolationError,
+	DomainError,
+	Result,
+	TOrUndefined,
+} from '@piggly/ddd-toolkit';
+import { FastifyReply, FastifyRequest, RawServerBase } from 'fastify';
 
 /**
  * @file Base controller class.
  * @copyright Piggly Lab 2023
  */
-export default class BaseController<
+export class BaseController<
 	Server extends RawServerBase,
 	AppEnvironment extends DefaultEnvironment,
-	ServiceDeps = any
+	ServiceDeps extends Record<string, any> = Record<string, any>
 > {
-	/**
-	 * The Fastify instance.
-	 *
-	 * @protected
-	 * @memberof BaseController
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	protected _app: FastifyInstance<Server>;
-
 	/**
 	 * The environment.
 	 *
@@ -32,7 +28,7 @@ export default class BaseController<
 	protected _env: AppEnvironment;
 
 	/**
-	 * Services dependencies.
+	 * General dependencies.
 	 *
 	 * @type {ServiceDeps}
 	 * @protected
@@ -54,50 +50,102 @@ export default class BaseController<
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	constructor(
-		app: FastifyInstance<Server>,
-		env: AppEnvironment,
-		servicesDeps: ServiceDeps
-	) {
-		this._app = app;
+	constructor(env: AppEnvironment, servicesDeps?: ServiceDeps) {
 		this._env = env;
-		this._services = servicesDeps;
+		this._services = servicesDeps ?? ({} as ServiceDeps);
 	}
 
 	/**
-	 * Initialize the controller with all routes.
+	 * Reply error object from result.
 	 *
-	 * @returns {Promise<void>}
-	 * @public
+	 * @param {FastifyReply<Server>} reply The Fastify reply.
+	 * @param {Result<never, DomainError>} result The result.
+	 * @returns {FastifyReply<Server>}
+	 * @protected
 	 * @memberof BaseController
-	 * @since 1.0.0
+	 * @since 4.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public init(): Promise<void> {
-		return Promise.resolve();
+	protected replyError(
+		reply: FastifyReply<Server>,
+		result: Result<never, DomainError>
+	): FastifyReply<Server> {
+		if (this._env.debug === true) {
+			return reply.status(result.error.status).send(result.error.toObject());
+		}
+
+		if (
+			result.error instanceof BusinessRuleViolationError ||
+			result.error.is('BusinessRuleViolationError') === true
+		) {
+			return reply.status(result.error.status).send(result.error.toJSON([]));
+		}
+
+		return reply
+			.status(result.error.status)
+			.send(result.error.toJSON(['extra'])); // prevent to show extra data when is not a BusinessRuleViolationError
 	}
 
 	/**
-	 * Create a new controller instance.
+	 * Get typed body from request.
 	 *
-	 * @param {ServiceDeps} servicesDeps
-	 * @returns {FastifyModifierCallable}
-	 * @public
-	 * @static
+	 * @param {FastifyRequest} request The Fastify request.
+	 * @returns {T}
+	 * @protected
 	 * @memberof BaseController
-	 * @since 1.0.0
+	 * @since 4.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static createInstance<
-		Server extends RawServerBase,
-		AppEnvironment extends DefaultEnvironment,
-		ServiceDeps
-	>(
-		servicesDeps: ServiceDeps
-	): FastifyModifierCallable<Server, AppEnvironment> {
-		return async (app, env) => {
-			const controller = new this(app, env, servicesDeps);
-			await controller.init();
-		};
+	protected getBody<T = any>(request: FastifyRequest): T {
+		return request.body as T;
+	}
+
+	/**
+	 * Get typed queries from request.
+	 *
+	 * @param {FastifyRequest} request The Fastify request.
+	 * @returns {T}
+	 * @protected
+	 * @memberof BaseController
+	 * @since 4.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected getQueries<T = any>(request: FastifyRequest): T {
+		return request.query as T;
+	}
+
+	/**
+	 * Get a param from request.
+	 *
+	 * @param {FastifyRequest} request The Fastify request.
+	 * @param {string} key The key.
+	 * @returns {T}
+	 * @protected
+	 * @memberof BaseController
+	 * @since 4.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected getParam<T = string>(request: FastifyRequest, key: string): T {
+		return (request.params as Record<string, any>)[key];
+	}
+
+	/**
+	 * Get a query from request.
+	 *
+	 * @param {FastifyRequest} request The Fastify request.
+	 * @param {string} key The key.
+	 * @param {T} [defaultValue] The default value.
+	 * @returns {TOrUndefined<T>}
+	 * @protected
+	 * @memberof BaseController
+	 * @since 4.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected getQuery<T = string>(
+		request: FastifyRequest,
+		key: string,
+		defaultValue?: T
+	): TOrUndefined<T> {
+		return (request.query as Record<string, any>)[key] ?? defaultValue;
 	}
 }

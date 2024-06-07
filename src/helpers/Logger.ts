@@ -4,7 +4,7 @@ import { FastifyBaseLogger } from 'fastify';
  * @file Logger class for static logging access.
  * @copyright Piggly Lab 2023
  */
-export default class Logger {
+export class Logger {
 	/**
 	 * The logger instance.
 	 *

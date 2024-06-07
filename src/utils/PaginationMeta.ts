@@ -4,7 +4,7 @@ import { PaginationMetaJSON, PaginationMetaProps } from '@/types';
  * @file Pagination metadata to collections.
  * @copyright Piggly Lab 2023
  */
-export default class PaginationMeta {
+export class PaginationMeta {
 	/**
 	 * Properties.
 	 *

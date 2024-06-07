@@ -1,10 +1,11 @@
-import ApplicationError from './ApplicationError';
+import { ApplicationError } from '@piggly/ddd-toolkit';
+import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when the request query is invalid.
  * @copyright Piggly Lab 2023
  */
-export default class InvalidRequestQueryError extends ApplicationError {
+export class InvalidRequestQueryError extends ApplicationError {
 	/**
 	 * Create a new error.
 	 *
@@ -18,7 +19,7 @@ export default class InvalidRequestQueryError extends ApplicationError {
 	constructor(message?: string, hint?: string, extra?: Record<string, any>) {
 		super(
 			'InvalidRequestQueryError',
-			55,
+			crc32('InvalidRequestQueryError'),
 			message || 'Invalid request query.',
 			422,
 			hint || 'One or more values were not accepted at request query.',

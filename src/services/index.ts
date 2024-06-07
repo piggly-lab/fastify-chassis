@@ -1,3 +1,5 @@
-export { default as JWTAccessTokenService } from './JWTAccessTokenService';
-export { default as JWTService } from './JWTService';
-export { default as JWTEdDSAService } from './JWTEdDSAService';
+export { JWTAccessTokenService } from './JWTAccessTokenService';
+export { JWTService } from './JWTService';
+export { JWTEdDSAService } from './JWTEdDSAService';
+
+export { HealthCheckService } from './HealthCheckService';
