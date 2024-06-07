@@ -43,3 +43,7 @@
 * Added `SyncErrorOnDiskHandler` to log errors in a log file;
 * Added `HealthCheckService` to check the server status based on handlers available, useful to run in a route to check if the server is healthy;
 * Named exportation to be fully compatible with ESM.
+
+## 4.0.1 at (`2024-06-07`)
+
+* ESM/CommonJS/Types compatibility.
