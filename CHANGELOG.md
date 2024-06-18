@@ -47,3 +47,8 @@
 ## 4.0.1 at (`2024-06-07`)
 
 * ESM/CommonJS/Types compatibility.
+
+## 4.0.2 at (`2024-06-18`)
+
+* Fix on `getBasicToken` util function;
+* Allow `getIp` and `getOrigin` define custom headers;

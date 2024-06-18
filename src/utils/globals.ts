@@ -39,7 +39,7 @@ export function getBasicToken(
 		return undefined;
 	}
 
-	const [username, password] = Buffer.from(header[1].split(' ')[1], 'base64')
+	const [username, password] = Buffer.from(header[1], 'base64')
 		.toString('utf-8')
 		.split(':');
 
@@ -72,19 +72,20 @@ export function mountURL(base: string, relative_path: string): string {
  * Try to get IP from request headers.
  *
  * @param {FastifyRequest} request
+ * @param {Array<string>} [headers] Headers to check in order. By default: 'cf-connecting-ip', 'x-real-ip', 'x-forwarded-for'
  * @returns {string}
  * @since 1.0.0
  * @author Caique Araujo <caique@piggly.com.br>
  */
-export function getIp(request: FastifyRequest): string {
-	const headers = ['cf-connecting-ip', 'x-real-ip', 'x-forwarded-for'];
+export function getIp(
+	request: FastifyRequest,
+	headers?: Array<string>
+): string {
+	const h = headers ?? ['cf-connecting-ip', 'x-real-ip', 'x-forwarded-for'];
 
-	for (let i = 0; i < headers.length; i += 1) {
-		if (request.headers[headers[i]] !== undefined) {
-			return lastAvailableString(
-				request.headers[headers[i]] as any,
-				request.ip
-			);
+	for (let i = 0; i < h.length; i += 1) {
+		if (request.headers[h[i]] !== undefined) {
+			return lastAvailableString(request.headers[h[i]] as any, request.ip);
 		}
 	}
 
@@ -95,17 +96,21 @@ export function getIp(request: FastifyRequest): string {
  * Try to get origin from request headers.
  *
  * @param {FastifyRequest} request
+ * @param {Array<string>} [headers] Headers to check in order. By default: 'x-forwarded-host', 'host'
  * @returns {string}
  * @since 1.0.0
  * @author Caique Araujo <caique@piggly.com.br>
  */
-export function getOrigin(request: FastifyRequest): string {
-	const headers = ['x-forwarded-host', 'host'];
+export function getOrigin(
+	request: FastifyRequest,
+	headers?: Array<string>
+): string {
+	const h = headers ?? ['x-forwarded-host', 'host'];
 
-	for (let i = 0; i < headers.length; i += 1) {
-		if (request.headers[headers[i]] !== undefined) {
+	for (let i = 0; i < h.length; i += 1) {
+		if (request.headers[h[i]] !== undefined) {
 			return lastAvailableString(
-				request.headers[headers[i]] as any,
+				request.headers[h[i]] as any,
 				request.hostname
 			);
 		}
