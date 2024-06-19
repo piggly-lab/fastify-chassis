@@ -84,12 +84,14 @@ export function getIp(
 	const h = headers ?? ['cf-connecting-ip', 'x-real-ip', 'x-forwarded-for'];
 
 	for (let i = 0; i < h.length; i += 1) {
-		if (request.headers[h[i]] !== undefined) {
-			return lastAvailableString(request.headers[h[i]] as any, request.ip);
+		const header = request.headers[h[i]];
+
+		if (header !== null && header !== undefined && header.length !== 0) {
+			return lastAvailableString(header, request.ip ?? '127.0.0.1');
 		}
 	}
 
-	return request.ip;
+	return request.ip ?? '127.0.0.1';
 }
 
 /**
@@ -108,13 +110,12 @@ export function getOrigin(
 	const h = headers ?? ['x-forwarded-host', 'host'];
 
 	for (let i = 0; i < h.length; i += 1) {
-		if (request.headers[h[i]] !== undefined) {
-			return lastAvailableString(
-				request.headers[h[i]] as any,
-				request.hostname
-			);
+		const header = request.headers[h[i]];
+
+		if (header !== null && header !== undefined && header.length !== 0) {
+			return lastAvailableString(header, request.hostname ?? 'localhost');
 		}
 	}
 
-	return request.hostname;
+	return request.hostname ?? 'localhost';
 }

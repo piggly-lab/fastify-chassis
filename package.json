@@ -1,6 +1,6 @@
 {
 	"name": "@piggly/fastify-chassis",
-	"version": "4.0.2",
+	"version": "4.0.3",
 	"description": "An ESM/CommonJS toolkit to help you to do common operations in your back-end applications with Fastify and NodeJS.",
 	"scripts": {
 		"check": "tsc --noEmit",
@@ -55,7 +55,7 @@
 	},
 	"devDependencies": {
 		"@fastify/rate-limit": "^9.1.0",
-		"@piggly/ddd-toolkit": "^3.0.1",
+		"@piggly/ddd-toolkit": "^3.0.4",
 		"@piggly/event-bus": "^2.1.2",
 		"@types/jest": "^29.5.12",
 		"@types/module-alias": "^2.0.4",
@@ -74,7 +74,7 @@
 		"eslint-import-resolver-typescript": "^3.6.1",
 		"eslint-plugin-import": "^2.29.1",
 		"eslint-plugin-prettier": "^4.2.1",
-		"fastify": "4.26",
+		"fastify": "^4.28.0",
 		"husky": "^8.0.3",
 		"jest": "^29.7.0",
 		"joi": "^17.13.1",
@@ -91,15 +91,15 @@
 		"@piggly/ddd-toolkit": ">=3.0",
 		"dotenv": ">=16.4",
 		"fastify": ">=4.27",
-		"joi": ">=17.8",
-		"jose": ">=5.0"
+		"joi": ">=17.13",
+		"jose": ">=5.4"
 	},
 	"dependencies": {
 		"crc": "^4.3.2",
 		"moment-timezone": "^0.5.45",
-		"pino": "^8.21.0",
-		"pino-pretty": "^10.3.1",
+		"pino": "^9.2.0",
+		"pino-pretty": "^11.2.1",
 		"shallow-equal-object": "^1.1.1",
-		"uuid": "^9.0.1"
+		"uuid": "^10.0.0"
 	}
 }

@@ -52,3 +52,7 @@
 
 * Fix on `getBasicToken` util function;
 * Allow `getIp` and `getOrigin` define custom headers;
+
+## 4.0.3 at (`2024-06-19`)
+
+* Fix on `getIp` and `getOrigin` util functions.
