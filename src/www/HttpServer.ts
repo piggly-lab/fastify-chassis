@@ -1,9 +1,11 @@
-import { Logger } from '@/helpers/Logger';
+import { ServiceProvider } from '@piggly/ddd-toolkit';
+
 import {
+	HttpServerInterface,
 	ApiServerInterface,
 	DefaultEnvironment,
-	HttpServerInterface,
 } from '@/types';
+import { LoggerService } from '@/services';
 
 /**
  * @file The HTTP server.
@@ -12,16 +14,6 @@ import {
 export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	implements HttpServerInterface<any, AppEnvironment>
 {
-	/**
-	 * The API server.
-	 *
-	 * @protected
-	 * @memberof HttpServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	protected _api;
-
 	/**
 	 * The running state.
 	 *
@@ -32,6 +24,16 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _running: boolean;
+
+	/**
+	 * The API server.
+	 *
+	 * @protected
+	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected _api;
 
 	/**
 	 * Create a new HTTP server.
@@ -49,19 +51,49 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	}
 
 	/**
-	 * Get the API server.
+	 * Listen to the server.
 	 *
-	 * @public
+	 * @returns {Promise<boolean>}
+	 * @protected
+	 * @async
 	 * @memberof HttpServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getApi() {
-		return this._api;
+	protected async listen(): Promise<boolean> {
+		const logger = ServiceProvider.resolve<LoggerService>('LoggerService');
+
+		if (this.isRunning()) {
+			logger.warn('⚠️ HttpServer: Server is already running');
+
+			return new Promise(res => {
+				res(false);
+			});
+		}
+
+		return new Promise((res, rej) => {
+			const { host, port } = this._api.getEnv().api.rest;
+
+			this._api.getApp().listen({ port, host }, (err, address) => {
+				if (err) {
+					logger.error(
+						'⛔ HttpServer: Error while starting to listen on host',
+						err,
+					);
+					return rej(err);
+				}
+
+				logger.info(
+					`⚡️ HttpServer: Server is running at ${host}:${port} - ${address}`,
+				);
+
+				res(true);
+			});
+		});
 	}
 
 	/**
-	 * Start the server.
+	 * Stop the server.
 	 *
 	 * @returns {Promise<boolean>}
 	 * @public
@@ -70,8 +102,42 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async start(): Promise<boolean> {
-		this._running = await this.listen();
+	public async stop(): Promise<boolean> {
+		const logger = ServiceProvider.resolve<LoggerService>('LoggerService');
+		logger.info('⚠️ HttpServer: Stopping server');
+
+		const response = await new Promise<boolean>((res, rej) => {
+			if (!this.isRunning()) {
+				res(true);
+				return;
+			}
+
+			this._api
+				.getApp()
+				.close()
+				.then(
+					() => {
+						logger.info('⚡️ HttpServer: Server was closed with success');
+						res(true);
+					},
+					(err: Error) => {
+						logger.error(
+							'⛔ HttpServer: An unexpected error happened while closing server',
+							err,
+						);
+						rej(err);
+					},
+				)
+				.catch((err: Error) => {
+					logger.error(
+						'⛔ HttpServer: An unexpected error happened while closing server',
+						err,
+					);
+					rej(err);
+				});
+		});
+
+		this._running = !response;
 		return this._running;
 	}
 
@@ -92,7 +158,7 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	}
 
 	/**
-	 * Stop the server.
+	 * Start the server.
 	 *
 	 * @returns {Promise<boolean>}
 	 * @public
@@ -101,43 +167,8 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async stop(): Promise<boolean> {
-		Logger.get().info('⚠️ [server]: Stopping server');
-
-		const response = await new Promise<boolean>((res, rej) => {
-			if (!this.isRunning()) {
-				res(true);
-				return;
-			}
-
-			this._api
-				.getApp()
-				.close()
-				.then(
-					() => {
-						Logger.get().info(
-							'⚡️ [server]: Server was closed with success'
-						);
-						res(true);
-					},
-					(err: Error) => {
-						Logger.get().error(
-							'⛔ [server]: An unexpected error happened while closing server',
-							err
-						);
-						rej(err);
-					}
-				)
-				.catch((err: Error) => {
-					Logger.get().error(
-						'⛔ [server]: An unexpected error happened while closing server',
-						err
-					);
-					rej(err);
-				});
-		});
-
-		this._running = !response;
+	public async start(): Promise<boolean> {
+		this._running = await this.listen();
 		return this._running;
 	}
 
@@ -155,38 +186,14 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	}
 
 	/**
-	 * Listen to the server.
+	 * Get the API server.
 	 *
-	 * @returns {Promise<boolean>}
-	 * @protected
-	 * @async
+	 * @public
 	 * @memberof HttpServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected async listen(): Promise<boolean> {
-		if (this.isRunning()) {
-			Logger.get().warn('⚠️ [server]: Server is already running');
-
-			return new Promise(res => {
-				res(false);
-			});
-		}
-
-		return new Promise((res, rej) => {
-			const { host, port } = this._api.getEnv();
-
-			this._api.getApp().listen({ port, host }, (err, address) => {
-				if (err) {
-					Logger.get().error(err);
-					rej(err);
-				}
-
-				Logger.get().info(
-					`⚡️ [server]: Server is running at ${host}:${port} - ${address}`
-				);
-				res(true);
-			});
-		});
+	public getApi() {
+		return this._api;
 	}
 }

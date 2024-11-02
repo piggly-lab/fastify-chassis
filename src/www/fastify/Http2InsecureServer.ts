@@ -1,7 +1,9 @@
-import fastify, { FastifyHttp2Options } from 'fastify';
 import { Http2Server as Server } from 'http2';
 
-import { ApiServerOptions, DefaultEnvironment } from '@/types';
+import fastify, { FastifyHttp2Options } from 'fastify';
+
+import { DefaultEnvironment, ApiServerOptions } from '@/types';
+
 import { AbstractServer } from './AbstractServer';
 
 /**
@@ -9,7 +11,7 @@ import { AbstractServer } from './AbstractServer';
  * @copyright Piggly Lab 2023
  */
 export class Http2InsecureServer<
-	AppEnvironment extends DefaultEnvironment
+	AppEnvironment extends DefaultEnvironment,
 > extends AbstractServer<Server, AppEnvironment> {
 	/**
 	 * Create a new API server.
@@ -23,24 +25,24 @@ export class Http2InsecureServer<
 	 */
 	constructor(
 		options: ApiServerOptions<Server, AppEnvironment>,
-		fastifyOptions?: FastifyHttp2Options<Server>
+		fastifyOptions?: FastifyHttp2Options<Server>,
 	) {
 		super(
 			options,
 			fastify(
 				fastifyOptions || {
 					logger:
-						options.logger ||
+						options.fastify.logger ||
 						AbstractServer.defaultLogger(
 							options.env.environment,
-							options.env.log_path,
-							options.env.debug
+							options.env.app.root_path,
+							options.env.debug,
 						),
 					disableRequestLogging: options.env.environment === 'production',
 					trustProxy: true,
 					http2: true,
-				}
-			)
+				},
+			),
 		);
 	}
 }

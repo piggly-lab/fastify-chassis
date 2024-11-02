@@ -1,5 +1,7 @@
 # Chassis for Fastify NodeJS applications
 
+> Outdated documentation. We are working to update it.
+
 ![Typescript](https://img.shields.io/badge/language-typescript-blue?style=for-the-badge) ![NPM](https://img.shields.io/npm/v/@piggly/fastify-chassis?style=for-the-badge) [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge)](LICENSE)
 
 An ESM/CommonJS toolkit to help you to do common operations in your back-end applications with Fastify and NodeJS.

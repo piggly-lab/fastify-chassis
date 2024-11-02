@@ -23,7 +23,7 @@ export class InvalidRequestQueryError extends ApplicationError {
 			message || 'Invalid request query.',
 			422,
 			hint || 'One or more values were not accepted at request query.',
-			extra
+			extra,
 		);
 	}
 }

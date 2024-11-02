@@ -23,7 +23,7 @@ export class InvalidAuthorizationHeaderError extends ApplicationError {
 			message || 'Invalid authorization header.',
 			401,
 			hint || 'The `Authorization` header must be of `Bearer` type.',
-			extra
+			extra,
 		);
 	}
 }

@@ -24,7 +24,7 @@ export class RequestServerError extends ApplicationError {
 			500,
 			hint ||
 				'The server was unable to handle this request. Contact the server administrator.',
-			extra
+			extra,
 		);
 	}
 }

@@ -1,13 +1,14 @@
-import { FastifyError, FastifyInstance, RawServerBase } from 'fastify';
+import type { FastifyInstance, RawServerBase, FastifyError } from 'fastify';
+
 import { RuntimeError, DomainError } from '@piggly/ddd-toolkit';
 
-import { Logger } from '@/helpers/Logger';
 import {
-	ApiServerInterface,
-	ApiServerOptions,
-	DefaultEnvironment,
 	HttpServerInterface,
+	ApiServerInterface,
+	DefaultEnvironment,
+	ApiServerOptions,
 } from '@/types';
+import { EnvironmentService, LoggerService } from '@/services';
 
 import { HttpServer } from '../HttpServer';
 
@@ -17,7 +18,7 @@ import { HttpServer } from '../HttpServer';
  */
 export abstract class AbstractServer<
 	Server extends RawServerBase,
-	AppEnvironment extends DefaultEnvironment
+	AppEnvironment extends DefaultEnvironment,
 > implements ApiServerInterface<Server, AppEnvironment>
 {
 	/**
@@ -52,34 +53,119 @@ export abstract class AbstractServer<
 	 */
 	constructor(
 		options: ApiServerOptions<Server, AppEnvironment>,
-		app: FastifyInstance<Server>
+		app: FastifyInstance<Server>,
 	) {
 		this._options = options;
 		this._app = app;
 	}
 
 	/**
-	 * Get the Fastify application.
+	 * Get the default logger configuration.
 	 *
 	 * @public
-	 * @memberof ApiServer
-	 * @since 1.0.0
+	 * @static
+	 * @memberof AbstractServer
+	 * @since 3.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getApp() {
-		return this._app;
+	protected static defaultLogger(
+		env: string,
+		root_path: string,
+		debug: boolean,
+	) {
+		const logger: Record<string, any> = {
+			file: `${root_path}/logs/server.log`,
+			level: debug ? 'debug' : 'info',
+		};
+
+		if (env === 'production') {
+			return logger;
+		}
+
+		return {
+			...logger,
+			transport: {
+				options: {
+					messageFormat:
+						'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
+					translateTime: true,
+					colorize: true,
+					ignore: 'pid',
+				},
+				target: 'pino-pretty',
+			},
+			serializers: {
+				req: (req: any) => ({
+					hostname: req.hostname,
+					method: req.method,
+					url: req.url,
+				}),
+				res: (res: any) => ({
+					statusCode: res.statusCode,
+				}),
+			},
+		};
 	}
 
 	/**
-	 * Get the global environment.
+	 * Initialize the API server.
 	 *
-	 * @public
+	 * @protected
 	 * @memberof ApiServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public getEnv(): AppEnvironment {
-		return this._options.env;
+	protected async init(): Promise<void> {
+		LoggerService.register(this._options.logger);
+		EnvironmentService.register(new EnvironmentService(this._options.env));
+
+		// Plugins
+		await this._options.plugins.apply(this._app, this._options.env);
+
+		// Routes
+		await this._options.routes.apply(this._app, this._options.env);
+
+		// Not found routes
+		this._app.setNotFoundHandler((request, reply) => {
+			reply
+				.status(404)
+				.send(this._options.errors.notFound.toJSON(['extra']));
+		});
+
+		// Any error
+		this._app.setErrorHandler<FastifyError | DomainError | Error>(
+			(error, request, reply) => {
+				this._app.log.error(error);
+
+				if (this._options.errors.handler) {
+					this._options.errors.handler(error);
+				}
+
+				if (error instanceof DomainError) {
+					const _error = error.toJSON(['extra']);
+
+					if (this._options.env.debug) {
+						console.error('DomainError', _error);
+					}
+
+					return reply.status(error.status).send(_error);
+				}
+
+				if (error instanceof RuntimeError) {
+					const _error = error.toJSON(['extra']);
+
+					if (this._options.env.debug) {
+						console.error('RuntimeError', _error);
+					}
+
+					return reply.status(error.status).send(_error);
+				}
+
+				return reply
+					.status(500)
+					.send(this._options.errors.unknown.toJSON(['extra']));
+			},
+		);
 	}
 
 	/**
@@ -111,116 +197,31 @@ export abstract class AbstractServer<
 		}
 
 		return new HttpServer(
-			this as unknown as ApiServerInterface<any, AppEnvironment>
+			this as unknown as ApiServerInterface<any, AppEnvironment>,
 		);
 	}
 
 	/**
-	 * Initialize the API server.
+	 * Get the global environment.
 	 *
-	 * @protected
+	 * @public
 	 * @memberof ApiServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected async init(): Promise<void> {
-		// Prepare application logger
-		Logger.prepare(this._app.log);
-
-		// Plugins
-		await this._options.plugins.apply(this._app, this._options.env);
-
-		// Routes
-		await this._options.routes.apply(this._app, this._options.env);
-
-		// Not found routes
-		this._app.setNotFoundHandler((request, reply) => {
-			reply
-				.status(404)
-				.send(this._options.errors.notFound.toJSON(['extra']));
-		});
-
-		// Any error
-		this._app.setErrorHandler<DomainError | Error | FastifyError>(
-			(error, request, reply) => {
-				this._app.log.error(error);
-
-				if (this._options.errors.handler) {
-					this._options.errors.handler(error);
-				}
-
-				if (error instanceof DomainError) {
-					const _error = error.toJSON(['extra']);
-
-					if (this._options.env.debug) {
-						console.error('DomainError', _error);
-					}
-
-					return reply.status(error.status).send(_error);
-				}
-
-				if (error instanceof RuntimeError) {
-					const _error = error.toJSON(['extra']);
-
-					if (this._options.env.debug) {
-						console.error('RuntimeError', _error);
-					}
-
-					return reply.status(error.status).send(_error);
-				}
-
-				return reply
-					.status(500)
-					.send(this._options.errors.unknown.toJSON(['extra']));
-			}
-		);
+	public getEnv(): AppEnvironment {
+		return this._options.env;
 	}
 
 	/**
-	 * Get the default logger configuration.
+	 * Get the Fastify application.
 	 *
 	 * @public
-	 * @static
-	 * @memberof AbstractServer
-	 * @since 3.0.0
+	 * @memberof ApiServer
+	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected static defaultLogger(
-		env: string,
-		log_path: string,
-		debug: boolean
-	) {
-		const logger: Record<string, any> = {
-			file: `${log_path}/server.log`,
-			level: debug ? 'debug' : 'info',
-		};
-
-		if (env === 'production') {
-			return logger;
-		}
-
-		return {
-			...logger,
-			transport: {
-				target: 'pino-pretty',
-				options: {
-					translateTime: true,
-					colorize: true,
-					ignore: 'pid',
-					messageFormat:
-						'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
-				},
-			},
-			serializers: {
-				req: (req: any) => ({
-					method: req.method,
-					url: req.url,
-					hostname: req.hostname,
-				}),
-				res: (res: any) => ({
-					statusCode: res.statusCode,
-				}),
-			},
-		};
+	public getApp() {
+		return this._app;
 	}
 }

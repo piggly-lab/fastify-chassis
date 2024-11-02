@@ -24,7 +24,7 @@ export class InvalidRequestBodyError extends ApplicationError {
 			message || 'Invalid request body.',
 			422,
 			hint || 'One or more values were not accepted at request body.',
-			extra
+			extra,
 		);
 	}
 }

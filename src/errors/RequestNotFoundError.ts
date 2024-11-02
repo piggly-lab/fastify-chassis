@@ -23,7 +23,7 @@ export class RequestNotFoundError extends ApplicationError {
 			message || 'Cannot access requested URL.',
 			404,
 			hint || 'You must check the URL or the request parameters.',
-			extra
+			extra,
 		);
 	}
 }

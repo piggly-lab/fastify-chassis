@@ -1,63 +1,60 @@
-import type { FastifyInstance, RawServerBase, RawServerDefault } from 'fastify';
+import type {
+	FastifyBaseLogger,
+	RawServerDefault,
+	FastifyInstance,
+	RawServerBase,
+} from 'fastify';
 import type { JSONExportable } from '@piggly/ddd-toolkit';
-import type * as jose from 'jose';
-import type pino from 'pino';
 
-import type { HttpInsecureServer } from '@/www/fastify/HttpInsecureServer';
-import type { HttpSecureServer } from '@/www/fastify/HttpSecureServer';
 import type { Http2InsecureServer } from '@/www/fastify/Http2InsecureServer';
+import type { HttpInsecureServer } from '@/www/fastify/HttpInsecureServer';
 import type { Http2SecureServer } from '@/www/fastify/Http2SecureServer';
+import type { HttpSecureServer } from '@/www/fastify/HttpSecureServer';
+import type { LoggerService } from '@/services';
 
 /** Environment */
 export type EnvironmentType =
-	| 'test'
-	| 'sandbox'
 	| 'homologation'
 	| 'development'
-	| 'production';
+	| 'production'
+	| 'sandbox'
+	| 'test';
 
 export type DefaultEnvironment = {
-	environment: EnvironmentType;
-	name: string;
-	port: number;
-	host: string;
-	debug: boolean;
-	timezone: string;
-	log_path: string;
-};
-
-export type EnvironmentAccessTokenOptions = {
-	access_token: AccessTokenServiceOptions;
-};
-
-export type EnvironmentMysqlOptions = {
-	mysql: {
-		host: string;
-		port: number;
-		database: string;
-		username: string;
-		password: string;
+	api: {
+		rest: {
+			name: string;
+			port: number;
+			host: string;
+		};
 	};
+	app: {
+		root_path: string;
+		timezone: string;
+	};
+
+	environment: EnvironmentType;
+	debug: boolean;
 };
 
 /** Fastify server */
 export type FastifyServer<
-	AppEnvironment extends DefaultEnvironment = DefaultEnvironment
+	AppEnvironment extends DefaultEnvironment = DefaultEnvironment,
 > =
-	| HttpInsecureServer<AppEnvironment>
-	| HttpSecureServer<AppEnvironment>
 	| Http2InsecureServer<AppEnvironment>
-	| Http2SecureServer<AppEnvironment>;
+	| HttpInsecureServer<AppEnvironment>
+	| Http2SecureServer<AppEnvironment>
+	| HttpSecureServer<AppEnvironment>;
 
 /** Fastify modifiers */
 export type FastifyModifierCallable<
 	Server extends RawServerBase,
-	AppEnvironment = DefaultEnvironment
+	AppEnvironment = DefaultEnvironment,
 > = (app: FastifyInstance<Server>, env: AppEnvironment) => Promise<void>;
 
 export interface FastifyAppliable<
 	Server extends RawServerBase,
-	AppEnvironment = DefaultEnvironment
+	AppEnvironment = DefaultEnvironment,
 > {
 	apply: FastifyModifierCallable<Server, AppEnvironment>;
 }
@@ -66,111 +63,43 @@ export interface FastifyAppliable<
 
 export type ApiServerOptions<
 	Server extends RawServerBase = RawServerDefault,
-	AppEnvironment = DefaultEnvironment
+	AppEnvironment = DefaultEnvironment,
 > = {
-	routes: FastifyAppliable<Server, AppEnvironment>;
-	plugins: FastifyAppliable<Server, AppEnvironment>;
-	logger?: pino.BaseLogger;
-	env: AppEnvironment;
 	hooks: {
 		beforeInit?: FastifyModifierCallable<Server, AppEnvironment>;
 		afterInit?: FastifyModifierCallable<Server, AppEnvironment>;
 	};
 	errors: {
+		handler?: (err: any) => void;
 		notFound: JSONExportable;
 		unknown: JSONExportable;
-		handler?: (err: any) => void;
 	};
+	plugins: FastifyAppliable<Server, AppEnvironment>;
+	fastify: { logger?: FastifyBaseLogger | boolean };
+	routes: FastifyAppliable<Server, AppEnvironment>;
+	logger: LoggerService;
+	env: AppEnvironment;
 };
 
 export interface ApiServerInterface<
 	Server extends RawServerBase,
-	AppEnvironment extends DefaultEnvironment
+	AppEnvironment extends DefaultEnvironment,
 > {
+	bootstrap: () => Promise<HttpServerInterface<Server, AppEnvironment>>;
 	getApp: () => FastifyInstance<Server>;
 	getEnv: () => AppEnvironment;
-	bootstrap: () => Promise<HttpServerInterface<Server, AppEnvironment>>;
 }
 
 export interface HttpServerInterface<
 	Server extends RawServerBase,
-	AppEnvironment extends DefaultEnvironment
+	AppEnvironment extends DefaultEnvironment,
 > {
 	getApi: () => ApiServerInterface<Server, AppEnvironment>;
-	start(): Promise<boolean>;
 	restart(): Promise<boolean>;
+	start(): Promise<boolean>;
 	stop(): Promise<boolean>;
 	isRunning(): boolean;
 }
-
-/** Validations */
-
-export interface RuleInterface {
-	assert(): void;
-}
-
-/** Services */
-export type JWTServiceOptions = {
-	issuer?: string;
-	audience?: string[];
-	accept_issuer?: string;
-	accept_audience?: string;
-	ed25519: {
-		public_key?: string;
-		private_key?: string;
-	};
-	ttl?: number;
-	required_claims?: string[];
-};
-
-export interface JWTServiceInterface<Payload extends jose.JWTPayload> {
-	issue(jti: string, sub: string, payload: Payload): Promise<string>;
-	get(token: string): Promise<Payload>;
-}
-
-export type AccessTokenServiceOptions = {
-	unlock_by: {
-		role: boolean;
-		scope: boolean;
-		origin: boolean;
-		ip: boolean;
-	};
-};
-
-export type AccessTokenServiceErrors = {
-	forbidden: () => Error;
-	unauthorized: () => Error;
-	missing_header: () => Error;
-	invalid_token_type: () => Error;
-};
-
-/** Schemas */
-
-export type SchemaHandler<ReturnEntry> = (entry: any) => ReturnEntry;
-
-/** Pagination */
-export type PaginationMetaProps = {
-	current_page: number;
-	size: number;
-	current_size: number;
-	total_size: number;
-	total_pages: number;
-};
-
-export type PaginationMetaJSON = {
-	current_page: number;
-	current_size: number;
-	total_pages: number;
-	total_size: number;
-	next_url: string | null;
-	previous_url: string | null;
-};
-
-/** Events */
-
-export type INVALID_ACCESS_TOKEN_EVENT = {
-	error: any;
-};
 
 declare module 'fastify' {
 	export interface FastifyRequest {
