@@ -1,7 +1,8 @@
 import fs from 'fs';
+
 import moment from 'moment-timezone';
 
-export const SyncErrorOnDiskHandler = (log_path: string) => (reason: any) => {
+export const SyncErrorOnDiskHandler = (root_path: string) => (reason: any) => {
 	const errs = [];
 	errs.push('❌ An error has occurred');
 
@@ -14,7 +15,7 @@ export const SyncErrorOnDiskHandler = (log_path: string) => (reason: any) => {
 				}
 
 				errs.push(
-					`reason: ${JSON.stringify(reason?.toObject() || reason)}`
+					`reason: ${JSON.stringify(reason?.toObject() || reason)}`,
 				);
 				break;
 			default:
@@ -26,5 +27,5 @@ export const SyncErrorOnDiskHandler = (log_path: string) => (reason: any) => {
 	const err = `[${moment().utc().format()}] > ${errs.join(' ')}.\n`;
 	console.error(err);
 
-	fs.appendFileSync(`${log_path}/error.log`, err);
+	fs.appendFileSync(`${root_path}/logs/error.log`, err);
 };

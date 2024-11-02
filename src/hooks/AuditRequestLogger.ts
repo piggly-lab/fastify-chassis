@@ -1,10 +1,12 @@
-import { pino } from 'pino';
-import {
+import type {
 	FastifyInstance,
-	FastifyReply,
 	FastifyRequest,
 	RawServerBase,
+	FastifyReply,
 } from 'fastify';
+
+import { pino } from 'pino';
+
 import { EnvironmentType } from '@/types';
 
 /**
@@ -26,39 +28,39 @@ export const AuditRequestLogger = <Server extends RawServerBase>(
 	app: FastifyInstance<Server>,
 	log_path: string,
 	environment: EnvironmentType = 'development',
-	log_level = 'info'
+	log_level = 'info',
 ) => {
 	const logger = pino(
 		{
-			level: log_level,
-			timestamp: true,
 			transport:
 				environment === 'development'
 					? {
-							target: 'pino-pretty',
 							options: {
+								messageFormat:
+									'{msg} [id={reqId} method={method} url={url} statusCode={statusCode} responseTime={responseTime}ms hostname={hostname} jti={jti} sub={sub} scopes={scopes} role={role}]',
 								translateTime: true,
 								colorize: true,
 								ignore: 'pid',
-								messageFormat:
-									'{msg} [id={reqId} method={method} url={url} statusCode={statusCode} responseTime={responseTime}ms hostname={hostname} jti={jti} sub={sub} scopes={scopes} role={role}]',
 							},
-					  }
+							target: 'pino-pretty',
+						}
 					: undefined,
+			level: log_level,
+			timestamp: true,
 		},
 		pino.destination({
 			dest: `${log_path}/audit.log`,
-		})
+		}),
 	);
 
 	const format = (req: FastifyRequest, res: FastifyReply) => {
 		const formatted: Record<string, any> = {
-			reqId: req.id,
-			method: req.method,
-			url: req.url,
-			hostname: req.hostname,
-			statusCode: res.statusCode,
 			responseTime: res.elapsedTime,
+			statusCode: res.statusCode,
+			hostname: req.hostname,
+			method: req.method,
+			reqId: req.id,
+			url: req.url,
 		};
 
 		if (req.access_token) {

@@ -23,7 +23,7 @@ export class UnauthorizedError extends ApplicationError {
 			message || 'Credentials not allowed.',
 			401,
 			hint || 'Your credentials are invalid or expired.',
-			extra
+			extra,
 		);
 	}
 }

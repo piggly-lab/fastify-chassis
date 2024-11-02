@@ -23,7 +23,7 @@ export class ForbiddenError extends ApplicationError {
 			message || 'Access not allowed.',
 			403,
 			hint || "You don't have enough permissions for this request.",
-			extra
+			extra,
 		);
 	}
 }

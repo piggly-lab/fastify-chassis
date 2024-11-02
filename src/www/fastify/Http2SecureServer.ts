@@ -1,7 +1,9 @@
-import fastify, { FastifyHttp2SecureOptions } from 'fastify';
 import { Http2SecureServer as Server } from 'http2';
 
-import { ApiServerOptions, DefaultEnvironment } from '@/types';
+import fastify, { FastifyHttp2SecureOptions } from 'fastify';
+
+import { DefaultEnvironment, ApiServerOptions } from '@/types';
+
 import { AbstractServer } from './AbstractServer';
 
 /**
@@ -9,7 +11,7 @@ import { AbstractServer } from './AbstractServer';
  * @copyright Piggly Lab 2023
  */
 export class Http2SecureServer<
-	AppEnvironment extends DefaultEnvironment
+	AppEnvironment extends DefaultEnvironment,
 > extends AbstractServer<Server, AppEnvironment> {
 	/**
 	 * Create a new API server.
@@ -24,32 +26,32 @@ export class Http2SecureServer<
 	constructor(
 		options: ApiServerOptions<Server, AppEnvironment>,
 		ssl: {
-			cert: string | Buffer | Array<string | Buffer> | undefined;
-			key: string | Buffer | Array<string | Buffer> | undefined;
+			cert: Array<string | Buffer> | undefined | string | Buffer;
+			key: Array<string | Buffer> | undefined | string | Buffer;
 		},
-		fastifyOptions?: FastifyHttp2SecureOptions<Server>
+		fastifyOptions?: FastifyHttp2SecureOptions<Server>,
 	) {
 		super(
 			options,
 			fastify(
 				fastifyOptions || {
-					http2: true,
+					logger:
+						options.fastify.logger ||
+						AbstractServer.defaultLogger(
+							options.env.environment,
+							options.env.app.root_path,
+							options.env.debug,
+						),
 					https: {
 						allowHTTP1: true,
 						cert: ssl.cert,
 						key: ssl.key,
 					},
-					logger:
-						options.logger ||
-						AbstractServer.defaultLogger(
-							options.env.environment,
-							options.env.log_path,
-							options.env.debug
-						),
 					disableRequestLogging: options.env.environment === 'production',
 					trustProxy: true,
-				}
-			)
+					http2: true,
+				},
+			),
 		);
 	}
 }

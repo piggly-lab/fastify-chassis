@@ -23,7 +23,7 @@ export class MissingAuthorizationHeaderError extends ApplicationError {
 			message || 'Invalid authorization header.',
 			401,
 			hint || 'The `Authorization` header is required.',
-			extra
+			extra,
 		);
 	}
 }
