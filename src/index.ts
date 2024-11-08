@@ -9,6 +9,18 @@ export {
 	ForbiddenError,
 } from './errors';
 
+export {
+	CookieBuilderService,
+	NonceBuilderService,
+	HealthCheckService,
+	EnvironmentService,
+	JWTBuilderService,
+	CleanUpService,
+	StartupService,
+	CryptoService,
+	LoggerService,
+} from './services';
+
 export type {
 	FastifyModifierCallable,
 	HttpServerInterface,
@@ -35,17 +47,6 @@ export {
 	getBody,
 	getIp,
 } from './utils';
-
-export {
-	CookieBuilderService,
-	NonceBuilderService,
-	HealthCheckService,
-	EnvironmentService,
-	JWTBuilderService,
-	CleanUpService,
-	CryptoService,
-	LoggerService,
-} from './services';
 
 export {
 	Http2InsecureServer,

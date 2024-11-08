@@ -4,14 +4,14 @@ import { ServiceProvider } from '@piggly/ddd-toolkit';
  * @file Handle clean up check services.
  * @copyright Piggly Lab 2024
  */
-export class CleanUpService {
+export class StartupService {
 	/**
 	 * Handlers to check.
 	 *
 	 * @type {Map<string, () => Promise<boolean>>}
 	 * @protected
-	 * @memberof CleanUpService
-	 * @since 5.2.0
+	 * @memberof StartupService
+	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected handlers: Map<string, () => Promise<boolean>>;
@@ -21,8 +21,8 @@ export class CleanUpService {
 	 *
 	 * @public
 	 * @constructor
-	 * @memberof CleanUpService
-	 * @since 5.2.0
+	 * @memberof StartupService
+	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	constructor() {
@@ -32,34 +32,34 @@ export class CleanUpService {
 	/**
 	 * Register application service.
 	 *
-	 * @param {CleanUpService} service
+	 * @param {StartupService} service
 	 * @public
 	 * @static
-	 * @memberof CleanUpService
-	 * @since 5.2.0
+	 * @memberof StartupService
+	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static register(service: CleanUpService): void {
-		if (ServiceProvider.has('CleanUpService')) {
+	public static register(service: StartupService): void {
+		if (ServiceProvider.has('StartupService')) {
 			return;
 		}
 
-		ServiceProvider.register('CleanUpService', service);
+		ServiceProvider.register('StartupService', service);
 	}
 
 	/**
 	 * Resolve application service.
 	 *
-	 * @returns {CleanUpService}
+	 * @returns {StartupService}
 	 * @throws {Error} If service is not registered.
 	 * @public
 	 * @static
-	 * @memberof CleanUpService
-	 * @since 5.2.0
+	 * @memberof StartupService
+	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static resolve(): CleanUpService {
-		return ServiceProvider.resolve('CleanUpService');
+	public static resolve(): StartupService {
+		return ServiceProvider.resolve('StartupService');
 	}
 
 	/**
@@ -70,11 +70,11 @@ export class CleanUpService {
 	 * 	services: Record<string, boolean>;
 	 * }>}
 	 * @public
-	 * @memberof CleanUpService
+	 * @memberof StartupService
 	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async softClean(): Promise<{
+	public async softStart(): Promise<{
 		services: Record<string, boolean>;
 		success: boolean;
 	}> {
@@ -106,12 +106,12 @@ export class CleanUpService {
 	 * 	services: Record<string, boolean>;
 	 * }>}
 	 * @public
-	 * @memberof CleanUpService
+	 * @memberof StartupService
 	 * @since 5.3.0
 	 * @throws {Error} If any handler fails.
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async clean(): Promise<{
+	public async start(): Promise<{
 		services: Record<string, boolean>;
 		success: boolean;
 	}> {
@@ -135,8 +135,8 @@ export class CleanUpService {
 	 * @param {string} name
 	 * @param {() => Promise<boolean>} handler
 	 * @public
-	 * @memberof CleanUpService
-	 * @since 5.2.0
+	 * @memberof StartupService
+	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public register(name: string, handler: () => Promise<boolean>): void {
