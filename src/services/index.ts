@@ -1,3 +1,4 @@
+export { CookieBuilderService } from './CookieBuilderService';
 export { NonceBuilderService } from './NonceBuilderService';
 export { HealthCheckService } from './HealthCheckService';
 export { EnvironmentService } from './EnvironmentService';

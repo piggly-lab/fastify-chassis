@@ -37,6 +37,16 @@ export {
 } from './utils';
 
 export {
+	CookieBuilderService,
+	NonceBuilderService,
+	HealthCheckService,
+	EnvironmentService,
+	JWTBuilderService,
+	CryptoService,
+	LoggerService,
+} from './services';
+
+export {
 	Http2InsecureServer,
 	HttpInsecureServer,
 	Http2SecureServer,
@@ -46,14 +56,7 @@ export {
 	HttpServer,
 } from './www';
 
-export {
-	NonceBuilderService,
-	HealthCheckService,
-	EnvironmentService,
-	JWTBuilderService,
-	CryptoService,
-	LoggerService,
-} from './services';
+export { processUncaught, logErrorOnFile, processStop } from './nodejs';
 
 export { SyncErrorOnDiskHandler } from './handlers';
 
