@@ -42,6 +42,7 @@ export {
 	HealthCheckService,
 	EnvironmentService,
 	JWTBuilderService,
+	CleanUpService,
 	CryptoService,
 	LoggerService,
 } from './services';
