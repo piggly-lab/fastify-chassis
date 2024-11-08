@@ -65,6 +65,10 @@ export class LoggerService {
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public static register(service: LoggerService): void {
+		if (ServiceProvider.has('LoggerService')) {
+			return;
+		}
+
 		ServiceProvider.register('LoggerService', service);
 	}
 

@@ -34,6 +34,24 @@ export class EnvironmentService<
 	}
 
 	/**
+	 * Register application service.
+	 *
+	 * @param {LoggerService} service
+	 * @public
+	 * @static
+	 * @memberof LoggerService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static register(service: EnvironmentService<any>): void {
+		if (ServiceProvider.has('EnvironmentService')) {
+			return;
+		}
+
+		ServiceProvider.register('EnvironmentService', service);
+	}
+
+	/**
 	 * Resolve application service.
 	 *
 	 * @returns {LoggerService}
@@ -48,20 +66,6 @@ export class EnvironmentService<
 		Settings extends DefaultEnvironment = DefaultEnvironment,
 	>(): EnvironmentService<Settings> {
 		return ServiceProvider.resolve('EnvironmentService');
-	}
-
-	/**
-	 * Register application service.
-	 *
-	 * @param {LoggerService} service
-	 * @public
-	 * @static
-	 * @memberof LoggerService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static register(service: EnvironmentService<any>): void {
-		ServiceProvider.register('EnvironmentService', service);
 	}
 
 	/**
