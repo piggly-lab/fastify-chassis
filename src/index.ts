@@ -56,6 +56,8 @@ export {
 	HttpServer,
 } from './www';
 
+export { processUncaught, logErrorOnFile, processStop } from './nodejs';
+
 export { SyncErrorOnDiskHandler } from './handlers';
 
 export { AuditRequestLogger } from './hooks';

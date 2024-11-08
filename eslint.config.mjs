@@ -19,7 +19,6 @@ export default [
 			'build',
 			'coverage',
 			'node_modules',
-			'debug',
 			'.jest',
 			'*.d.ts',
 			'**/*.config.js',

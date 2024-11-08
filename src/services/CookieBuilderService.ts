@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
-import { TOrUndefined } from '@piggly/ddd-toolkit';
+import { ServiceProvider, TOrUndefined } from '@piggly/ddd-toolkit';
 
 import { EnvironmentType } from '@/types';
 
@@ -48,6 +48,39 @@ export class CookieBuilderService {
 	 */
 	public constructor(settings: CookieBuilderServiceSettings) {
 		this._settings = settings;
+	}
+
+	/**
+	 * Register application service.
+	 *
+	 * @param {CookieBuilderService} service
+	 * @public
+	 * @static
+	 * @memberof CookieBuilderService
+	 * @since 5.1.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static register(service: CookieBuilderService): void {
+		if (ServiceProvider.has('CookieBuilderService')) {
+			return;
+		}
+
+		ServiceProvider.register('CookieBuilderService', service);
+	}
+
+	/**
+	 * Resolve application service.
+	 *
+	 * @returns {CookieBuilderService}
+	 * @throws {Error} If service is not registered.
+	 * @public
+	 * @static
+	 * @memberof CookieBuilderService
+	 * @since 5.1.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static resolve(): CookieBuilderService {
+		return ServiceProvider.resolve('CookieBuilderService');
 	}
 
 	/**
