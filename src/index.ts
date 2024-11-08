@@ -37,6 +37,16 @@ export {
 } from './utils';
 
 export {
+	CookieBuilderService,
+	NonceBuilderService,
+	HealthCheckService,
+	EnvironmentService,
+	JWTBuilderService,
+	CryptoService,
+	LoggerService,
+} from './services';
+
+export {
 	Http2InsecureServer,
 	HttpInsecureServer,
 	Http2SecureServer,
@@ -45,15 +55,6 @@ export {
 	AbstractServer,
 	HttpServer,
 } from './www';
-
-export {
-	NonceBuilderService,
-	HealthCheckService,
-	EnvironmentService,
-	JWTBuilderService,
-	CryptoService,
-	LoggerService,
-} from './services';
 
 export { SyncErrorOnDiskHandler } from './handlers';
 
