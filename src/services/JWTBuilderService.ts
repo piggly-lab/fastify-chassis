@@ -5,7 +5,7 @@ import { ServiceProvider } from '@piggly/ddd-toolkit';
 type JWTBuilderServiceSettings = {
 	private_key: string;
 	public_key: string;
-	audience: string;
+	audience?: string;
 	issuer: string;
 };
 
@@ -74,8 +74,9 @@ export class JWTBuilderService {
 	 * @param {string} sub
 	 * @param {number} ttl
 	 * @param {object} payload
+	 * @param {string} audience If not provided, the audience set in settings will be used.
 	 * @returns {Promise<string>}
-	 * @throws {Error} If the token cannot be issued.
+	 * @throws {Error} If the token cannot be issued or audience is not set on param and settings.
 	 * @public
 	 * @async
 	 * @memberof JWTBuilderService
@@ -87,16 +88,23 @@ export class JWTBuilderService {
 		sub: string,
 		ttl: number,
 		payload: Payload,
+		audience?: string,
 	): Promise<string> {
 		const jose = await import('jose');
 		const timestamp = Math.floor(new Date().getTime() / 1000);
+
+		if (!audience && !this._settings.audience) {
+			throw new Error(
+				'Audience is required. You must set audience in settings or pass it to the issue method.',
+			);
+		}
 
 		return new jose.SignJWT(payload)
 			.setProtectedHeader({ alg: 'EdDSA' })
 			.setJti(jti)
 			.setIssuer(this._settings.issuer)
 			.setSubject(sub)
-			.setAudience(this._settings.audience)
+			.setAudience(audience ?? this._settings.audience ?? 'none')
 			.setIssuedAt(timestamp)
 			.setNotBefore(timestamp)
 			.setExpirationTime(timestamp + ttl)
@@ -108,8 +116,9 @@ export class JWTBuilderService {
 	 *
 	 * @param {string} token
 	 * @param {string[]} required_claims
+	 * @param {string} audience If not provided, the audience set in settings will be used.
 	 * @returns {Promise<Payload>}
-	 * @throws {Error} If the token is invalid.
+	 * @throws {Error} If the token is invalid or audience is not set on param and settings.
 	 * @public
 	 * @async
 	 * @memberof JWTBuilderService
@@ -119,8 +128,15 @@ export class JWTBuilderService {
 	public async read<Payload extends JWTPayload>(
 		token: string,
 		required_claims: string[],
+		audience?: string,
 	): Promise<Payload> {
 		const jose = await import('jose');
+
+		if (!audience && !this._settings.audience) {
+			throw new Error(
+				'Audience is required. You must set audience in settings or pass it to the read method.',
+			);
+		}
 
 		const { payload } = await jose.jwtVerify(
 			token,
@@ -134,7 +150,7 @@ export class JWTBuilderService {
 					'exp',
 					...required_claims,
 				],
-				audience: this._settings.audience,
+				audience: audience ?? this._settings.audience ?? 'none',
 				issuer: this._settings.issuer,
 			},
 		);

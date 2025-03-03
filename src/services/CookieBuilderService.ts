@@ -16,7 +16,9 @@ type CookieOptions = {
 	partitioned?: boolean;
 	httpOnly?: boolean;
 	signed?: boolean;
+	secure?: boolean;
 	maxAge?: number;
+	domain?: string;
 	expires?: Date;
 	path?: string;
 };
@@ -111,12 +113,12 @@ export class CookieBuilderService {
 		}
 
 		(reply as any).setCookie(name, value, {
-			secure: this._settings.environment === 'production',
+			secure: options?.secure ?? this._settings.environment === 'production',
+			domain: options?.domain ?? this._settings.domain,
 			sameSite: options?.sameSite ?? 'lax',
 			httpOnly: options?.httpOnly ?? false,
 			partitioned: options?.partitioned,
 			signed: options?.signed ?? false,
-			domain: this._settings.domain,
 			priority: options?.priority,
 			path: options?.path ?? '/',
 			expires: options?.expires,

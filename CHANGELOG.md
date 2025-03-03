@@ -56,3 +56,9 @@
 ## 4.0.3 at (`2024-06-19`)
 
 * Fix on `getIp` and `getOrigin` util functions.
+
+## 5.4.0 at (`2025-03-03`)
+
+* Add `audience` param to `JWTBuilderService` methods;
+* Add `domain` and `secure` params to `CookieBuilderService` methods;
+* Keep compatibility with previous versions.

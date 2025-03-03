@@ -1,10 +1,11 @@
 {
 	"folders": [
 		{
-			"path": "."
-		}
+			"path": ".",
+		},
 	],
 	"settings": {
-		"editor.fontSize": 12
-	}
+		"editor.fontSize": 13,
+		"terminal.integrated.fontSize": 13,
+	},
 }
