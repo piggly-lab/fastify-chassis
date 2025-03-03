@@ -1,5 +1,8 @@
 export {
+	getHeaderValues,
+	evaluateHeaders,
 	getBearerToken,
+	getHeaderValue,
 	getBasicToken,
 	replyError,
 	getQueries,

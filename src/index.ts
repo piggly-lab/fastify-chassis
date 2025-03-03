@@ -1,4 +1,23 @@
 export {
+	getHeaderValues,
+	evaluateHeaders,
+	getBearerToken,
+	getHeaderValue,
+	getBasicToken,
+	loadConfigIni,
+	replyError,
+	getQueries,
+	loadDotEnv,
+	getOrigin,
+	mountURL,
+	getParam,
+	getQuery,
+	loadYaml,
+	getBody,
+	getIp,
+} from './utils';
+
+export {
 	MissingAuthorizationHeaderError,
 	InvalidAuthorizationHeaderError,
 	InvalidRequestQueryError,
@@ -31,22 +50,6 @@ export type {
 	EnvironmentType,
 	FastifyServer,
 } from './types';
-
-export {
-	getBearerToken,
-	getBasicToken,
-	loadConfigIni,
-	replyError,
-	getQueries,
-	loadDotEnv,
-	getOrigin,
-	mountURL,
-	getParam,
-	getQuery,
-	loadYaml,
-	getBody,
-	getIp,
-} from './utils';
 
 export {
 	Http2InsecureServer,

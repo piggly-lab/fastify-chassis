@@ -190,3 +190,86 @@ export const getBasicToken = (
 		password,
 	};
 };
+
+/**
+ * Get a header from request. If not found, return a default value or an empty string.
+ *
+ * @param {FastifyRequest} request
+ * @param {string} header
+ * @param {string} [default_value]
+ * @returns {string}
+ * @since 5.4.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
+export const getHeaderValue = (
+	request: FastifyRequest,
+	header: string,
+	default_value?: string,
+): string => {
+	const found = request.headers[header.toLowerCase()];
+
+	if (found !== null && found !== undefined && found.length !== 0) {
+		return lastAvailableString(found, default_value ?? '');
+	}
+
+	return default_value ?? '';
+};
+
+/**
+ * Get all values for a header from request. If not found, return a default value or an empty array.
+ *
+ * @param {FastifyRequest} request
+ * @param {string} header
+ * @param {Array<string>} [default_value]
+ * @returns {Array<string>}
+ * @since 5.4.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
+export const getHeaderValues = (
+	request: FastifyRequest,
+	header: string,
+	default_value?: Array<string>,
+): Array<string> => {
+	const found = request.headers[header.toLowerCase()];
+
+	if (found !== null && found !== undefined && found.length !== 0) {
+		if (Array.isArray(found)) {
+			return found;
+		}
+
+		return found.split(',').map(value => value.trim());
+	}
+
+	return default_value ?? [];
+};
+
+/**
+ * Evaluate if the request headers match the expected headers.
+ * Will return an array with the headers that do not match the expected headers.
+ *
+ * @param {FastifyRequest} request
+ * @param {Record<string, string>} expected_headers
+ * @returns {Array<string>}
+ * @since 5.4.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
+export const evaluateHeaders = (
+	request: FastifyRequest,
+	expected_headers: Record<string, string>,
+): Array<string> => {
+	const headers = Object.keys(expected_headers);
+
+	for (let i = 0; i < headers.length; i += 1) {
+		const header = headers[i];
+		const values = getHeaderValues(request, header);
+
+		if (
+			values.length !== 0 &&
+			values.some(value => value !== expected_headers[header])
+		) {
+			return [header];
+		}
+	}
+
+	return [];
+};

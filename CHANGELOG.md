@@ -61,4 +61,5 @@
 
 * Add `audience` param to `JWTBuilderService` methods;
 * Add `domain` and `secure` params to `CookieBuilderService` methods;
+* Add `getHeaderValue`, `getHeaderValues` and `evaluateHeaders` utils;
 * Keep compatibility with previous versions.
