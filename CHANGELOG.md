@@ -62,4 +62,7 @@
 * Add `audience` param to `JWTBuilderService` methods;
 * Add `domain` and `secure` params to `CookieBuilderService` methods;
 * Add `getHeaderValue`, `getHeaderValues` and `evaluateHeaders` utils;
+* Add `SchemaValidationMiddleware` and `BasicAuthMiddleware` middlewares;
+* Add `ApplicationErrorEvent`, `DependencyErrorEvent` and `UnauthorizedAccessEvent` events;
+* Add many errors, see `./errors` folder for more information;
 * Keep compatibility with previous versions.

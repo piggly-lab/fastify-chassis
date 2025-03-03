@@ -1,8 +1,25 @@
 export {
+	MissingAuthorizationHeaderError,
+	InvalidAuthorizationHeaderError,
+	InvalidPayloadSchemaError,
+	InvalidRequestQueryError,
+	InvalidRequestBodyError,
+	ServiceUnavailableError,
+	RequestApiNotFoundError,
+	ResourceForbiddenError,
+	RequestApiServerError,
+	RequestNotFoundError,
+	RequestServerError,
+	UnauthorizedError,
+	ForbiddenError,
+} from './errors';
+
+export {
 	getHeaderValues,
 	evaluateHeaders,
 	getBearerToken,
 	getHeaderValue,
+	evaluateSchema,
 	getBasicToken,
 	loadConfigIni,
 	replyError,
@@ -16,17 +33,6 @@ export {
 	getBody,
 	getIp,
 } from './utils';
-
-export {
-	MissingAuthorizationHeaderError,
-	InvalidAuthorizationHeaderError,
-	InvalidRequestQueryError,
-	InvalidRequestBodyError,
-	RequestNotFoundError,
-	RequestServerError,
-	UnauthorizedError,
-	ForbiddenError,
-} from './errors';
 
 export {
 	CookieBuilderService,
@@ -60,6 +66,14 @@ export {
 	AbstractServer,
 	HttpServer,
 } from './www';
+
+export {
+	UnauthorizedAccessEvent,
+	ApplicationErrorEvent,
+	DependencyErrorEvent,
+} from './events';
+
+export { SchemaValidationMiddleware, BasicAuthMiddleware } from './middlewares';
 
 export { processUncaught, logErrorOnFile, processStop } from './nodejs';
 

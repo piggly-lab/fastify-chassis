@@ -1,7 +1,12 @@
 export { MissingAuthorizationHeaderError } from './MissingAuthorizationHeaderError';
 export { InvalidAuthorizationHeaderError } from './InvalidAuthorizationHeaderError';
+export { InvalidPayloadSchemaError } from './InvalidPayloadSchemaError';
 export { InvalidRequestQueryError } from './InvalidRequestQueryError';
 export { InvalidRequestBodyError } from './InvalidRequestBodyError';
+export { ServiceUnavailableError } from './ServiceUnavailableError';
+export { RequestApiNotFoundError } from './RequestApiNotFoundError';
+export { ResourceForbiddenError } from './ResourceForbiddenError';
+export { RequestApiServerError } from './RequestApiServerError';
 export { RequestNotFoundError } from './RequestNotFoundError';
 export { RequestServerError } from './RequestServerError';
 export { UnauthorizedError } from './UnauthorizedError';
