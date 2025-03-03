@@ -3,10 +3,10 @@ import type { JWTPayload } from 'jose';
 import { ServiceProvider } from '@piggly/ddd-toolkit';
 
 type JWTBuilderServiceSettings = {
-	private_key: string;
-	public_key: string;
 	audience?: string;
 	issuer: string;
+	private_key: string;
+	public_key: string;
 };
 
 /**
@@ -36,35 +36,6 @@ export class JWTBuilderService {
 	 */
 	public constructor(settings: JWTBuilderServiceSettings) {
 		this._settings = settings;
-	}
-
-	/**
-	 * Register application service.
-	 *
-	 * @param {JWTBuilderService} service
-	 * @public
-	 * @static
-	 * @memberof JWTBuilderService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static register(service: JWTBuilderService): void {
-		ServiceProvider.register('JWTBuilderService', service);
-	}
-
-	/**
-	 * Resolve application service.
-	 *
-	 * @returns {JWTBuilderService}
-	 * @throws {Error} If service is not registered.
-	 * @public
-	 * @static
-	 * @memberof JWTBuilderService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static resolve(): JWTBuilderService {
-		return ServiceProvider.resolve('JWTBuilderService');
 	}
 
 	/**
@@ -142,6 +113,8 @@ export class JWTBuilderService {
 			token,
 			await jose.importSPKI(this._settings.public_key, 'EdDSA'),
 			{
+				audience: audience ?? this._settings.audience ?? 'none',
+				issuer: this._settings.issuer,
 				requiredClaims: [
 					'jti',
 					'iss',
@@ -150,11 +123,38 @@ export class JWTBuilderService {
 					'exp',
 					...required_claims,
 				],
-				audience: audience ?? this._settings.audience ?? 'none',
-				issuer: this._settings.issuer,
 			},
 		);
 
 		return payload as Payload;
+	}
+
+	/**
+	 * Register application service.
+	 *
+	 * @param {JWTBuilderService} service
+	 * @public
+	 * @static
+	 * @memberof JWTBuilderService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static register(service: JWTBuilderService): void {
+		ServiceProvider.register('JWTBuilderService', service);
+	}
+
+	/**
+	 * Resolve application service.
+	 *
+	 * @returns {JWTBuilderService}
+	 * @throws {Error} If service is not registered.
+	 * @public
+	 * @static
+	 * @memberof JWTBuilderService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static resolve(): JWTBuilderService {
+		return ServiceProvider.resolve('JWTBuilderService');
 	}
 }

@@ -9,7 +9,7 @@ import { UnauthorizedError } from '@/errors';
 import { getBasicToken } from '@/utils';
 
 export const BasicAuthMiddleware =
-	(expected: { username: string; password: string }) =>
+	(expected: { password: string; username: string }) =>
 	(
 		request: FastifyRequest,
 		reply: FastifyReply,

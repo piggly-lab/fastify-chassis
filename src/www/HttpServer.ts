@@ -15,6 +15,16 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	implements HttpServerInterface<any, AppEnvironment>
 {
 	/**
+	 * The API server.
+	 *
+	 * @protected
+	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected _api;
+
+	/**
 	 * The running state.
 	 *
 	 * @type {boolean}
@@ -24,16 +34,6 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _running: boolean;
-
-	/**
-	 * The API server.
-	 *
-	 * @protected
-	 * @memberof HttpServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	protected _api;
 
 	/**
 	 * Create a new HTTP server.
@@ -51,70 +51,59 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	}
 
 	/**
-	 * Listen to the server.
+	 * Get the API server.
+	 *
+	 * @public
+	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public getApi() {
+		return this._api;
+	}
+
+	/**
+	 * Check if the server is running.
+	 *
+	 * @returns {boolean}
+	 * @public
+	 * @memberof HttpServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public isRunning(): boolean {
+		return this._running;
+	}
+
+	/**
+	 * Restart the server.
 	 *
 	 * @returns {Promise<boolean>}
-	 * @protected
+	 * @public
 	 * @async
 	 * @memberof HttpServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected async listen(): Promise<boolean> {
-		const logger = this.getLogger();
-
-		if (this.isRunning()) {
-			logger.warn('⚠️ HttpServer: Server is already running');
-
-			return new Promise(res => {
-				res(false);
-			});
-		}
-
-		return new Promise((res, rej) => {
-			const { host, port } = this._api.getEnv().api.rest;
-
-			this._api.getApp().listen({ port, host }, (err, address) => {
-				if (err) {
-					logger.error(
-						'⛔ HttpServer: Error while starting to listen on host',
-						err,
-					);
-					return rej(err);
-				}
-
-				logger.info(
-					`⚡️ HttpServer: Server is running at ${host}:${port} - ${address}`,
-				);
-
-				res(true);
-			});
-		});
+	public async restart(): Promise<boolean> {
+		await this.stop();
+		await this.start();
+		return this._running;
 	}
 
 	/**
-	 * Get the logger.
+	 * Start the server.
 	 *
-	 * @returns {LoggerService}
-	 * @protected
+	 * @returns {Promise<boolean>}
+	 * @public
+	 * @async
 	 * @memberof HttpServer
-	 * @since 5.4.0
+	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected getLogger(): LoggerService {
-		const logger = ServiceProvider.get<LoggerService>('LoggerService');
-		if (!logger) {
-			// If no logger is registered, register on console
-			// it will be a fallback to don't break the app
-			console.warn('⚠️ HttpServer: No logger registered, using fallback');
-
-			return new LoggerService({
-				alwaysOnConsole: true,
-				ignoreUnset: true,
-			});
-		}
-
-		return logger;
+	public async start(): Promise<boolean> {
+		this._running = await this.listen();
+		return this._running;
 	}
 
 	/**
@@ -167,58 +156,69 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	}
 
 	/**
-	 * Restart the server.
+	 * Get the logger.
+	 *
+	 * @returns {LoggerService}
+	 * @protected
+	 * @memberof HttpServer
+	 * @since 5.4.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected getLogger(): LoggerService {
+		const logger = ServiceProvider.get<LoggerService>('LoggerService');
+		if (!logger) {
+			// If no logger is registered, register on console
+			// it will be a fallback to don't break the app
+			console.warn('⚠️ HttpServer: No logger registered, using fallback');
+
+			return new LoggerService({
+				alwaysOnConsole: true,
+				ignoreUnset: true,
+			});
+		}
+
+		return logger;
+	}
+
+	/**
+	 * Listen to the server.
 	 *
 	 * @returns {Promise<boolean>}
-	 * @public
+	 * @protected
 	 * @async
 	 * @memberof HttpServer
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async restart(): Promise<boolean> {
-		await this.stop();
-		await this.start();
-		return this._running;
-	}
+	protected async listen(): Promise<boolean> {
+		const logger = this.getLogger();
 
-	/**
-	 * Start the server.
-	 *
-	 * @returns {Promise<boolean>}
-	 * @public
-	 * @async
-	 * @memberof HttpServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public async start(): Promise<boolean> {
-		this._running = await this.listen();
-		return this._running;
-	}
+		if (this.isRunning()) {
+			logger.warn('⚠️ HttpServer: Server is already running');
 
-	/**
-	 * Check if the server is running.
-	 *
-	 * @returns {boolean}
-	 * @public
-	 * @memberof HttpServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public isRunning(): boolean {
-		return this._running;
-	}
+			return new Promise(res => {
+				res(false);
+			});
+		}
 
-	/**
-	 * Get the API server.
-	 *
-	 * @public
-	 * @memberof HttpServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public getApi() {
-		return this._api;
+		return new Promise((res, rej) => {
+			const { host, port } = this._api.getEnv().api.rest;
+
+			this._api.getApp().listen({ host, port }, (err, address) => {
+				if (err) {
+					logger.error(
+						'⛔ HttpServer: Error while starting to listen on host',
+						err,
+					);
+					return rej(err);
+				}
+
+				logger.info(
+					`⚡️ HttpServer: Server is running at ${host}:${port} - ${address}`,
+				);
+
+				res(true);
+			});
+		});
 	}
 }

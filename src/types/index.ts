@@ -23,9 +23,9 @@ export type EnvironmentType =
 export type DefaultEnvironment = {
 	api: {
 		rest: {
+			host: string;
 			name: string;
 			port: number;
-			host: string;
 		};
 	};
 	app: {
@@ -33,8 +33,8 @@ export type DefaultEnvironment = {
 		timezone: string;
 	};
 
-	environment: EnvironmentType;
 	debug: boolean;
+	environment: EnvironmentType;
 };
 
 /** Fastify server */
@@ -65,20 +65,20 @@ export type ApiServerOptions<
 	Server extends RawServerBase = RawServerDefault,
 	AppEnvironment = DefaultEnvironment,
 > = {
-	hooks: {
-		beforeInit?: FastifyModifierCallable<Server, AppEnvironment>;
-		afterInit?: FastifyModifierCallable<Server, AppEnvironment>;
-	};
+	env: AppEnvironment;
 	errors: {
 		handler?: (err: any) => void;
 		notFound: JSONExportable;
 		unknown: JSONExportable;
 	};
-	plugins: FastifyAppliable<Server, AppEnvironment>;
 	fastify: { logger?: FastifyBaseLogger | boolean };
-	routes: FastifyAppliable<Server, AppEnvironment>;
+	hooks: {
+		afterInit?: FastifyModifierCallable<Server, AppEnvironment>;
+		beforeInit?: FastifyModifierCallable<Server, AppEnvironment>;
+	};
 	logger?: LoggerService;
-	env: AppEnvironment;
+	plugins: FastifyAppliable<Server, AppEnvironment>;
+	routes: FastifyAppliable<Server, AppEnvironment>;
 };
 
 export interface ApiServerInterface<

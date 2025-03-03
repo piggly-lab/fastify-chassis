@@ -40,14 +40,14 @@ export class InvalidPayloadSchemaError extends BusinessRuleViolationError {
 	protected static prepareIssues(
 		issues: Array<ZodIssue>,
 		mapTo?: Record<string, string>,
-	): Array<{ message: string; field: string }> {
-		const errors: Array<{ message: string; field: string }> = [];
+	): Array<{ field: string; message: string }> {
+		const errors: Array<{ field: string; message: string }> = [];
 
 		issues.forEach(issue => {
 			const field = issue.path.map(i => i.toString()).join('.');
 
 			if (!mapTo) {
-				errors.push({ message: issue.message, field });
+				errors.push({ field, message: issue.message });
 				return;
 			}
 
@@ -57,7 +57,7 @@ export class InvalidPayloadSchemaError extends BusinessRuleViolationError {
 				return;
 			}
 
-			errors.push({ message: issue.message, field: mapped });
+			errors.push({ field: mapped, message: issue.message });
 		});
 
 		return errors;

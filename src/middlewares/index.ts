@@ -1,2 +1,2 @@
-export { SchemaValidationMiddleware } from './SchemaValidationMiddleware';
 export { BasicAuthMiddleware } from './BasicAuthMiddleware';
+export { SchemaValidationMiddleware } from './SchemaValidationMiddleware';

@@ -31,6 +31,8 @@ export class Http2InsecureServer<
 			options,
 			fastify(
 				fastifyOptions || {
+					disableRequestLogging: options.env.environment === 'production',
+					http2: true,
 					logger:
 						options.fastify.logger ||
 						AbstractServer.defaultLogger(
@@ -38,9 +40,7 @@ export class Http2InsecureServer<
 							options.env.app.root_path,
 							options.env.debug,
 						),
-					disableRequestLogging: options.env.environment === 'production',
 					trustProxy: true,
-					http2: true,
 				},
 			),
 		);

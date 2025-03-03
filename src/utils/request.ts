@@ -174,7 +174,7 @@ export const getBearerToken = (
  */
 export const getBasicToken = (
 	headers: IncomingHttpHeaders,
-): TOrUndefined<{ username: string; password: string }> => {
+): TOrUndefined<{ password: string; username: string }> => {
 	const header = /Basic (.*)/gi.exec(headers.authorization || '');
 
 	if (!header || !header[1]) {
@@ -186,8 +186,8 @@ export const getBasicToken = (
 		.split(':');
 
 	return {
-		username,
 		password,
+		username,
 	};
 };
 

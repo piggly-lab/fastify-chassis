@@ -35,6 +35,11 @@ export class HttpSecureServer<
 			options,
 			fastify(
 				fastifyOptions || {
+					disableRequestLogging: options.env.environment === 'production',
+					https: {
+						cert: ssl.cert,
+						key: ssl.key,
+					},
 					logger:
 						options.fastify.logger ||
 						AbstractServer.defaultLogger(
@@ -42,11 +47,6 @@ export class HttpSecureServer<
 							options.env.app.root_path,
 							options.env.debug,
 						),
-					disableRequestLogging: options.env.environment === 'production',
-					https: {
-						cert: ssl.cert,
-						key: ssl.key,
-					},
 					trustProxy: true,
 				},
 			),

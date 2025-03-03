@@ -48,43 +48,109 @@ export class LoggerService {
 	constructor(settings: Partial<LoggerServiceSettings> = {}) {
 		this._settings = {
 			alwaysOnConsole: settings.alwaysOnConsole ?? false,
-			ignoreUnset: settings.ignoreUnset ?? true,
 			callbacks: settings.callbacks ?? {},
+			ignoreUnset: settings.ignoreUnset ?? true,
 			onFlush: settings.onFlush,
 		};
 	}
 
 	/**
-	 * Register application service.
+	 * Debug.
 	 *
-	 * @param {LoggerService} service
-	 * @public
-	 * @static
+	 * @param {string} message
+	 * @param {Record<string, any>} meta
+	 * @returns {void}
+	 * @protected
 	 * @memberof LoggerService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static register(service: LoggerService): void {
-		if (ServiceProvider.has('LoggerService')) {
-			return;
-		}
-
-		ServiceProvider.register('LoggerService', service);
+	public debug(message?: string, ...args: any[]): void {
+		return this.prepare('onDebug', message, ...args);
 	}
 
 	/**
-	 * Resolve application service.
+	 * Error.
 	 *
-	 * @returns {LoggerService}
-	 * @throws {Error} If service is not registered.
-	 * @public
-	 * @static
+	 * @param {string} message
+	 * @param {Record<string, any>} meta
+	 * @returns {void}
+	 * @protected
 	 * @memberof LoggerService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static resolve(): LoggerService {
-		return ServiceProvider.resolve('LoggerService');
+	public error(message?: string, ...args: any[]): void {
+		return this.prepare('onError', message, ...args);
+	}
+
+	/**
+	 * Fatal.
+	 *
+	 * @param {string} message
+	 * @param {Record<string, any>} meta
+	 * @returns {void}
+	 * @protected
+	 * @memberof LoggerService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public fatal(message?: string, ...args: any[]): void {
+		return this.prepare('onFatal', message, ...args);
+	}
+
+	/**
+	 * Flush the logger.
+	 *
+	 * @returns {void}
+	 * @protected
+	 * @memberof LoggerService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public flush(): void {
+		if (!this._settings.onFlush) {
+			return;
+		}
+
+		this._settings.onFlush().catch(error => {
+			if (!this._settings.onError) {
+				console.error('LoggerService.UncaughtError', error);
+				return;
+			}
+
+			this._settings.onError(error);
+		});
+	}
+
+	/**
+	 * Info.
+	 *
+	 * @param {string} message
+	 * @param {Record<string, any>} meta
+	 * @returns {void}
+	 * @protected
+	 * @memberof LoggerService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public info(message?: string, ...args: any[]): void {
+		return this.prepare('onInfo', message, ...args);
+	}
+
+	/**
+	 * Warn.
+	 *
+	 * @param {string} message
+	 * @param {Record<string, any>} meta
+	 * @returns {void}
+	 * @protected
+	 * @memberof LoggerService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public warn(message?: string, ...args: any[]): void {
+		return this.prepare('onWarn', message, ...args);
 	}
 
 	/**
@@ -149,101 +215,35 @@ export class LoggerService {
 	}
 
 	/**
-	 * Flush the logger.
+	 * Register application service.
 	 *
-	 * @returns {void}
-	 * @protected
+	 * @param {LoggerService} service
+	 * @public
+	 * @static
 	 * @memberof LoggerService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public flush(): void {
-		if (!this._settings.onFlush) {
+	public static register(service: LoggerService): void {
+		if (ServiceProvider.has('LoggerService')) {
 			return;
 		}
 
-		this._settings.onFlush().catch(error => {
-			if (!this._settings.onError) {
-				console.error('LoggerService.UncaughtError', error);
-				return;
-			}
-
-			this._settings.onError(error);
-		});
+		ServiceProvider.register('LoggerService', service);
 	}
 
 	/**
-	 * Debug.
+	 * Resolve application service.
 	 *
-	 * @param {string} message
-	 * @param {Record<string, any>} meta
-	 * @returns {void}
-	 * @protected
+	 * @returns {LoggerService}
+	 * @throws {Error} If service is not registered.
+	 * @public
+	 * @static
 	 * @memberof LoggerService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public debug(message?: string, ...args: any[]): void {
-		return this.prepare('onDebug', message, ...args);
-	}
-
-	/**
-	 * Error.
-	 *
-	 * @param {string} message
-	 * @param {Record<string, any>} meta
-	 * @returns {void}
-	 * @protected
-	 * @memberof LoggerService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public error(message?: string, ...args: any[]): void {
-		return this.prepare('onError', message, ...args);
-	}
-
-	/**
-	 * Fatal.
-	 *
-	 * @param {string} message
-	 * @param {Record<string, any>} meta
-	 * @returns {void}
-	 * @protected
-	 * @memberof LoggerService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public fatal(message?: string, ...args: any[]): void {
-		return this.prepare('onFatal', message, ...args);
-	}
-
-	/**
-	 * Warn.
-	 *
-	 * @param {string} message
-	 * @param {Record<string, any>} meta
-	 * @returns {void}
-	 * @protected
-	 * @memberof LoggerService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public warn(message?: string, ...args: any[]): void {
-		return this.prepare('onWarn', message, ...args);
-	}
-
-	/**
-	 * Info.
-	 *
-	 * @param {string} message
-	 * @param {Record<string, any>} meta
-	 * @returns {void}
-	 * @protected
-	 * @memberof LoggerService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public info(message?: string, ...args: any[]): void {
-		return this.prepare('onInfo', message, ...args);
+	public static resolve(): LoggerService {
+		return ServiceProvider.resolve('LoggerService');
 	}
 }

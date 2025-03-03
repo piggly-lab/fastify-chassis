@@ -30,36 +30,17 @@ export class StartupService {
 	}
 
 	/**
-	 * Register application service.
+	 * Register a new handler.
 	 *
-	 * @param {StartupService} service
+	 * @param {string} name
+	 * @param {() => Promise<boolean>} handler
 	 * @public
-	 * @static
 	 * @memberof StartupService
 	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static register(service: StartupService): void {
-		if (ServiceProvider.has('StartupService')) {
-			return;
-		}
-
-		ServiceProvider.register('StartupService', service);
-	}
-
-	/**
-	 * Resolve application service.
-	 *
-	 * @returns {StartupService}
-	 * @throws {Error} If service is not registered.
-	 * @public
-	 * @static
-	 * @memberof StartupService
-	 * @since 5.3.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static resolve(): StartupService {
-		return ServiceProvider.resolve('StartupService');
+	public register(name: string, handler: () => Promise<boolean>): void {
+		this.handlers.set(name, handler);
 	}
 
 	/**
@@ -130,16 +111,35 @@ export class StartupService {
 	}
 
 	/**
-	 * Register a new handler.
+	 * Register application service.
 	 *
-	 * @param {string} name
-	 * @param {() => Promise<boolean>} handler
+	 * @param {StartupService} service
 	 * @public
+	 * @static
 	 * @memberof StartupService
 	 * @since 5.3.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public register(name: string, handler: () => Promise<boolean>): void {
-		this.handlers.set(name, handler);
+	public static register(service: StartupService): void {
+		if (ServiceProvider.has('StartupService')) {
+			return;
+		}
+
+		ServiceProvider.register('StartupService', service);
+	}
+
+	/**
+	 * Resolve application service.
+	 *
+	 * @returns {StartupService}
+	 * @throws {Error} If service is not registered.
+	 * @public
+	 * @static
+	 * @memberof StartupService
+	 * @since 5.3.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static resolve(): StartupService {
+		return ServiceProvider.resolve('StartupService');
 	}
 }

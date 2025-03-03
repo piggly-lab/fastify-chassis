@@ -5,14 +5,14 @@ import { EventPayload, EventBus } from '@piggly/event-bus';
 import { getIp } from '@/utils';
 
 export class UnauthorizedAccessEvent extends EventPayload<{
+	ip: string;
 	method: string;
 	url: string;
-	ip: string;
 }> {
 	constructor(request: FastifyRequest) {
 		super('UNAUTHORIZED_ACCESS_EVENT', {
-			method: request.method,
 			ip: getIp(request),
+			method: request.method,
 			url: request.url,
 		});
 	}

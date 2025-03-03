@@ -12,10 +12,10 @@ import { replyError, getBody } from '@/utils';
 
 export const SchemaValidationMiddleware =
 	(schemas: {
-		querystring?: ZodSchema<any>;
+		body?: ZodSchema<any>;
 		headers?: ZodSchema<any>;
 		params?: ZodSchema<any>;
-		body?: ZodSchema<any>;
+		querystring?: ZodSchema<any>;
 	}) =>
 	(
 		request: FastifyRequest,

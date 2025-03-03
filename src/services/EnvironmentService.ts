@@ -34,6 +34,18 @@ export class EnvironmentService<
 	}
 
 	/**
+	 * Get the settings.
+	 *
+	 * @public
+	 * @memberof EnvironmentService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public get settings(): Settings {
+		return this._settings;
+	}
+
+	/**
 	 * Register application service.
 	 *
 	 * @param {LoggerService} service
@@ -66,17 +78,5 @@ export class EnvironmentService<
 		Settings extends DefaultEnvironment = DefaultEnvironment,
 	>(): EnvironmentService<Settings> {
 		return ServiceProvider.resolve('EnvironmentService');
-	}
-
-	/**
-	 * Get the settings.
-	 *
-	 * @public
-	 * @memberof EnvironmentService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public get settings(): Settings {
-		return this._settings;
 	}
 }

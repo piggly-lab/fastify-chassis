@@ -60,51 +60,60 @@ export abstract class AbstractServer<
 	}
 
 	/**
-	 * Get the default logger configuration.
+	 * Bootstrap the API server.
+	 *
+	 * This method will prepare the environment, the logger,
+	 * the plugins and the routes for fastify.
+	 *
+	 * After that, it will return a new HttpServer instance.
+	 * This instance will be used to start the server.
 	 *
 	 * @public
-	 * @static
-	 * @memberof AbstractServer
-	 * @since 3.0.0
+	 * @async
+	 * @memberof ApiServer
+	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	protected static defaultLogger(
-		env: string,
-		root_path: string,
-		debug: boolean,
-	) {
-		const logger: Record<string, any> = {
-			file: `${root_path}/logs/server.log`,
-			level: debug ? 'debug' : 'info',
-		};
-
-		if (env === 'production') {
-			return logger;
+	public async bootstrap(): Promise<
+		HttpServerInterface<Server, AppEnvironment>
+	> {
+		if (this._options.hooks.beforeInit) {
+			await this._options.hooks.beforeInit(this._app, this._options.env);
 		}
 
-		return {
-			...logger,
-			transport: {
-				options: {
-					messageFormat:
-						'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
-					translateTime: true,
-					colorize: true,
-					ignore: 'pid',
-				},
-				target: 'pino-pretty',
-			},
-			serializers: {
-				req: (req: any) => ({
-					hostname: req.hostname,
-					method: req.method,
-					url: req.url,
-				}),
-				res: (res: any) => ({
-					statusCode: res.statusCode,
-				}),
-			},
-		};
+		await this.init();
+
+		if (this._options.hooks.afterInit) {
+			await this._options.hooks.afterInit(this._app, this._options.env);
+		}
+
+		return new HttpServer(
+			this as unknown as ApiServerInterface<any, AppEnvironment>,
+		);
+	}
+
+	/**
+	 * Get the Fastify application.
+	 *
+	 * @public
+	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public getApp() {
+		return this._app;
+	}
+
+	/**
+	 * Get the global environment.
+	 *
+	 * @public
+	 * @memberof ApiServer
+	 * @since 1.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public getEnv(): AppEnvironment {
+		return this._options.env;
 	}
 
 	/**
@@ -173,59 +182,50 @@ export abstract class AbstractServer<
 	}
 
 	/**
-	 * Bootstrap the API server.
-	 *
-	 * This method will prepare the environment, the logger,
-	 * the plugins and the routes for fastify.
-	 *
-	 * After that, it will return a new HttpServer instance.
-	 * This instance will be used to start the server.
+	 * Get the default logger configuration.
 	 *
 	 * @public
-	 * @async
-	 * @memberof ApiServer
-	 * @since 1.0.0
+	 * @static
+	 * @memberof AbstractServer
+	 * @since 3.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async bootstrap(): Promise<
-		HttpServerInterface<Server, AppEnvironment>
-	> {
-		if (this._options.hooks.beforeInit) {
-			await this._options.hooks.beforeInit(this._app, this._options.env);
+	protected static defaultLogger(
+		env: string,
+		root_path: string,
+		debug: boolean,
+	) {
+		const logger: Record<string, any> = {
+			file: `${root_path}/logs/server.log`,
+			level: debug ? 'debug' : 'info',
+		};
+
+		if (env === 'production') {
+			return logger;
 		}
 
-		await this.init();
-
-		if (this._options.hooks.afterInit) {
-			await this._options.hooks.afterInit(this._app, this._options.env);
-		}
-
-		return new HttpServer(
-			this as unknown as ApiServerInterface<any, AppEnvironment>,
-		);
-	}
-
-	/**
-	 * Get the global environment.
-	 *
-	 * @public
-	 * @memberof ApiServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public getEnv(): AppEnvironment {
-		return this._options.env;
-	}
-
-	/**
-	 * Get the Fastify application.
-	 *
-	 * @public
-	 * @memberof ApiServer
-	 * @since 1.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public getApp() {
-		return this._app;
+		return {
+			...logger,
+			serializers: {
+				req: (req: any) => ({
+					hostname: req.hostname,
+					method: req.method,
+					url: req.url,
+				}),
+				res: (res: any) => ({
+					statusCode: res.statusCode,
+				}),
+			},
+			transport: {
+				options: {
+					colorize: true,
+					ignore: 'pid',
+					messageFormat:
+						'{msg} [id={reqId} method={req.method} url={req.url} statusCode={res.statusCode} responseTime={responseTime}ms hostname={req.hostname}]',
+					translateTime: true,
+				},
+				target: 'pino-pretty',
+			},
+		};
 	}
 }

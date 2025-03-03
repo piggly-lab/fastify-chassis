@@ -8,8 +8,8 @@ export class ApplicationErrorEvent extends EventPayload<{
 	constructor(error: Error, hash: string) {
 		super('APPLICATION_ERROR_EVENT', {
 			error: error.message,
-			raw: error,
 			hash,
+			raw: error,
 		});
 	}
 
