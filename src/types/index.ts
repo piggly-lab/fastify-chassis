@@ -77,7 +77,7 @@ export type ApiServerOptions<
 	plugins: FastifyAppliable<Server, AppEnvironment>;
 	fastify: { logger?: FastifyBaseLogger | boolean };
 	routes: FastifyAppliable<Server, AppEnvironment>;
-	logger: LoggerService;
+	logger?: LoggerService;
 	env: AppEnvironment;
 };
 

@@ -61,7 +61,7 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected async listen(): Promise<boolean> {
-		const logger = ServiceProvider.resolve<LoggerService>('LoggerService');
+		const logger = this.getLogger();
 
 		if (this.isRunning()) {
 			logger.warn('⚠️ HttpServer: Server is already running');
@@ -93,6 +93,31 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	}
 
 	/**
+	 * Get the logger.
+	 *
+	 * @returns {LoggerService}
+	 * @protected
+	 * @memberof HttpServer
+	 * @since 5.4.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected getLogger(): LoggerService {
+		const logger = ServiceProvider.get<LoggerService>('LoggerService');
+		if (!logger) {
+			// If no logger is registered, register on console
+			// it will be a fallback to don't break the app
+			console.warn('⚠️ HttpServer: No logger registered, using fallback');
+
+			return new LoggerService({
+				alwaysOnConsole: true,
+				ignoreUnset: true,
+			});
+		}
+
+		return logger;
+	}
+
+	/**
 	 * Stop the server.
 	 *
 	 * @returns {Promise<boolean>}
@@ -103,7 +128,7 @@ export class HttpServer<AppEnvironment extends DefaultEnvironment>
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	public async stop(): Promise<boolean> {
-		const logger = ServiceProvider.resolve<LoggerService>('LoggerService');
+		const logger = this.getLogger();
 		logger.info('⚠️ HttpServer: Stopping server');
 
 		const response = await new Promise<boolean>((res, rej) => {

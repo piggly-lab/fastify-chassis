@@ -116,7 +116,11 @@ export abstract class AbstractServer<
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected async init(): Promise<void> {
-		LoggerService.register(this._options.logger);
+		if (this._options.logger) {
+			// if logger is already registered, it will be ignored
+			LoggerService.register(this._options.logger);
+		}
+
 		EnvironmentService.register(new EnvironmentService(this._options.env));
 
 		// Plugins

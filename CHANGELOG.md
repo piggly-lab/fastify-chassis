@@ -65,4 +65,5 @@
 * Add `SchemaValidationMiddleware` and `BasicAuthMiddleware` middlewares;
 * Add `ApplicationErrorEvent`, `DependencyErrorEvent` and `UnauthorizedAccessEvent` events;
 * Add many errors, see `./errors` folder for more information;
+* Fix `LoggerService` behavior to be able to register it before create `AbstractServer` instance, sometimes you may want to register logger before to handle application dependencies logging;
 * Keep compatibility with previous versions.
