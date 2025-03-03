@@ -6,85 +6,16 @@ import crypto from 'node:crypto';
  */
 export class CryptoService {
 	/**
-	 * Compare a password with bcrypt hash.
+	 * Random generates a client key with uuid.
 	 *
-	 * @returns {Promise<boolean>}
-	 * @public
-	 * @static
-	 * @async
-	 * @memberof CryptoService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static async passwordCompare(
-		password: string,
-		hash: string,
-	): Promise<boolean> {
-		const bcrypt = await import('bcrypt');
-
-		return new Promise<boolean>((resolve, reject) => {
-			bcrypt.compare(password, hash, (err, result) => {
-				if (err) {
-					return reject(err);
-				}
-
-				return resolve(result);
-			});
-		});
-	}
-
-	/**
-	 * Verify a string with a specific key HMAC sha256.
-	 *
-	 * @param {string} data
-	 * @param {string} key
-	 * @param {string} signature
 	 * @public
 	 * @static
 	 * @memberof CryptoService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static verify(data: string, signature: string, key: string): boolean {
-		try {
-			const generatedSignature = this.sign(data, key);
-
-			return crypto.timingSafeEqual(
-				Buffer.from(generatedSignature, 'hex'),
-				Buffer.from(signature, 'hex'),
-			);
-		} catch (err) {
-			console.error(err);
-			return false;
-		}
-	}
-
-	/**
-	 * Hash a password with bcrypt hash.
-	 *
-	 * @returns {Promise<string>}
-	 * @public
-	 * @static
-	 * @async
-	 * @memberof CryptoService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static async passwordHash(
-		password: string,
-		salt = 12,
-	): Promise<string> {
-		const bcrypt = await import('bcrypt');
-
-		return new Promise<string>((resolve, reject) => {
-			bcrypt.hash(password, salt, (err, hash) => {
-				if (err) {
-					return reject(err);
-				}
-
-				return resolve(hash);
-			});
-		});
+	public static generateClientKey(): string {
+		return crypto.randomUUID();
 	}
 
 	/**
@@ -123,6 +54,62 @@ export class CryptoService {
 	}
 
 	/**
+	 * Compare a password with bcrypt hash.
+	 *
+	 * @returns {Promise<boolean>}
+	 * @public
+	 * @static
+	 * @async
+	 * @memberof CryptoService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static async passwordCompare(
+		password: string,
+		hash: string,
+	): Promise<boolean> {
+		const bcrypt = await import('bcrypt');
+
+		return new Promise<boolean>((resolve, reject) => {
+			bcrypt.compare(password, hash, (err, result) => {
+				if (err) {
+					return reject(err);
+				}
+
+				return resolve(result);
+			});
+		});
+	}
+
+	/**
+	 * Hash a password with bcrypt hash.
+	 *
+	 * @returns {Promise<string>}
+	 * @public
+	 * @static
+	 * @async
+	 * @memberof CryptoService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static async passwordHash(
+		password: string,
+		salt = 12,
+	): Promise<string> {
+		const bcrypt = await import('bcrypt');
+
+		return new Promise<string>((resolve, reject) => {
+			bcrypt.hash(password, salt, (err, hash) => {
+				if (err) {
+					return reject(err);
+				}
+
+				return resolve(hash);
+			});
+		});
+	}
+
+	/**
 	 * Sign a string with a specific key HMAC sha256.
 	 *
 	 * @param {string} data
@@ -138,15 +125,28 @@ export class CryptoService {
 	}
 
 	/**
-	 * Random generates a client key with uuid.
+	 * Verify a string with a specific key HMAC sha256.
 	 *
+	 * @param {string} data
+	 * @param {string} key
+	 * @param {string} signature
 	 * @public
 	 * @static
 	 * @memberof CryptoService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static generateClientKey(): string {
-		return crypto.randomUUID();
+	public static verify(data: string, signature: string, key: string): boolean {
+		try {
+			const generatedSignature = this.sign(data, key);
+
+			return crypto.timingSafeEqual(
+				Buffer.from(generatedSignature, 'hex'),
+				Buffer.from(signature, 'hex'),
+			);
+		} catch (err) {
+			console.error(err);
+			return false;
+		}
 	}
 }

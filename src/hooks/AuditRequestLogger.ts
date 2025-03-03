@@ -32,21 +32,21 @@ export const AuditRequestLogger = <Server extends RawServerBase>(
 ) => {
 	const logger = pino(
 		{
+			level: log_level,
+			timestamp: true,
 			transport:
 				environment === 'development'
 					? {
 							options: {
+								colorize: true,
+								ignore: 'pid',
 								messageFormat:
 									'{msg} [id={reqId} method={method} url={url} statusCode={statusCode} responseTime={responseTime}ms hostname={hostname} jti={jti} sub={sub} scopes={scopes} role={role}]',
 								translateTime: true,
-								colorize: true,
-								ignore: 'pid',
 							},
 							target: 'pino-pretty',
 						}
 					: undefined,
-			level: log_level,
-			timestamp: true,
 		},
 		pino.destination({
 			dest: `${log_path}/audit.log`,
@@ -55,11 +55,11 @@ export const AuditRequestLogger = <Server extends RawServerBase>(
 
 	const format = (req: FastifyRequest, res: FastifyReply) => {
 		const formatted: Record<string, any> = {
-			responseTime: res.elapsedTime,
-			statusCode: res.statusCode,
 			hostname: req.hostname,
 			method: req.method,
 			reqId: req.id,
+			responseTime: res.elapsedTime,
+			statusCode: res.statusCode,
 			url: req.url,
 		};
 

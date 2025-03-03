@@ -1,5 +1,8 @@
 export {
+	getHeaderValues,
+	evaluateHeaders,
 	getBearerToken,
+	getHeaderValue,
 	getBasicToken,
 	replyError,
 	getQueries,
@@ -12,4 +15,4 @@ export {
 
 export { loadConfigIni, loadDotEnv, loadYaml } from './config';
 
-export { mountURL } from './global';
+export { evaluateSchema, mountURL } from './global';

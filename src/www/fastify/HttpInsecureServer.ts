@@ -31,6 +31,7 @@ export class HttpInsecureServer<
 			options,
 			fastify(
 				fastifyOptions ?? {
+					disableRequestLogging: options.env.environment === 'production',
 					logger:
 						options.fastify.logger ??
 						AbstractServer.defaultLogger(
@@ -38,7 +39,6 @@ export class HttpInsecureServer<
 							options.env.app.root_path,
 							options.env.debug,
 						),
-					disableRequestLogging: options.env.environment === 'production',
 					trustProxy: true,
 				},
 			),

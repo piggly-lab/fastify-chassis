@@ -56,3 +56,14 @@
 ## 4.0.3 at (`2024-06-19`)
 
 * Fix on `getIp` and `getOrigin` util functions.
+
+## 5.4.0 at (`2025-03-03`)
+
+* Add `audience` param to `JWTBuilderService` methods;
+* Add `domain` and `secure` params to `CookieBuilderService` methods;
+* Add `getHeaderValue`, `getHeaderValues` and `evaluateHeaders` utils;
+* Add `SchemaValidationMiddleware` and `BasicAuthMiddleware` middlewares;
+* Add `ApplicationErrorEvent`, `DependencyErrorEvent` and `UnauthorizedAccessEvent` events;
+* Add many errors, see `./errors` folder for more information;
+* Fix `LoggerService` behavior to be able to register it before create `AbstractServer` instance, sometimes you may want to register logger before to handle application dependencies logging;
+* Keep compatibility with previous versions.

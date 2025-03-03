@@ -6,9 +6,9 @@ import { CryptoService } from './CryptoService';
 
 type NonceBuilderServiceSettings = {
 	errors: {
-		onError?: (err: any) => Promise<void>;
-		cannotValidate: DomainError;
 		cannotIssue: DomainError;
+		cannotValidate: DomainError;
+		onError?: (err: any) => Promise<void>;
 	};
 	prefix?: string;
 	ttl: number;
@@ -20,17 +20,6 @@ type NonceBuilderServiceSettings = {
  */
 export class NonceBuilderService {
 	/**
-	 * Settings.
-	 *
-	 * @type {NonceBuilderServiceSettings}
-	 * @protected
-	 * @memberof NonceBuilderService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	protected _settings: NonceBuilderServiceSettings;
-
-	/**
 	 * Redis client.
 	 *
 	 * @type {RedisClientType}
@@ -40,6 +29,17 @@ export class NonceBuilderService {
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
 	protected _client: RedisClientType;
+
+	/**
+	 * Settings.
+	 *
+	 * @type {NonceBuilderServiceSettings}
+	 * @protected
+	 * @memberof NonceBuilderService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	protected _settings: NonceBuilderServiceSettings;
 
 	/**
 	 * Constructor.
@@ -59,32 +59,33 @@ export class NonceBuilderService {
 	}
 
 	/**
-	 * Register application service.
+	 * Issue a nonce.
 	 *
-	 * @param {NonceBuilderService} service
+	 * @returns {Promise<Result<string, DomainError>>}
 	 * @public
-	 * @static
+	 * @async
 	 * @memberof NonceBuilderService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public static register(service: NonceBuilderService): void {
-		ServiceProvider.register('NonceBuilderService', service);
-	}
+	public async issue(): Promise<Result<string, DomainError>> {
+		const token = CryptoService.generateClientSecret(32);
 
-	/**
-	 * Resolve application service.
-	 *
-	 * @returns {NonceBuilderService}
-	 * @throws {Error} If service is not registered.
-	 * @public
-	 * @static
-	 * @memberof NonceBuilderService
-	 * @since 5.0.0
-	 * @author Caique Araujo <caique@piggly.com.br>
-	 */
-	public static resolve(): NonceBuilderService {
-		return ServiceProvider.resolve('NonceBuilderService');
+		try {
+			await this._client.setEx(
+				`${this._settings.prefix}nonce:${token}`,
+				this._settings.ttl,
+				'1',
+			);
+
+			return Result.ok(token);
+		} catch (err: any) {
+			if (this._settings.errors.onError) {
+				this._settings.errors.onError(err);
+			}
+
+			return Result.fail(this._settings.errors.cannotIssue);
+		}
 	}
 
 	/**
@@ -123,32 +124,31 @@ export class NonceBuilderService {
 	}
 
 	/**
-	 * Issue a nonce.
+	 * Register application service.
 	 *
-	 * @returns {Promise<Result<string, DomainError>>}
+	 * @param {NonceBuilderService} service
 	 * @public
-	 * @async
+	 * @static
 	 * @memberof NonceBuilderService
 	 * @since 5.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
-	public async issue(): Promise<Result<string, DomainError>> {
-		const token = CryptoService.generateClientSecret(32);
+	public static register(service: NonceBuilderService): void {
+		ServiceProvider.register('NonceBuilderService', service);
+	}
 
-		try {
-			await this._client.setEx(
-				`${this._settings.prefix}nonce:${token}`,
-				this._settings.ttl,
-				'1',
-			);
-
-			return Result.ok(token);
-		} catch (err: any) {
-			if (this._settings.errors.onError) {
-				this._settings.errors.onError(err);
-			}
-
-			return Result.fail(this._settings.errors.cannotIssue);
-		}
+	/**
+	 * Resolve application service.
+	 *
+	 * @returns {NonceBuilderService}
+	 * @throws {Error} If service is not registered.
+	 * @public
+	 * @static
+	 * @memberof NonceBuilderService
+	 * @since 5.0.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static resolve(): NonceBuilderService {
+		return ServiceProvider.resolve('NonceBuilderService');
 	}
 }
