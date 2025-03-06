@@ -3,10 +3,9 @@ import type { ZodIssue } from 'zod';
 import { BusinessRuleViolationError } from '@piggly/ddd-toolkit';
 
 /**
- * The error to be thrown when the payload cannot be validated.
- *
- * @class InvalidPayloadSchemaError
+ * @file The error to be thrown when the payload cannot be validated.
  * @since 5.4.0
+ * @copyright Piggly Lab 2025
  * @author Caique Araujo <caique@piggly.com.br>
  */
 export class InvalidPayloadSchemaError extends BusinessRuleViolationError {
@@ -37,6 +36,15 @@ export class InvalidPayloadSchemaError extends BusinessRuleViolationError {
 		);
 	}
 
+	/**
+	 * Prepare the issues.
+	 *
+	 * @param {Array<ZodIssue>} issues The issues found.
+	 * @param {Record<string, string>} mapTo The map of fields.
+	 * @returns {Array<{ field: string; message: string }>} The prepared issues.
+	 * @since 5.4.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
 	protected static prepareIssues(
 		issues: Array<ZodIssue>,
 		mapTo?: Record<string, string>,

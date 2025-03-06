@@ -1,6 +1,7 @@
 import type { ZodSchema } from 'zod';
 
 import { DomainError, Result } from '@piggly/ddd-toolkit';
+import sanitize from 'sanitize-html';
 
 import { InvalidPayloadSchemaError } from '@/errors/InvalidPayloadSchemaError';
 
@@ -57,4 +58,34 @@ export const evaluateSchema = <Schema = any>(
 	}
 
 	return Result.ok(result.data as Schema);
+};
+
+/**
+ * Sanitize a string recursively.
+ *
+ * @param {any} data
+ * @returns {any}
+ * @since 5.5.0
+ * @author Caique Araujo <caique@piggly.com.br>
+ */
+export const sanitizeRecursively = <T = any>(data: T): T => {
+	if (typeof data === 'string') {
+		return sanitize(data) as T;
+	}
+
+	if (Array.isArray(data)) {
+		return data.map(sanitizeRecursively) as T;
+	}
+
+	if (data !== null && typeof data === 'object') {
+		const sanitizedObj: any = {};
+
+		for (const key in data) {
+			sanitizedObj[key] = sanitizeRecursively(data[key]);
+		}
+
+		return sanitizedObj as T;
+	}
+
+	return data as T;
 };

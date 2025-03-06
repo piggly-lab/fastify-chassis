@@ -1,9 +1,10 @@
 {
 	"name": "@piggly/fastify-chassis",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"description": "An ESM/CommonJS toolkit to help you to do common operations in your back-end applications with Fastify and NodeJS.",
 	"scripts": {
 		"clean": "rimraf dist",
+		"pre:commit": "npm run format && npm run lint && npm run check",
 		"prebuild": "npm run lint && npm run format",
 		"build": "npm run clean && npm run build:types && npm run build:esm && npm run build:cjs",
 		"build:esm": "tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json && node ./fixESM.cjs",
@@ -45,13 +46,13 @@
 	],
 	"author": "caiquearaujo",
 	"license": "MIT",
-	"homepage": "https://github.com/caiquearaujo/fastify-chassis#readme",
+	"homepage": "https://github.com/piggly-lab/fastify-chassis#readme",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/caiquearaujo/fastify-chassis.git"
+		"url": "git+https://github.com/piggly-lab/fastify-chassis.git"
 	},
 	"bugs": {
-		"url": "https://github.com/caiquearaujo/fastify-chassis/issues"
+		"url": "https://github.com/piggly-lab/fastify-chassis/issues"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.0",
@@ -68,6 +69,7 @@
 		"@types/module-alias": "^2.0.4",
 		"@types/node": "^22.8.6",
 		"@types/redis": "^4.0.11",
+		"@types/sanitize-html": "^2.13.0",
 		"@typescript-eslint/eslint-plugin": "^8.10.0",
 		"@typescript-eslint/parser": "^8.10.0",
 		"@zerollup/ts-transform-paths": "^1.7.18",
@@ -87,6 +89,7 @@
 		"moment-timezone": "*",
 		"prettier": "^3.3.3",
 		"redis": "^4.7.0",
+		"sanitize-html": "^2.14.0",
 		"ts-jest": "^29.2.5",
 		"ts-node": "^10.9.2",
 		"tsc-alias": "^1.8.10",
@@ -99,7 +102,9 @@
 	"peerDependencies": {
 		"@piggly/ddd-toolkit": ">=3.0",
 		"fastify": ">=5.1",
-		"moment-timezone": "^0.5.46"
+		"moment-timezone": ">=0.5",
+		"sanitize-html": ">=2.13",
+		"zod": ">=3.23"
 	},
 	"optionalDependencies": {
 		"bcrypt": "^5.1.1",
@@ -107,7 +112,6 @@
 		"ini": "^5.0.0",
 		"jose": "^5.9.6",
 		"js-yaml": "^4.1.0",
-		"redis": "^4.7.0",
-		"zod": "^3.23.8"
+		"redis": "^4.7.0"
 	}
 }

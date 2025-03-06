@@ -1,3 +1,4 @@
+export { CORSNotAllowedError } from './CORSNotAllowedError';
 export { ForbiddenError } from './ForbiddenError';
 export { InvalidAuthorizationHeaderError } from './InvalidAuthorizationHeaderError';
 export { InvalidPayloadSchemaError } from './InvalidPayloadSchemaError';
@@ -10,4 +11,5 @@ export { RequestNotFoundError } from './RequestNotFoundError';
 export { RequestServerError } from './RequestServerError';
 export { ResourceForbiddenError } from './ResourceForbiddenError';
 export { ServiceUnavailableError } from './ServiceUnavailableError';
+export { TooManyRequestsError } from './TooManyRequestsError';
 export { UnauthorizedError } from './UnauthorizedError';

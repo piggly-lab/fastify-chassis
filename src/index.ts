@@ -9,12 +9,15 @@ export {
 	ResourceForbiddenError,
 	RequestApiServerError,
 	RequestNotFoundError,
+	TooManyRequestsError,
+	CORSNotAllowedError,
 	RequestServerError,
 	UnauthorizedError,
 	ForbiddenError,
 } from './errors';
 
 export {
+	sanitizeRecursively,
 	getHeaderValues,
 	evaluateHeaders,
 	getBearerToken,
@@ -75,7 +78,12 @@ export {
 
 export { SchemaValidationMiddleware, BasicAuthMiddleware } from './middlewares';
 
-export { processUncaught, logErrorOnFile, processStop } from './nodejs';
+export {
+	cleanupDependencies,
+	processUncaught,
+	logErrorOnFile,
+	processStop,
+} from './nodejs';
 
 export { SyncErrorOnDiskHandler } from './handlers';
 

@@ -67,3 +67,12 @@
 * Add many errors, see `./errors` folder for more information;
 * Fix `LoggerService` behavior to be able to register it before create `AbstractServer` instance, sometimes you may want to register logger before to handle application dependencies logging;
 * Keep compatibility with previous versions.
+
+## 5.5.0 at (`2025-03-06`)
+
+* Add `softResolve` method to `LoggerService` to allow soft resolve the logger service;
+* Add new errors, see `./errors` folder for more information;
+* Add `cleanupDependencies` function to cleanup dependencies;
+* Add a `sanitizeRecursively` util function to sanitize HTML data recursively;
+* Fix on `BasicAuthMiddleware` which was not working as expected;
+* Keep compatibility with previous versions.

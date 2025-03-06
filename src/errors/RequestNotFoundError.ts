@@ -3,7 +3,9 @@ import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when request is not found.
- * @copyright Piggly Lab 2023
+ * @since 5.4.0
+ * @copyright Piggly Lab 2025
+ * @author Caique Araujo <caique@piggly.com.br>
  */
 export class RequestNotFoundError extends ApplicationError {
 	/**

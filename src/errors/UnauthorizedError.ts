@@ -3,7 +3,9 @@ import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when crendentials is not allowed.
- * @copyright Piggly Lab 2023
+ * @since 5.4.0
+ * @copyright Piggly Lab 2025
+ * @author Caique Araujo <caique@piggly.com.br>
  */
 export class UnauthorizedError extends ApplicationError {
 	/**
@@ -12,7 +14,7 @@ export class UnauthorizedError extends ApplicationError {
 	 * @param {string} [message] The error message.
 	 * @param {string} [hint] The error hint.
 	 * @param {Record<string, any>} [extra] The extra data.
-	 * @memberof CannotSaveEntityError
+	 * @memberof UnauthorizedError
 	 * @since 1.0.0
 	 * @author Caique Araujo <caique@piggly.com.br>
 	 */
