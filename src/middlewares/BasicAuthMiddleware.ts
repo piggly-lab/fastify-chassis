@@ -28,6 +28,7 @@ export const BasicAuthMiddleware =
 		if (username !== expected.username || password !== expected.password) {
 			UnauthorizedAccessEvent.publish(request);
 			done(new UnauthorizedError());
+			return;
 		}
 
 		done();

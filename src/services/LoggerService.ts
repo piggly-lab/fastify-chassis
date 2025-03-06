@@ -246,4 +246,27 @@ export class LoggerService {
 	public static resolve(): LoggerService {
 		return ServiceProvider.resolve('LoggerService');
 	}
+
+	/**
+	 * Soft resolve application service.
+	 * This method will not throw an error if the service is not registered.
+	 * It will return a new instance of the service with the ignoreUnset config set to true.
+	 *
+	 * @returns {LoggerService}
+	 * @public
+	 * @static
+	 * @memberof LoggerService
+	 * @since 5.5.0
+	 * @author Caique Araujo <caique@piggly.com.br>
+	 */
+	public static softResolve(): LoggerService {
+		if (ServiceProvider.has('LoggerService')) {
+			return ServiceProvider.resolve('LoggerService');
+		}
+
+		return new LoggerService({
+			alwaysOnConsole: false,
+			ignoreUnset: true,
+		});
+	}
 }

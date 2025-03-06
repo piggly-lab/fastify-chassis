@@ -3,7 +3,9 @@ import { crc32 } from 'crc';
 
 /**
  * @file This error should be thrown when server cannot handle the request.
- * @copyright Piggly Lab 2023
+ * @since 5.4.0
+ * @copyright Piggly Lab 2025
+ * @author Caique Araujo <caique@piggly.com.br>
  */
 export class RequestServerError extends ApplicationError {
 	/**

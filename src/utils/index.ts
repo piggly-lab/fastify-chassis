@@ -15,4 +15,4 @@ export {
 
 export { loadConfigIni, loadDotEnv, loadYaml } from './config';
 
-export { evaluateSchema, mountURL } from './global';
+export { sanitizeRecursively, evaluateSchema, mountURL } from './global';

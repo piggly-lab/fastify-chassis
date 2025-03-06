@@ -6,19 +6,19 @@ import { crc32 } from 'crc';
 import { ApplicationErrorEvent } from '@/events';
 
 /**
- * The error to be thrown when the requested service is unavailable.
- *
- * @class RequestApiServerError
+ * @file The error to be thrown when the requested service is unavailable.
  * @since 5.4.0
+ * @copyright Piggly Lab 2025
  * @author Caique Araujo <caique@piggly.com.br>
  */
 export class RequestApiServerError extends ApplicationError {
 	/**
 	 * Create a new instance of the error.
 	 *
+	 * @param {any} error The error.
+	 * @memberof RequestApiServerError
 	 * @since 5.4.0
 	 * @author Caique Araujo <caique@piggly.com.br>
-	 * @param {any} error The error.
 	 */
 	constructor(error?: any) {
 		const hash = randomUUID();
