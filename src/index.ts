@@ -1,7 +1,6 @@
 export {
 	MissingAuthorizationHeaderError,
 	InvalidAuthorizationHeaderError,
-	InvalidPayloadSchemaError,
 	InvalidRequestQueryError,
 	InvalidRequestBodyError,
 	ServiceUnavailableError,
@@ -17,22 +16,17 @@ export {
 } from './errors';
 
 export {
-	sanitizeRecursively,
 	getHeaderValues,
 	evaluateHeaders,
 	getBearerToken,
 	getHeaderValue,
-	evaluateSchema,
 	getBasicToken,
-	loadConfigIni,
 	replyError,
 	getQueries,
-	loadDotEnv,
 	getOrigin,
 	mountURL,
 	getParam,
 	getQuery,
-	loadYaml,
 	getBody,
 	getIp,
 } from './utils';
@@ -42,11 +36,8 @@ export {
 	NonceBuilderService,
 	HealthCheckService,
 	EnvironmentService,
-	JWTBuilderService,
 	CleanUpService,
 	StartupService,
-	CryptoService,
-	LoggerService,
 } from './services';
 
 export type {
@@ -56,7 +47,6 @@ export type {
 	ApiServerInterface,
 	FastifyAppliable,
 	ApiServerOptions,
-	EnvironmentType,
 	FastifyServer,
 } from './types';
 

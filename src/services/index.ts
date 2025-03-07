@@ -1,9 +1,6 @@
 export { CleanUpService } from './CleanUpService';
 export { CookieBuilderService } from './CookieBuilderService';
-export { CryptoService } from './CryptoService';
 export { EnvironmentService } from './EnvironmentService';
 export { HealthCheckService } from './HealthCheckService';
-export { JWTBuilderService } from './JWTBuilderService';
-export { LoggerService } from './LoggerService';
 export { NonceBuilderService } from './NonceBuilderService';
 export { StartupService } from './StartupService';

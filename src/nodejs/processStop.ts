@@ -1,7 +1,7 @@
-import { ServiceProvider } from '@piggly/ddd-toolkit';
+/* eslint-disable no-console */
+import { LoggerService } from '@piggly/ddd-toolkit';
 
 import type { DefaultEnvironment } from '@/types';
-import type { LoggerService } from '@/services';
 
 import { logErrorOnFile } from './logErrorOnFile';
 
@@ -27,11 +27,7 @@ export const processStop =
 				console.log('⚠️ Command is stopping... Please wait a moment.');
 			}
 
-			const logger = ServiceProvider.get<LoggerService>('LoggerService');
-
-			if (logger) {
-				logger.flush();
-			}
+			LoggerService.softResolve().flush();
 
 			if (beforeExit) {
 				return process.exit(await beforeExit());

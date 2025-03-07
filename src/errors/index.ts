@@ -1,7 +1,6 @@
 export { CORSNotAllowedError } from './CORSNotAllowedError';
 export { ForbiddenError } from './ForbiddenError';
 export { InvalidAuthorizationHeaderError } from './InvalidAuthorizationHeaderError';
-export { InvalidPayloadSchemaError } from './InvalidPayloadSchemaError';
 export { InvalidRequestBodyError } from './InvalidRequestBodyError';
 export { InvalidRequestQueryError } from './InvalidRequestQueryError';
 export { MissingAuthorizationHeaderError } from './MissingAuthorizationHeaderError';

@@ -13,6 +13,4 @@ export {
 	getIp,
 } from './request';
 
-export { loadConfigIni, loadDotEnv, loadYaml } from './config';
-
-export { sanitizeRecursively, evaluateSchema, mountURL } from './global';
+export { mountURL } from './global';

@@ -76,3 +76,17 @@
 * Add a `sanitizeRecursively` util function to sanitize HTML data recursively;
 * Fix on `BasicAuthMiddleware` which was not working as expected;
 * Keep compatibility with previous versions.
+
+## 6.0.0 at (`2025-03-07`)
+
+* Break changes, migrating classes and functions to `@piggly/ddd-toolkit` package, see:
+  * `JWTBuilderService` class;
+  * `CryptoService` class;
+  * `LoggerService` class;
+  * `evaluateSchema` function;
+  * `sanitizeRecursively` function;
+  * `loadConfigIni` function;
+  * `loadDotEnv` function;
+  * `loadYaml` function;
+  * `EnvironmentType` type;
+  * `InvalidPayloadSchemaError` error.

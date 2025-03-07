@@ -6,7 +6,6 @@ import prettier from 'eslint-config-prettier';
 import perfectionist from 'eslint-plugin-perfectionist';
 import importplugin from 'eslint-plugin-import';
 
-/** @type {import('eslint').Linter.Config[]} */
 export default [
 	pluginJs.configs.recommended,
 	...tseslint.configs.recommended,
@@ -47,11 +46,12 @@ export default [
 
 		settings: {
 			'import/parsers': {
-				'@typescript-eslint/parser': ['.ts', '.tsx'],
+				'@typescript-eslint/parser': ['.ts', '.js'],
 			},
 
 			'import/resolver': {
 				typescript: {
+					alwaysTryTypes: true,
 					project: './tsconfig.json',
 				},
 			},
@@ -59,9 +59,25 @@ export default [
 	},
 	{
 		rules: {
-			'no-console': 'off',
-			'no-underscore-dangle': 'off',
 			'class-methods-use-this': 'off',
+			'import/prefer-default-export': 'off',
+			'import/no-named-as-default': 'off',
+			'import/no-named-as-default-member': 'off',
+			'max-classes-per-file': 'off',
+			'max-statements': ['error', 35],
+			'no-console': 'warn',
+			'no-underscore-dangle': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-throw-literal': 'off',
+			'@typescript-eslint/naming-convention': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					varsIgnorePattern: '^_+$',
+					argsIgnorePattern: '^_+$',
+					caughtErrorsIgnorePattern: '^_+$',
+				},
+			],
 			'import/extensions': [
 				'error',
 				'always',
@@ -69,14 +85,6 @@ export default [
 					ts: 'never',
 				},
 			],
-			'import/prefer-default-export': 'off',
-			'import/no-named-as-default': 'off',
-			'max-classes-per-file': 'off',
-			'max-statements': ['error', 35],
-			'@typescript-eslint/no-unused-vars': 'warn',
-			'@typescript-eslint/no-explicit-any': 'off',
-			'@typescript-eslint/no-throw-literal': 'off',
-			'@typescript-eslint/naming-convention': 'off',
 			'perfectionist/sort-imports': [
 				'error',
 				{
@@ -98,7 +106,7 @@ export default [
 						'unknown',
 					],
 					newlinesBetween: 'always',
-					internalPattern: ['@/**'],
+					internalPattern: ['^@/'],
 					environment: 'node',
 				},
 			],
@@ -164,7 +172,7 @@ export default [
 					},
 				},
 			],
-			'perfectionist/sort-intersection-types': [
+			'perfectionist/sort-modules': [
 				'error',
 				{
 					type: 'alphabetical',
@@ -172,7 +180,6 @@ export default [
 					ignoreCase: true,
 					specialCharacters: 'keep',
 					partitionByComment: true,
-					partitionByNewLine: true,
 				},
 			],
 			'perfectionist/sort-exports': [
@@ -184,7 +191,17 @@ export default [
 					specialCharacters: 'keep',
 					partitionByComment: true,
 					partitionByNewLine: true,
-					groupKind: 'mixed',
+				},
+			],
+			'perfectionist/sort-intersection-types': [
+				'error',
+				{
+					type: 'alphabetical',
+					order: 'asc',
+					ignoreCase: true,
+					specialCharacters: 'keep',
+					partitionByComment: true,
+					partitionByNewLine: true,
 				},
 			],
 		},

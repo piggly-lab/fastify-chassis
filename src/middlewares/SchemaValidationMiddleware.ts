@@ -4,10 +4,9 @@ import type {
 	FastifyReply,
 } from 'fastify';
 
-import { DomainError, Result } from '@piggly/ddd-toolkit';
+import { evaluateSchema, DomainError, Result } from '@piggly/ddd-toolkit';
 import { ZodSchema } from 'zod';
 
-import { evaluateSchema } from '@/utils/global';
 import { replyError, getBody } from '@/utils';
 
 export const SchemaValidationMiddleware =

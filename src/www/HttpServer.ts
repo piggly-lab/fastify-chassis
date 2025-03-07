@@ -1,11 +1,11 @@
-import { ServiceProvider } from '@piggly/ddd-toolkit';
+/* eslint-disable no-console */
+import { ServiceProvider, LoggerService } from '@piggly/ddd-toolkit';
 
 import {
 	HttpServerInterface,
 	ApiServerInterface,
 	DefaultEnvironment,
 } from '@/types';
-import { LoggerService } from '@/services';
 
 /**
  * @file The HTTP server.
