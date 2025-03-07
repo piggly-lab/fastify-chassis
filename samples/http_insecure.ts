@@ -9,7 +9,7 @@ import { Server } from 'http';
 import path from 'path';
 import fs from 'fs';
 
-import { ServiceProvider } from '@piggly/ddd-toolkit';
+import { LoggerService, ServiceProvider } from '@piggly/ddd-toolkit';
 import fastifyRateLimit from '@fastify/rate-limit';
 import moment from 'moment-timezone';
 
@@ -21,7 +21,6 @@ import {
 import { RequestNotFoundError, RequestServerError } from '@/errors';
 import { HttpInsecureServer, FastifyModifiers } from '@/www';
 import { SyncErrorOnDiskHandler } from '@/handlers';
-import { LoggerService } from '@/services';
 
 type ApiServer = Server;
 

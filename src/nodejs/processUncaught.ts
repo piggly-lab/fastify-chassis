@@ -1,7 +1,7 @@
-import { ServiceProvider } from '@piggly/ddd-toolkit';
+/* eslint-disable no-console */
+import { LoggerService } from '@piggly/ddd-toolkit';
 
 import type { DefaultEnvironment } from '@/types';
-import type { LoggerService } from '@/services';
 
 import { logErrorOnFile } from './logErrorOnFile';
 
@@ -23,12 +23,11 @@ export const processUncaught =
 	) =>
 	async (reason: any, origin: any) => {
 		const err = logErrorOnFile(env, reason, origin);
-		const logger = ServiceProvider.get<LoggerService>('LoggerService');
 
-		if (logger) {
-			logger.error('UNCAUGHT_EXCEPTION_ERROR', err);
-			logger.flush();
-		}
+		const logger = LoggerService.softResolve();
+
+		logger.error('UNCAUGHT_EXCEPTION_ERROR', err);
+		logger.flush();
 
 		if (env.debug === true) {
 			console.error(err);

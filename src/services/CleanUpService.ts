@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ServiceProvider } from '@piggly/ddd-toolkit';
 
 /**

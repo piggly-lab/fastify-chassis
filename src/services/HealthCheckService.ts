@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * @file Handle health check services.
  * @copyright Piggly Lab 2024

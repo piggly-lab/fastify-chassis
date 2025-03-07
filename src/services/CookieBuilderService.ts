@@ -1,8 +1,11 @@
+/* eslint-disable no-console */
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
-import { ServiceProvider, TOrUndefined } from '@piggly/ddd-toolkit';
-
-import { EnvironmentType } from '@/types';
+import {
+	ServiceProvider,
+	EnvironmentType,
+	TOrUndefined,
+} from '@piggly/ddd-toolkit';
 
 type CookieBuilderServiceSettings = {
 	domain: string;

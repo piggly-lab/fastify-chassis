@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 import type { FastifyInstance, RawServerBase, FastifyError } from 'fastify';
 
-import { RuntimeError, DomainError } from '@piggly/ddd-toolkit';
+import { LoggerService, RuntimeError, DomainError } from '@piggly/ddd-toolkit';
 
 import {
 	HttpServerInterface,
@@ -8,7 +9,7 @@ import {
 	DefaultEnvironment,
 	ApiServerOptions,
 } from '@/types';
-import { EnvironmentService, LoggerService } from '@/services';
+import { EnvironmentService } from '@/services';
 
 import { HttpServer } from '../HttpServer';
 

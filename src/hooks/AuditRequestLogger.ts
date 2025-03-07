@@ -4,10 +4,9 @@ import type {
 	RawServerBase,
 	FastifyReply,
 } from 'fastify';
+import type { EnvironmentType } from '@piggly/ddd-toolkit';
 
 import { pino } from 'pino';
-
-import { EnvironmentType } from '@/types';
 
 /**
  * Log server request only when the request is completed.

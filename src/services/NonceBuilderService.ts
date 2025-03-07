@@ -1,13 +1,16 @@
 import type { RedisClientType } from 'redis';
 
-import { ServiceProvider, DomainError, Result } from '@piggly/ddd-toolkit';
-
-import { CryptoService } from './CryptoService';
+import {
+	ServiceProvider,
+	CryptoService,
+	DomainError,
+	Result,
+} from '@piggly/ddd-toolkit';
 
 type NonceBuilderServiceSettings = {
 	errors: {
-		cannotIssue: DomainError;
 		cannotValidate: DomainError;
+		cannotIssue: DomainError;
 		onError?: (err: any) => Promise<void>;
 	};
 	prefix?: string;
